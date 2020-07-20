@@ -85,7 +85,7 @@ export function useApi() {
 
     loadDao: async (lockHash: string) => {
       const dao = (await apiGet('/dao/stats', { lockHash }))?.data as {
-        global: any;
+        global: unknown;
         user: { locked: string; yesterday: string; yieldCumulative: string };
       };
 
@@ -150,15 +150,13 @@ export function useApi() {
       tokenAmount: string,
       from: string
     ) => {
-      const res = (
-        await apiPost('/swap/submitPendingSwap', {
-          txhash,
-          ckbAmount,
-          tokenSymbol,
-          tokenAmount,
-          from
-        })
-      )?.status;
+      await apiPost('/swap/submitPendingSwap', {
+        txhash,
+        ckbAmount,
+        tokenSymbol,
+        tokenAmount,
+        from
+      });
     }
   };
 }

@@ -43,6 +43,7 @@
   import VueQrcode from 'vue-qrcode';
   export default defineComponent({
     name: 'ReceiveCard',
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     components: { VueQrcode },
     setup() {
       const type: Ref<'native' | 'ckb' | 'portal'> = ref('native');

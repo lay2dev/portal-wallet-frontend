@@ -55,7 +55,7 @@
     name: 'ContactSelect',
     setup(props, ctx) {
       onMounted(() => {
-        loadContacts();
+        void loadContacts();
       });
 
       const contacts = useContacts();

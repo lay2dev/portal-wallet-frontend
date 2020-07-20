@@ -34,15 +34,15 @@ export async function loadSwapConfig() {
 const lefts = computed(() => {
   const tokens: SwapItem[] = [];
   if (config.value?.tokenList.length) {
-    for (const token of config.value.tokenList) {
+    for (const token of config.value.tokenList as SwapItem[]) {
       tokens.push({
-        symbol: token.symbol as string,
-        icon: `img:${(token.symbol as string).toLowerCase()}.svg`,
-        address: token.address as string,
-        decimal: token.decimal as number,
+        symbol: token.symbol,
+        icon: `img:${token.symbol.toLowerCase()}.svg`,
+        address: token.address,
+        decimal: token.decimal,
         price: 0,
         balance: '0',
-        min: token.minAmount as number
+        min: token.min
       });
     }
   } else {
@@ -109,8 +109,7 @@ export async function swap(
       config.value.depositEthAddress,
       leftAmount,
       left.address,
-      left.decimal,
-      config.value.chain
+      left.decimal
     );
 
     const ret = await useApi().submitPendingSwap(
@@ -194,7 +193,7 @@ export async function loadSwapTxs(lastId?: number) {
 // eth tools
 
 const sendAsync = async (
-  params: Record<string, any>[] | [string, string],
+  params: Array<unknown>,
   method: string
   // from: string
 ) =>
@@ -226,13 +225,10 @@ export const sendAssets = async (
   toAddress: string,
   amount: number | string,
   tokenAddress: string,
-  decimal = 18,
-  chain = 'mainnet'
+  decimal = 18
+  // chain = 'mainnet'
 ) => {
-  const params = [
-    // { from: fromAddress, to: toAddress, chain, data: '', value: '0x' }
-    { from: fromAddress, to: toAddress, data: '', value: '0x' }
-  ];
+  const params = [{ from: fromAddress, to: toAddress, data: '', value: '0x0' }];
   const method = 'eth_sendTransaction';
   if (tokenAddress?.length) {
     const contract = await window.web3.eth.contract(USDT_ABI).at(tokenAddress);
@@ -257,7 +253,7 @@ export const sendAssets = async (
 };
 
 export const getBalance = async (fromAddress: string, tokenAddress: string) => {
-  let params: [any | string, string] | undefined,
+  let params = [],
     method = '';
   const from = fromAddress;
   if (tokenAddress?.length) {
@@ -272,5 +268,5 @@ export const getBalance = async (fromAddress: string, tokenAddress: string) => {
     method = 'eth_getBalance';
   }
 
-  return sendAsync(params, method, fromAddress);
+  return sendAsync(params, method);
 };

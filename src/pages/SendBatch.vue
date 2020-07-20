@@ -246,7 +246,7 @@
       const confirmSend = ref(false);
       const onSend = async () => {
         root.$q.loading.show({
-          spinner: QSpinnerBall,
+          spinner: (QSpinnerBall as unknown) as Vue,
           spinnerColor: 'accent',
           spinnerSize: 64,
           messageColor: 'white',

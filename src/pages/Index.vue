@@ -195,11 +195,10 @@
     truncatedAddress,
     useAuthorized,
     useShowLogin,
-    logout,
-    checkLoginStatus
+    logout
   } from 'src/compositions/account';
   import { AmountUnit, Amount } from '@lay2/pw-core';
-  import { Notify, debounce } from 'quasar';
+  import { Notify } from 'quasar';
   import { ref, computed } from '@vue/composition-api';
   import Jazzicon from 'vue-jazzicon';
   import TxList from 'src/components/TxList.vue';
@@ -273,8 +272,7 @@
       actions: [
         {
           label: 'Cancel',
-          color: 'white',
-          handler: () => {}
+          color: 'white'
         },
         {
           label: 'OK, Reload',

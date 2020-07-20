@@ -139,8 +139,8 @@
     name: 'SwapTxList',
     components: { SwapTxItem },
     setup() {
-      onMounted(async () => {
-        loadSwapTxs();
+      onMounted(() => {
+        void loadSwapTxs();
       });
       const { swapTxs, swapTxsLoading } = useSwapTxs();
       const selectedTx = ref<SwapTX | undefined>(undefined);

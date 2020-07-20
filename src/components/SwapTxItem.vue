@@ -12,7 +12,7 @@
         v-else
         color="accent"
         size="1.5em"
-        name="360"
+        name="south"
       />
       <div class="column">
         <div
@@ -34,7 +34,6 @@
 
 <script lang="ts">
   import { defineComponent, computed } from '@vue/composition-api';
-  import { truncatedAddress } from '../compositions/account';
   import { SwapTX, displayFromAmount } from '../compositions/swap';
   import { AmountUnit, Amount } from '@lay2/pw-core';
 

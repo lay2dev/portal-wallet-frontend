@@ -156,14 +156,12 @@
     ref,
     onMounted,
     computed,
-    watch,
-    reactive
+    watch
   } from '@vue/composition-api';
   import { useConfig } from '../compositions/config';
   import {
     swap,
     useSwap,
-    getBalance,
     loadSwapConfig,
     loadSwapRates,
     loadSwapBalances

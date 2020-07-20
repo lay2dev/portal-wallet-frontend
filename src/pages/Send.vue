@@ -385,7 +385,7 @@
   function loading(show = false) {
     show
       ? Loading.show({
-          spinner: QSpinnerBall,
+          spinner: (QSpinnerBall as unknown) as Vue,
           spinnerColor: 'accent',
           spinnerSize: 64,
           messageColor: 'white',

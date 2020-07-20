@@ -13,7 +13,7 @@
 </template>
 
 <script>
-  import { onMounted, ref } from '@vue/composition-api';
+  import { onMounted } from '@vue/composition-api';
   import init from '../compositions/init';
   import LoginDialog from '../components/LoginDialog.vue';
   import vConsole from 'vconsole';
