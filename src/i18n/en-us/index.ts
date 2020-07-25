@@ -8,6 +8,7 @@ const cancel = 'Cancel';
 const close = 'Close';
 const ckb = 'CKB';
 const dao = 'Nervos DAO';
+const empty = 'No Records';
 const fee = 'Fee';
 const from = 'From';
 const hash = 'Hash';
@@ -48,7 +49,8 @@ export default {
       save: 'Save'
     },
     msg: {
-      added: 'Contact Added'
+      added: 'Contact Added',
+      empty
     }
   },
   send: {
@@ -126,7 +128,8 @@ export default {
       in: 'Received',
       out: 'Sent',
       loading,
-      empty: 'No Records'
+      empty,
+      login: 'Need Login'
     },
     btn: {
       close,

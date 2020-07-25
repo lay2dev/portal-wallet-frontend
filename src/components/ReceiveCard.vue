@@ -47,14 +47,14 @@
     components: { VueQrcode },
     setup() {
       const type: Ref<'native' | 'ckb' | 'portal'> = ref('native');
-      const { address } = useAccount();
+      const { address, portalAddress } = useAccount();
       const addresses = {
         native: computed(() => address.value?.addressString || '-'),
         ckb: computed(() => address.value?.toCKBAddress() || '-'),
-        portal: computed(() => address.value?.toCKBAddress() || '-')
+        portal: computed(() => portalAddress.value || '-'),
       };
 
       return { addresses, type };
-    }
+    },
   });
 </script>

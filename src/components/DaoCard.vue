@@ -56,18 +56,19 @@
   import { useDao } from 'src/compositions/account';
   import { AmountUnit } from '@lay2/pw-core';
   import { useConfig } from '../compositions/config';
+  import { useSettings } from '../compositions/settings';
 
   export default defineComponent({
     name: 'DaoCard',
     setup() {
       const { locked, yesterday, cumulative } = useDao();
 
-      const showBalance = computed(() => useConfig().showBalance);
+      const showBalance = computed(() => useSettings().showBalance);
       const lockedAmount = computed(() =>
         showBalance.value
           ? locked.value.toString(AmountUnit.ckb, {
               commify: true,
-              section: 'whole'
+              section: 'whole',
             })
           : '****'
       );
@@ -89,9 +90,9 @@
         yesterdayAmount,
         cumulativeAmount,
         gotoDao,
-        showBalance
+        showBalance,
       };
-    }
+    },
   });
 </script>
 

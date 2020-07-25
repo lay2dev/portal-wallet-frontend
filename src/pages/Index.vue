@@ -149,6 +149,7 @@
       <q-card flat>
         <tx-list
           :size="3"
+          direction="all"
           :more="false"
         />
       </q-card>
@@ -195,7 +196,7 @@
     truncatedAddress,
     useAuthorized,
     useShowLogin,
-    logout
+    logout,
   } from 'src/compositions/account';
   import { AmountUnit, Amount } from '@lay2/pw-core';
   import { Notify } from 'quasar';
@@ -204,8 +205,9 @@
   import TxList from 'src/components/TxList.vue';
   import ReceiveCard from 'src/components/ReceiveCard.vue';
   import DaoCard from 'src/components/DaoCard.vue';
-  import { useSwap } from '../compositions/swap';
-  import { useConfig, useFiatSymbol } from '../compositions/config';
+  import { useSwap, useFiatRates } from '../compositions/swap';
+  import { useFiatSymbol } from '../compositions/config';
+  import { useSettings } from '../compositions/settings';
 
   export default Vue.extend({
     name: 'PageIndex',
@@ -214,8 +216,8 @@
     setup() {
       const { address } = useAccount();
       const showBalance = computed({
-        get: () => useConfig().showBalance,
-        set: val => (useConfig().showBalance = val)
+        get: () => useSettings().showBalance,
+        set: (val) => (useSettings().showBalance = val),
       });
       const originAddress = computed(() =>
         truncatedAddress(address.value?.addressString)
@@ -228,15 +230,22 @@
         showBalance.value
           ? useAccount().balance.value.toString(AmountUnit.ckb, {
               commify: true,
-              fixed: 4
+              fixed: 4,
             })
           : '****'
       );
       const fiatSymbol = useFiatSymbol();
+      const fiatPrice = computed(() =>
+        useFiatRates()[useSettings().currency].toString()
+      );
       const fiat = computed(() =>
         showBalance.value
           ? useAccount()
-              .balance.value.mul(new Amount(useSwap().rights[0].price.toString()))
+              .balance.value.mul(
+                new Amount(useSwap().rights[0].price.toString()).mul(
+                  new Amount(fiatPrice.value)
+                )
+              )
               .toString(AmountUnit.ckb, { commify: true, fixed: 2 })
           : '****'
       );
@@ -257,9 +266,9 @@
         showLogin: useShowLogin(),
         toggleVConsole: toggleVConsole,
         authorized: useAuthorized(),
-        logout: logout
+        logout: logout,
       };
-    }
+    },
   });
 
   function toggleVConsole() {
@@ -272,7 +281,7 @@
       actions: [
         {
           label: 'Cancel',
-          color: 'white'
+          color: 'white',
         },
         {
           label: 'OK, Reload',
@@ -280,9 +289,9 @@
           handler: () => {
             localStorage.setItem('vconsole', vConsole);
             window.location.reload();
-          }
-        }
-      ]
+          },
+        },
+      ],
     });
   }
 </script>

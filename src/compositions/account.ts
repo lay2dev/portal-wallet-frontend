@@ -15,9 +15,11 @@ import { LoginSigner } from './login-signer';
 
 const account = reactive<{
   address: Address | undefined;
+  portalAddress: string | undefined;
   balance: Amount;
 }>({
   address: undefined,
+  portalAddress: undefined,
   balance: Amount.ZERO
 });
 
@@ -48,7 +50,8 @@ watch(address, async address => {
       updateAccount(address),
       loadTxRecords({ address }),
       loadSwapRates(),
-      updateDao(address)
+      updateDao(address),
+      getPortalAddress(address)
     ]);
   }
 });
@@ -58,6 +61,12 @@ const getAddress = (address: string) =>
     address,
     address.startsWith('0x') ? AddressType.eth : AddressType.ckb
   );
+
+const getPortalAddress = async (address: Address) => {
+  account.portalAddress = await useApi().loadPortalAddress(
+    address.toCKBAddress()
+  );
+};
 
 // ---------DAO-----------
 
@@ -163,12 +172,24 @@ function loadLocalPending() {
   }
 }
 
+const txFilter = reactive({
+  direction: 'all',
+  size: 10
+});
+
+export function useTxFilter() {
+  return txFilter;
+}
+
 export async function loadTxRecords({
-  lastHash = '',
-  direction = 'all',
-  size = 10,
-  address = account.address
+  address = account.address,
+  size = 0,
+  direction = '',
+  lastHash = ''
 }) {
+  size = size || txFilter.size;
+  direction = direction.length ? direction : txFilter.direction;
+
   if (address !== undefined) {
     txsLoading.value = true;
     const res = await useApi().loadTxRecords(
@@ -251,6 +272,11 @@ export async function checkLoginStatus(address: string) {
   console.log('[login check] ', authorized.value);
 }
 
+watch(authorized, authorized => {
+  void loadTxRecords({ address: address.value });
+  authorized && void loadContacts();
+});
+
 export function logout() {
   const address = account.address?.addressString;
   if (!!address) {
@@ -275,7 +301,13 @@ export async function login() {
         sig = await signer.signLogin(timestamp, false);
       }
     } catch (e) {
-      sig = await signer.signLogin(timestamp, false);
+      try {
+        sig = await signer.signLogin(timestamp, false);
+      } catch (e) {
+        console.log('[login] cancelled');
+        showLogin.value = false;
+        return;
+      }
     }
     console.log('[login] signature: ', sig);
 

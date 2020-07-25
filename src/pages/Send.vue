@@ -146,7 +146,7 @@
         class="filter-card"
       >
         <q-tabs
-          v-model="filter"
+          v-model="filter.direction"
           dense
           no-caps
           inline-label
@@ -173,7 +173,7 @@
         </q-tabs>
         <q-separator />
       </q-card>
-      <tx-list :direction="filter" />
+      <tx-list :direction="filter.direction" />
     </div>
     <q-page-scroller
       position="bottom-right"
@@ -257,32 +257,33 @@
     useNote,
     useIsBatch,
     isValidAddress,
-    isValidAmount
+    isValidAmount,
   } from '../compositions/send';
   import {
     computed,
     onMounted,
     ref,
-    defineComponent
+    defineComponent,
   } from '@vue/composition-api';
   import PWCore, {
     SimpleBuilder,
     Address,
     Amount,
     EthProvider,
-    AmountUnit
+    AmountUnit,
   } from '@lay2/pw-core';
   import FeeBar from '../components/FeeBar.vue';
   import TxList from '../components/TxList.vue';
   import SignBoard from '../components/SignBoard.vue';
   import ContactSelect from '../components/ContactSelect.vue';
   import { i18n } from '../boot/i18n';
+  import { useTxFilter } from '../compositions/account';
 
   export default defineComponent({
     name: 'Send',
     components: { FeeBar, TxList, SignBoard, ContactSelect },
     setup() {
-      const filter = ref('all');
+      const filter = useTxFilter();
       const ens = ref('');
       const note = useNote();
       const pair = useReceivePair();
@@ -290,14 +291,14 @@
       const address = ref('');
       const amount = computed({
         get: () => pair.amount.toString(AmountUnit.ckb, { commify: true }),
-        set: val => {
+        set: (val) => {
           try {
             pair.amount = setAmount(val);
             pair.valid.amount = isValidAmount(pair.amount as Amount);
           } catch (e) {
             pair.valid.amount = (e as Error).message;
           }
-        }
+        },
       });
       const canSend = computed(() => pair.isValidPair());
       const confirmSend = ref(false);
@@ -342,7 +343,7 @@
         sending,
         filter,
         note,
-        noteTemp: ref('')
+        noteTemp: ref(''),
       };
     },
     watch: {
@@ -378,8 +379,8 @@
           this.ens = '';
           this.resolvingEns = false;
         }
-      }
-    }
+      },
+    },
   });
 
   function loading(show = false) {
@@ -389,7 +390,7 @@
           spinnerColor: 'accent',
           spinnerSize: 64,
           messageColor: 'white',
-          backgroundColor: 'primary'
+          backgroundColor: 'primary',
         })
       : Loading.hide();
   }
@@ -399,7 +400,7 @@
       type,
       message: i18n.t(i18nMsg).toString(),
       timeout: 3000,
-      position: 'bottom'
+      position: 'bottom',
     });
   }
 </script>

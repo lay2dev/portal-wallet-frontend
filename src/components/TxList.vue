@@ -91,6 +91,7 @@
           >
             <span class="col-3 text-caption text-grey">{{$t('txlist.label.note')}}:</span>
             <span
+              v-if="authorized"
               class="col-8 text-caption text-grey-7 cursor-pointer"
               style="word-break: break-word; text-decoration: underline;"
             >
@@ -113,6 +114,16 @@
                 />
               </q-popup-edit>
             </span>
+            <q-btn
+              v-else
+              dense
+              outline
+              no-caps
+              size="xs"
+              color="grey-7"
+              :label="$t('txlist.msg.login')"
+              @click="login"
+            />
           </div>
         </q-card-section>
         <q-card-actions vertical>
@@ -150,7 +161,9 @@
     useTxRecords,
     TX,
     truncatedAddress,
-    useHasMoreTxs
+    useHasMoreTxs,
+    useAuthorized,
+    useShowLogin,
   } from 'src/compositions/account';
   import TxItem from './TxItem.vue';
   import { AmountUnit, Amount } from '@lay2/pw-core';
@@ -162,15 +175,21 @@
     props: {
       direction: {
         type: String,
-        default: 'all'
+        default: 'all',
       },
       size: {
-        type: Number
+        type: Number,
       },
       more: {
         type: Boolean,
-        default: true
-      }
+        default: true,
+      },
+    },
+    created() {
+      void loadTxRecords({
+        size: this.size,
+        direction: this.direction,
+      });
     },
     setup(props) {
       let { txs, txsLoading } = useTxRecords();
@@ -195,7 +214,7 @@
         await loadTxRecords({
           lastHash: lastHash.value,
           size: props.size,
-          direction: props.direction
+          direction: props.direction,
         });
       };
 
@@ -212,6 +231,11 @@
       };
 
       const hasMore = useHasMoreTxs();
+
+      const login = () => {
+        useShowLogin().value = true;
+        showTxDetail.value = false;
+      };
       return {
         txList,
         selectedTx,
@@ -224,17 +248,20 @@
         truncatedAddress,
         openExplorer,
         saveNote,
-        savingNote
+        savingNote,
+        authorized: useAuthorized(),
+        login,
       };
     },
     watch: {
       async direction(direction: string) {
+        console.log('[TxList] load tx for ', direction);
         await loadTxRecords({ direction });
       },
       async size(size: number) {
         await loadTxRecords({ size });
-      }
-    }
+      },
+    },
   });
 </script>
 

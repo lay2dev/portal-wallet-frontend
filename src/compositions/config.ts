@@ -1,4 +1,5 @@
 import { reactive, computed } from '@vue/composition-api';
+import { useSettings } from './settings';
 
 const config = reactive({
   node_url: 'https://lay2.ckb.dev',
@@ -8,10 +9,7 @@ const config = reactive({
   // dao_url: 'https://dao.ckb.pw',
   dao_url: 'https://dao-ckb-pw.vercel.app',
 
-  showHeader: true,
-  showBalance: true,
-  currency: 'usd',
-  locale: 'en-us'
+  showHeader: true
 });
 
 const FiatSymbols: Record<string, string> = {
@@ -19,7 +17,7 @@ const FiatSymbols: Record<string, string> = {
   cny: '¥'
 };
 
-const fiatSymbol = computed(() => FiatSymbols[config.currency]);
+const fiatSymbol = computed(() => FiatSymbols[useSettings().currency]);
 export function useFiatSymbol() {
   return fiatSymbol;
 }

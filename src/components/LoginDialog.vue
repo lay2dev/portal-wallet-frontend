@@ -28,28 +28,37 @@
           class="full-width"
           size="1.2em"
           rounded
+          :loading="waiting"
+          :disable="waiting"
           color="primary"
           icon="login"
           no-caps
           :label="$t('login.btn.login')"
           @click="onLogin"
-        />
+        >
+          <template v-slot:loading>
+            <q-spinner-facebook color="white" />
+          </template>
+        </q-btn>
       </q-card-section>
     </q-card>
   </div>
 </template>
 
 <script lang="ts">
-  import { defineComponent } from '@vue/composition-api';
+  import { defineComponent, ref } from '@vue/composition-api';
   import { login } from '../compositions/account';
   export default defineComponent({
     name: 'LoginDialog',
     setup() {
+      const waiting = ref(false);
       const onLogin = async () => {
+        waiting.value = true;
         await login();
+        waiting.value = false;
       };
 
-      return { onLogin };
-    }
+      return { onLogin, waiting };
+    },
   });
 </script>

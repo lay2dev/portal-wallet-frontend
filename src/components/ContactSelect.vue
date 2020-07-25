@@ -19,7 +19,7 @@
         to="contacts/0"
       />
     </q-toolbar>
-    <q-card-section>
+    <q-card-section v-if="contacts && contacts.length">
       <div
         v-for="contact in contacts"
         :key="contact.id"
@@ -44,6 +44,16 @@
         <q-separator />
       </div>
     </q-card-section>
+    <q-card-section
+      class="text-center text-grey"
+      v-else
+    >
+      <div class="text-subtitle2"> {{$t('contacts.msg.empty')}} </div>
+      <q-icon
+        name="space_bar"
+        size="5em"
+      />
+    </q-card-section>
   </q-card>
 </template>
 
@@ -65,8 +75,8 @@
 
       return {
         contacts,
-        onSelect
+        onSelect,
       };
-    }
+    },
   });
 </script>

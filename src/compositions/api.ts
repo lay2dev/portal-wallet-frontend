@@ -1,10 +1,10 @@
 import { Notify, Cookies, LocalStorage } from 'quasar';
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 import { useConfig } from './config';
 import PWCore, { Amount, AmountUnit } from '@lay2/pw-core';
 import { SwapTX, SwapTxStatus, SwapConfig } from './swap';
 import * as jwt from 'jsonwebtoken';
-import { Contact } from './account';
+import { Contact, useShowLogin } from './account';
 
 const apiGet = async (
   url: string,
@@ -35,6 +35,11 @@ export function useApi() {
       } else {
         throw new Error('Authorization failed!');
       }
+    },
+
+    loadPortalAddress: async (fullAddress: string) => {
+      const res = await apiGet('/wallet/address', { address: fullAddress });
+      if (res?.data) return (res.data as Record<string, string>).address;
     },
 
     addNote: async (txHash: string, remark: string) => {
@@ -105,9 +110,9 @@ export function useApi() {
 
     loadSwapRates: async () => {
       const rates = (await apiGet('/swap/tokenRate'))?.data as {
-        symbol: string;
-        price: string;
-      }[];
+        marketPrices: [];
+        otcUSDTPrices: Record<string, number>;
+      };
       return rates;
     },
 
@@ -224,6 +229,10 @@ export const get = async (
     //   action: `Error: ${e.toString()} | Params: ${JSON.stringify(params)}`,
     //   label: '[API] - ' + url.split('/').pop()
     // })
+    if ((e as AxiosError).response?.status === 401) {
+      useShowLogin().value = true;
+      return;
+    }
     Notify.create({
       message: `[API] - ${(e as Error).toString()}`,
       position: 'top',
@@ -262,6 +271,10 @@ const post = async (
     //   action: `Error: ${e.toString()} | Params: ${JSON.stringify(params)}`,
     //   label: '[API] - ' + url.split('/').pop()
     // })
+    if ((e as AxiosError).response?.status === 401) {
+      useShowLogin().value = true;
+      return;
+    }
     Notify.create({
       message: `[API] - ${(e as Error).message} Params: ${JSON.stringify(
         params

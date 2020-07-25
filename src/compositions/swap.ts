@@ -69,17 +69,42 @@ export function useSwap() {
   return { lefts, rights };
 }
 
+const fiatRates = reactive<Record<string, number>>({
+  cny: 0,
+  usd: 0
+});
+
+export function useFiatRates() {
+  return fiatRates;
+}
+
 export async function loadSwapRates() {
-  const rates = await useApi().loadSwapRates();
+  const {
+    marketPrices: rates,
+    otcUSDTPrices: otcRates
+  } = await useApi().loadSwapRates();
   if (rates && lefts.value) {
     for (let i = 0; i < lefts.value.length; i++) {
       lefts.value[i].price =
-        Number(rates.find(r => r.symbol === lefts.value[i].symbol)?.price) || 0;
+        Number(
+          (rates as Record<string, string>[]).find(
+            r => r.symbol === lefts.value[i].symbol
+          )?.price
+        ) || 0;
     }
     for (let i = 0; i < rights.length; i++) {
       rights[i].price =
-        Number(rates.find(r => r.symbol === rights[i].symbol)?.price) || 0;
+        Number(
+          (rates as Record<string, string>[]).find(
+            r => r.symbol === rights[i].symbol
+          )?.price
+        ) || 0;
     }
+  }
+
+  if (otcRates) {
+    fiatRates.cny = otcRates.CNY;
+    fiatRates.usd = otcRates.USD;
   }
 }
 
@@ -226,7 +251,6 @@ export const sendAssets = async (
   amount: number | string,
   tokenAddress: string,
   decimal = 18
-  // chain = 'mainnet'
 ) => {
   const params = [{ from: fromAddress, to: toAddress, data: '', value: '0x0' }];
   const method = 'eth_sendTransaction';
@@ -248,7 +272,6 @@ export const sendAssets = async (
   }
 
   console.log('[sendAssets]', params[0]);
-  // return sendAsync(params, method, fromAddress);
   return sendAsync(params, method);
 };
 
