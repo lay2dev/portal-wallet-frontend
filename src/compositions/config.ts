@@ -9,6 +9,8 @@ const config = reactive({
   // dao_url: 'https://dao.ckb.pw',
   dao_url: 'https://dao-ckb-pw.vercel.app',
 
+  socket_url: 'https://cellapitest.ckb.pw/',
+
   showHeader: true
 });
 

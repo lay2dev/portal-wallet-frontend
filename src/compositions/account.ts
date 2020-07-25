@@ -12,6 +12,7 @@ import { LocalStorage, Cookies } from 'quasar';
 import { loadSwapRates } from './swap';
 import { useInit } from './init';
 import { LoginSigner } from './login-signer';
+import IoClient from 'socket.io-client';
 
 const account = reactive<{
   address: Address | undefined;
@@ -42,6 +43,12 @@ export function usePortalAddress() {
   return portalAddress;
 }
 
+const updateData = (address: Address) => {
+  void updateAccount(address);
+  void loadTxRecords({ address, silent: true });
+  void updateDao(address);
+};
+
 watch(address, async address => {
   console.log('[account.ts] address updated', address?.addressString);
   if (address instanceof Address) {
@@ -51,7 +58,8 @@ watch(address, async address => {
       loadTxRecords({ address }),
       loadSwapRates(),
       updateDao(address),
-      getPortalAddress(address)
+      getPortalAddress(address),
+      initSocket(address)
     ]);
   }
 });
@@ -66,6 +74,41 @@ const getPortalAddress = async (address: Address) => {
   account.portalAddress = await useApi().loadPortalAddress(
     address.toCKBAddress()
   );
+};
+
+const socket = ref<SocketIOClient.Socket>(
+  IoClient(useConfig().socket_url, {
+    transports: ['websocket']
+  })
+);
+
+const initSocket = (address: Address) => {
+  if (socket.value !== undefined) {
+    socket.value.on('connect', () => {
+      console.log('[socket] connected: ', socket.value.connected);
+      const type = authorized.value ? 'token' : 'address';
+      const value =
+        type === 'token'
+          ? Cookies.get('AT+' + address.addressString)
+          : address.addressString;
+      socket.value.emit('login', {
+        type,
+        value
+      });
+    });
+
+    socket.value.on('newTx', () => {
+      console.log('[socket] nex tx');
+      void updateData(address);
+    });
+
+    socket.value.on(
+      'loginResponse',
+      (data: { success: boolean; info: string }) => {
+        console.log('[socket] login response: ', data.info);
+      }
+    );
+  }
 };
 
 // ---------DAO-----------
@@ -185,13 +228,14 @@ export async function loadTxRecords({
   address = account.address,
   size = 0,
   direction = '',
-  lastHash = ''
+  lastHash = '',
+  silent = false
 }) {
   size = size || txFilter.size;
   direction = direction.length ? direction : txFilter.direction;
 
   if (address !== undefined) {
-    txsLoading.value = true;
+    txsLoading.value = !silent && true;
     const res = await useApi().loadTxRecords(
       address.toLockScript().toHash(),
       lastHash,

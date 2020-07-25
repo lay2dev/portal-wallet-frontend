@@ -2214,6 +2214,11 @@
     "@types/express-serve-static-core" "*"
     "@types/mime" "*"
 
+"@types/socket.io-client@^1.4.33":
+  version "1.4.33"
+  resolved "https://registry.yarnpkg.com/@types/socket.io-client/-/socket.io-client-1.4.33.tgz#8e705b9b3f7fba6cb329d27cd2eda222812adbf1"
+  integrity sha512-m4LnxkljsI9fMsjwpW5QhRpMixo2BeeLpFmg0AE+sS4H1pzAd/cs/ftTiL60FLZgfFa8PFRPx5KsHu8O0bADKQ==
+
 "@types/source-list-map@*":
   version "0.1.2"
   resolved "https://registry.yarnpkg.com/@types/source-list-map/-/source-list-map-0.1.2.tgz#0078836063ffaf17412349bba364087e0ac02ec9"
@@ -10125,7 +10130,7 @@ snapdragon@^0.8.1:
     source-map-resolve "^0.5.0"
     use "^3.1.0"
 
-socket.io-client@^2.1.1:
+socket.io-client@^2.3.0:
   version "2.3.0"
   resolved "https://registry.yarnpkg.com/socket.io-client/-/socket.io-client-2.3.0.tgz#14d5ba2e00b9bcd145ae443ab96b3f86cbcc1bb4"
   integrity sha512-cEQQf24gET3rfhxZ2jJ5xzAOo/xhZwK+mOqtGRg5IowZsMgwvHwnf/mCRapAAkadhM26y+iydgwsXGObBB5ZdA==
@@ -11379,13 +11384,6 @@ vue-server-renderer@2.6.11:
     resolve "^1.2.0"
     serialize-javascript "^2.1.2"
     source-map "0.5.6"
-
-vue-socket.io@^3.0.9:
-  version "3.0.9"
-  resolved "https://registry.yarnpkg.com/vue-socket.io/-/vue-socket.io-3.0.9.tgz#c725fe99d7a3aa173478c0a2607816c993feec0d"
-  integrity sha512-imgrZL+UuyMhEyOOD6Cl11eDtEaVn606e3mCD/2s/oUAB511Ckqon4U7y97t6dwQgLCKW+tfA8aFhF5d3Eogdw==
-  dependencies:
-    socket.io-client "^2.1.1"
 
 vue-style-loader@4.1.2, vue-style-loader@^4.1.0:
   version "4.1.2"

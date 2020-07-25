@@ -156,7 +156,7 @@
     ref,
     onMounted,
     computed,
-    watch
+    watch,
   } from '@vue/composition-api';
   import { useConfig } from '../compositions/config';
   import {
@@ -164,7 +164,7 @@
     useSwap,
     loadSwapConfig,
     loadSwapRates,
-    loadSwapBalances
+    loadSwapBalances,
   } from '../compositions/swap';
   import { Amount } from '@lay2/pw-core';
   import SwapTxList from '../components/SwapTxList.vue';
@@ -172,7 +172,7 @@
   export default defineComponent({
     name: 'Swap',
     components: {
-      SwapTxList
+      SwapTxList,
     },
     setup() {
       const amount = ref(0);
@@ -185,10 +185,15 @@
       });
       const leftAmount = computed({
         get: () =>
-          amount.value ? `${amount.value / left.value.price}` : undefined,
-        set: val => {
+          amount.value
+            ? new Amount(`${amount.value / left.value.price}`).toString(
+                undefined,
+                { fixed: 6 }
+              )
+            : undefined,
+        set: (val) => {
           amount.value = Number(val) * left.value.price;
-        }
+        },
       });
 
       const right = ref(rights[0]);
@@ -197,9 +202,9 @@
           amount.value
             ? new Amount(`${amount.value / right.value.price}`).toString()
             : undefined,
-        set: val => {
+        set: (val) => {
           amount.value = Number(val) * right.value.price;
-        }
+        },
       });
 
       const rate = computed(
@@ -232,14 +237,14 @@
         right,
         rightAmount,
         rate,
-        onSwap
+        onSwap,
       };
     },
     watch: {
       left() {
         this.leftAmount = '0';
-      }
-    }
+      },
+    },
   });
 </script>
 
