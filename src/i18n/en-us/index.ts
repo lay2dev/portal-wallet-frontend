@@ -4,6 +4,7 @@
 const address = 'Address';
 const amount = 'Amount';
 const balance = 'Balance';
+const boughtAt = 'Bought At';
 const cancel = 'Cancel';
 const close = 'Close';
 const ckb = 'CKB';
@@ -20,7 +21,9 @@ const portal = 'Portal';
 const rate = 'Fee Rate';
 const send = 'Send';
 const sent = 'Transaction Sent';
+const success = 'Success';
 const to = 'To';
+const validBefore = 'Expires';
 
 export default {
   common: {
@@ -194,6 +197,54 @@ export default {
       hint: 'Login to Continue',
       detail:
         'A signature of your address and timestamp will be requested to prevent unauthorized access for your private information, such as contacts and transaction notes.'
+    }
+  },
+  shop: {
+    title: 'PW Shop'
+  },
+
+  order: {
+    title: 'Place Order',
+    btn: {
+      pay: 'Pay',
+      checkOrders: 'Check Orders',
+      cancel
+    },
+    msg: {
+      noSku: 'Can not find product',
+      expired: 'Order expired, please reload this page',
+      paid: 'Payment submitted, you can go to check the order status'
+    },
+    label: {
+      success,
+      rate: 'Current Rate'
+    }
+  },
+
+  orders: {
+    title: 'Orders',
+    label: {
+      avaliable: 'Avaliable',
+      used: 'Used',
+      expired: 'Expired',
+      service: 'Service'
+    },
+    msg: {
+      empty
+    }
+  },
+
+  cardItem: {
+    label: {
+      validBefore,
+      boughtAt
+    }
+  },
+
+  cardInfo: {
+    label: {
+      validBefore,
+      boughtAt
     }
   }
 };

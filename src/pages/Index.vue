@@ -165,6 +165,16 @@
         <q-card-section>
           PW Shop Widget
         </q-card-section>
+        <q-card-actions
+          vertical
+          align="center"
+        >
+          <q-btn
+            flat
+            label="Go"
+            to="shop"
+          />
+        </q-card-actions>
       </q-card>
     </div>
     <q-page-scroller

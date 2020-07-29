@@ -13,6 +13,7 @@ import { loadSwapRates } from './swap';
 import { useInit } from './init';
 import { LoginSigner } from './login-signer';
 import IoClient from 'socket.io-client';
+import { loadCards } from './shop/order';
 
 const account = reactive<{
   address: Address | undefined;
@@ -57,6 +58,7 @@ watch(address, async address => {
       updateAccount(address),
       loadTxRecords({ address }),
       loadSwapRates(),
+      loadCards(),
       updateDao(address),
       getPortalAddress(address),
       initSocket(address)

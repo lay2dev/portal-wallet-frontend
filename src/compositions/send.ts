@@ -1,10 +1,17 @@
 import { reactive, ref, computed } from '@vue/composition-api';
-import PWCore, { Address, AddressType, Amount, EthSigner } from '@lay2/pw-core';
+import PWCore, {
+  Address,
+  AddressType,
+  Amount,
+  EthSigner,
+  SimpleBuilder
+} from '@lay2/pw-core';
 import { addPendingTx, TX } from './account';
 import { BatchBuilder } from './batch-builder';
 import { useConfig } from './config';
 import { i18n } from 'src/boot/i18n';
 import { useApi } from './api';
+import { payOrder } from './shop/shop';
 
 export class Pair {
   public address: Address | undefined;
@@ -89,14 +96,34 @@ export function useReceivePair() {
   return receivePair;
 }
 
+const sendMode = ref<'local' | 'remote'>('local');
+export function useSendMode() {
+  return sendMode;
+}
+
+const confirmSend = ref(false);
+export function useConfirmSend() {
+  return confirmSend;
+}
+
 export async function send(): Promise<string | undefined> {
   const address = receivePair.address;
   const amount = receivePair.amount;
   if (address instanceof Address && amount instanceof Amount) {
     sending.value = true;
     try {
-      const pw = new PWCore(useConfig().node_url);
-      const txHash = await pw.send(address, amount, rate.value);
+      let txHash = '';
+      if (useSendMode().value === 'remote') {
+        const builder = new SimpleBuilder(address, amount, rate.value);
+        const tx = await new EthSigner(
+          PWCore.provider.address.addressString
+        ).sign(await builder.build());
+        txHash = tx.raw.toHash();
+        await payOrder(tx);
+      } else {
+        const pw = new PWCore(useConfig().node_url);
+        txHash = await pw.send(address, amount, rate.value);
+      }
       addPendingTx(
         new TX(
           txHash,

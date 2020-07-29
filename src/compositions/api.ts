@@ -1,10 +1,12 @@
 import { Notify, Cookies, LocalStorage } from 'quasar';
 import axios, { AxiosError } from 'axios';
 import { useConfig } from './config';
-import PWCore, { Amount, AmountUnit } from '@lay2/pw-core';
+import PWCore, { Amount, AmountUnit, Transaction } from '@lay2/pw-core';
 import { SwapTX, SwapTxStatus, SwapConfig } from './swap';
 import * as jwt from 'jsonwebtoken';
 import { Contact, useShowLogin } from './account';
+import { CATE, SKU } from './shop/sku';
+import { Order, CardStatus, Card } from './shop/order';
 
 const apiGet = async (
   url: string,
@@ -162,6 +164,148 @@ export function useApi() {
         tokenAmount,
         from
       });
+    },
+
+    shop: {
+      loadConfig: async () => {
+        const res = await apiGet('/store/config');
+        console.log('[api] shop.loadConfig', res);
+        if (res?.status === 200) {
+          const paymentList = (res.data as Record<string, []>)
+            .receivePaymentList as { address: string; token: string }[];
+          return { address: paymentList[0].address };
+        }
+      },
+      loadBanners: async (): Promise<{ img: string; link: string }[]> => {
+        const res = await apiGet('/store/banners');
+        let banners: { img: string; link: string }[] = [];
+        if (res?.data) {
+          banners = res.data as { img: string; link: string }[];
+        }
+        return banners;
+      },
+      loadCategories: async (): Promise<CATE[]> => {
+        const res = await apiGet('/store/categories');
+        let categories: CATE[] = [];
+        if (res?.data) {
+          categories = res.data as CATE[];
+          categories = categories.sort((a, b) => a.id - b.id);
+        }
+        return categories;
+      },
+
+      loadSku: async (skuId: number) => {
+        const res = await apiGet(`/store/productInfo/${skuId}`);
+        if (res?.status === 200) {
+          return res.data as SKU;
+        }
+      },
+      loadSkus: async (cateId: number): Promise<SKU[]> => {
+        if (cateId) {
+          const res = await apiGet('/store/productList/', {
+            cid: cateId.toString()
+          });
+          if (res?.data) {
+            const skus: SKU[] = [];
+            for (const sku of res.data) {
+              skus.push({ ...sku, cid: cateId });
+            }
+            return skus;
+          }
+        }
+        return [];
+      },
+
+      placeOrder: async (
+        sid: number,
+        count: number,
+        phoneNumber?: string,
+        rechargeAmount?: number
+      ) => {
+        const res = await apiPost(
+          '/store/placeOrder',
+          {
+            productId: sid,
+            num: count,
+            rechargeNo: phoneNumber,
+            rechargeAmount
+          },
+          true
+        );
+
+        console.log('[api] placeOrder', res);
+
+        if (res?.status === 201) {
+          const { orderNo } = res.data as Record<string, string>;
+          return orderNo;
+        }
+      },
+
+      prePayOrder: async (orderNo: string, token = 'CKB') => {
+        const res = await apiPost(
+          '/store/prePayOrder',
+          { orderNo, token },
+          true
+        );
+        if (res?.status === 201) {
+          const { tokenAmount, expiresIn } = res.data as {
+            tokenAmount: string;
+            expiresIn: number;
+          };
+
+          return { tokenAmount, expiresIn };
+        }
+      },
+
+      payOrder: async (orderNo: string, tx: Transaction, token = 'CKB') => {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+        const signedTx = tx.transform() as Record<string, unknown>;
+        const res = await apiPost(
+          '/store/payOrder',
+          { orderNo, token, signedTx },
+          true
+        );
+        if (res?.status === 201) {
+          return true;
+        }
+
+        return false;
+      },
+
+      loadCards: async (
+        status: CardStatus,
+        size: number,
+        lastOrderId?: number
+      ) => {
+        const res = await apiGet(
+          '/store/cardList',
+          {
+            status: `${status}`,
+            size: `${size}`,
+            lastOrderId: `${lastOrderId || 0}`
+          },
+          true
+        );
+
+        if (res?.status === 200) {
+          return res.data as Card[];
+        }
+      },
+
+      loadOrders: async (size: number, lastOrderId?: number) => {
+        const res = await apiGet(
+          '/store/orderList',
+          {
+            size: `${size}`,
+            lastOrderId: `${lastOrderId || 0}`
+          },
+          true
+        );
+
+        if (res?.status === 200) {
+          return res.data as Order[];
+        }
+      }
     }
   };
 }
@@ -204,6 +348,7 @@ export const get = async (
 ) => {
   let config = undefined;
   if (authorization) {
+    if (PWCore.provider === undefined) return;
     const AT = await checkAuthorization(
       PWCore.provider.address.addressString,
       url.endsWith('refreshToken')
@@ -251,6 +396,7 @@ const post = async (
 ) => {
   let config = undefined;
   if (authorization) {
+    if (PWCore.provider === undefined) return;
     const AT = await checkAuthorization(
       PWCore.provider.address.addressString,
       url.endsWith('refreshToken')
