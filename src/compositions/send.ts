@@ -12,6 +12,7 @@ import { useConfig } from './config';
 import { i18n } from 'src/boot/i18n';
 import { useApi } from './api';
 import { payOrder } from './shop/shop';
+import { loadPendingCard } from './shop/order';
 
 export class Pair {
   public address: Address | undefined;
@@ -119,7 +120,10 @@ export async function send(): Promise<string | undefined> {
           PWCore.provider.address.addressString
         ).sign(await builder.build());
         txHash = tx.raw.toHash();
-        await payOrder(tx);
+        const orderNo = await payOrder(tx);
+        if (orderNo) {
+          void loadPendingCard(orderNo, txHash);
+        }
       } else {
         const pw = new PWCore(useConfig().node_url);
         txHash = await pw.send(address, amount, rate.value);

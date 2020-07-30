@@ -6,7 +6,8 @@
         <div class="text-h6">{{ card.productName }}</div>
         <div class="text-positive">{{$t('cardInfo.label.validBefore')}}: {{validBefore}}</div>
         <q-separator spaced />
-        <vue-qrcode :value="card.uniqueCode" :margin="1" :width="200" />
+        <vue-qrcode v-if="!!card.uniqueCode" :value="card.uniqueCode" :margin="1" :width="200" />
+        <div v-if="!!card.cardPwd" class="text-h6 text-accent bg-grey-2 q-pa-lg">{{ card.cardPwd}}</div>
         <q-separator spaced />
         <div class="text-left q-px-sm" style="white-space: pre-line;">{{ card.description }}</div>
       </q-card-section>

@@ -238,6 +238,9 @@ export default {
     label: {
       validBefore,
       boughtAt
+    },
+    msg: {
+      pending: 'Payment Confirming'
     }
   },
 

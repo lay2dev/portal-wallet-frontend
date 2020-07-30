@@ -104,6 +104,11 @@ const initSocket = (address: Address) => {
       void updateData(address);
     });
 
+    socket.value.on('store.order.success', () => {
+      console.log('[socket] new order');
+      void loadCards();
+    });
+
     socket.value.on(
       'loginResponse',
       (data: { success: boolean; info: string }) => {

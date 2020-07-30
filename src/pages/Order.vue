@@ -107,10 +107,8 @@ export default defineComponent({
 
       placingOrder.value = true;
       orderNo.value = await useApi().shop.placeOrder(Number(props.sid), 1);
-      console.log('[Order.vue] placed: ', orderNo);
       if (!!orderNo.value) {
         const res = await useApi().shop.prePayOrder(orderNo.value);
-        console.log('[Order.vue] prePaied: ', res);
         if (!!res) {
           tokenAmount.value = new Amount(res.tokenAmount);
           useReceivePair().amount = tokenAmount.value;

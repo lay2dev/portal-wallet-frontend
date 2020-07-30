@@ -290,6 +290,16 @@ export function useApi() {
         if (res?.status === 200) {
           return res.data as Card[];
         }
+
+        return [];
+      },
+
+      loadOrder: async (orderNo: string) => {
+        const res = await apiGet('/store/queryOrder', { orderNo }, true);
+
+        if (res?.status === 200) {
+          return res.data as Order;
+        }
       },
 
       loadOrders: async (size: number, lastOrderId?: number) => {

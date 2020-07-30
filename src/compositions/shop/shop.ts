@@ -9,7 +9,8 @@ export function useOrderNo() {
 
 export async function payOrder(tx: Transaction) {
   if (!!orderNo.value) {
-    return await useApi().shop.payOrder(orderNo.value, tx);
+    await useApi().shop.payOrder(orderNo.value, tx);
+    return orderNo.value;
   }
 
   return false;
