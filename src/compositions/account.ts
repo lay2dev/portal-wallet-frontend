@@ -350,18 +350,15 @@ export async function login() {
     const timestamp = new Date().getTime();
     let sig = undefined;
     try {
-      sig = await signer.signLogin(timestamp);
-      if (typeof sig !== 'string') {
+      if (useConfig().platform === 'MetaMask') {
+        sig = await signer.signLogin(timestamp);
+      } else {
         sig = await signer.signLogin(timestamp, false);
       }
     } catch (e) {
-      try {
-        sig = await signer.signLogin(timestamp, false);
-      } catch (e) {
-        console.log('[login] cancelled');
-        showLogin.value = false;
-        return;
-      }
+      console.log('[login] cancelled');
+      showLogin.value = false;
+      return;
     }
     console.log('[login] signature: ', sig);
 

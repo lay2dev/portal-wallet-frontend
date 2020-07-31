@@ -32,18 +32,18 @@
           <q-item-label class="text-bold">{{originAddress}}</q-item-label>
           <q-item-label caption class="text-warning">{{ckbAddress}}</q-item-label>
         </q-item-section>
-        <q-item-section side>
+        <!-- <q-item-section side>
           <div class="row">
             <q-btn color="white" round flat icon="qr_code" @click="showReceive = true" />
-            <!-- <q-btn
+            <q-btn
               :color="authorized ? 'primary' : 'white'"
               round
               flat
               icon="login"
               @click="authorized ? logout() : showLogin = true"
-            />-->
+            />
           </div>
-        </q-item-section>
+        </q-item-section>-->
       </q-item>
     </div>
     <div class="row meta q-px-md q-py-xs">
@@ -67,12 +67,12 @@
             flat
             dense
             no-caps
-            icon="get_app"
+            icon="qr_code"
             :label="$t('index.btn.receive')"
             @click="showReceive = true"
           />
           <q-separator inset vertical dark />
-          <q-btn flat dense no-caps icon="sync_alt" :label="$t('index.btn.send')" to="send" />
+          <q-btn flat dense no-caps icon="send" :label="$t('index.btn.send')" to="send" />
         </q-card-actions>
       </q-card>
     </div>

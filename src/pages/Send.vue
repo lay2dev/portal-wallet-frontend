@@ -24,7 +24,7 @@
           hide-bottom-space
         >
           <template v-slot:after>
-            <q-btn round dense flat icon="qr_code_scanner" />
+            <q-btn round dense flat icon="qr_code_scanner" @click="scan" />
             <q-btn round dense flat icon="contacts" @click="showContacts = true" />
           </template>
           <template v-slot:loading>
@@ -177,6 +177,7 @@ import {
   isValidAmount,
   useConfirmSend,
   useSendMode,
+  scanQR,
 } from '../compositions/send';
 import {
   computed,
@@ -232,6 +233,10 @@ export default defineComponent({
         : undefined
     );
 
+    const scan = async () => {
+      address.value = await scanQR();
+    };
+
     onMounted(() => {
       amount.value = '100';
       useIsBatch().value = false;
@@ -253,6 +258,7 @@ export default defineComponent({
       canSend,
       confirmSend: useConfirmSend(),
       sending,
+      scan,
       filter,
       note,
       noteTemp: ref(''),

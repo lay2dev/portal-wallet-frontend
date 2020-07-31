@@ -11,6 +11,7 @@ const config = reactive({
 
   socket_url: 'https://cellapitest.ckb.pw/',
 
+  platform: '',
   showHeader: true
 });
 

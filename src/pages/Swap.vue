@@ -163,7 +163,9 @@ export default defineComponent({
     const rightAmount = computed({
       get: () =>
         amount.value
-          ? new Amount(`${amount.value / right.value.price}`).toString(u)
+          ? new Amount(
+              `${amount.value / right.value.price}`
+            ).toString(undefined, { fixed: 4 })
           : undefined,
       set: (val) => {
         amount.value = Number(val) * right.value.price;

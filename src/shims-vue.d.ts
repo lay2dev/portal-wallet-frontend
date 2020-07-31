@@ -7,6 +7,7 @@ declare module '*.vue' {
 interface Window {
   web3: any;
   ethereum: any;
+  imToken: any;
 }
 
 declare module 'vue-qrcode';

@@ -1,4 +1,6 @@
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import { reactive, ref, computed } from '@vue/composition-api';
+import ABCWallet from 'abcwallet';
 import PWCore, {
   Address,
   AddressType,
@@ -200,6 +202,36 @@ export async function sendBatch() {
 }
 
 // tools
+
+export async function scanQR() {
+  let address = '';
+  if (useConfig().platform === 'ImToken') {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+    address = (await window.imToken.callPromisifyAPI(
+      'native.scanQRCode'
+    )) as string;
+  } else if (useConfig().platform === 'ABCWallet') {
+    const { text } = (await ABCWallet.webview.invokeQRScanner()) as Record<
+      string,
+      string
+    >;
+    address = text;
+  }
+  console.log(`[${useConfig().platform}] scaned address:`, address);
+
+  // check if is eth address
+  const ethAddress = /0x[a-fA-F0-9]{40}/.exec(address);
+  ethAddress && (address = ethAddress[0]);
+
+  // check if is ckb address
+  let ckbAddress = /ck[bt]1.+/.exec(address);
+  !ckbAddress && (ckbAddress = /ck[bt]1.{42}/.exec(address));
+  ckbAddress && (address = ckbAddress[0]);
+
+  console.log('address:', address);
+  return address;
+}
+
 export function isValidAddress(address: Address | undefined): boolean | string {
   if (address === undefined) {
     return 'Address must be provided';
