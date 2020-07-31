@@ -202,7 +202,7 @@ export default {
     }
   },
   shop: {
-    title: 'PW Shop'
+    title: 'Lay2 Shop'
   },
 
   order: {

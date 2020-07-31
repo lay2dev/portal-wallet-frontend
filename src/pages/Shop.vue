@@ -56,8 +56,8 @@
           :name="cate.id"
         >
           <div class="text-h6">{{cate.name}}</div>
-          <q-separator class="q-mb-sm" />
-          <sku-card v-for="sku in cate.skus" :key="sku.id" :sku="sku" />
+          <q-separator />
+          <sku-card class="q-my-sm" v-for="sku in cate.skus" :key="sku.id" :sku="sku" />
           <q-inner-loading :showing="skuLoading">
             <q-spinner-facebook size="50px" color="accent" />
           </q-inner-loading>

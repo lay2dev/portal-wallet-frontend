@@ -3,7 +3,7 @@
     <q-card-section class="q-px-sm q-py-xs">
       <div class="row justify-between items-center" @click="gotoShop">
         <div class="row items-center">
-          <q-avatar size="lg" icon="store" />
+          <q-avatar size="lg" icon="img:lay2.svg" />
           <div class="q-ml-xs text-center text-subtitle">{{$t('shop.title')}}</div>
         </div>
         <q-icon size="sm" color="grey" name="chevron_right" />
