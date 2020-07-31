@@ -61,6 +61,7 @@ export default {
     label: {
       address,
       amount,
+      balance,
       all: 'All',
       in: 'In',
       out: 'Out',

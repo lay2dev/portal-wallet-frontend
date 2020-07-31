@@ -66,8 +66,12 @@
             </template>
           </q-input>
         </div>
+        <div class="row text-grey text-caption">
+          <span class="q-mr-xs">{{$t('send.label.balance')}}:</span>
+          <span>{{balance}} CKB</span>
+        </div>
         <div>
-          <q-separator class="q-mt-md" dark />
+          <q-separator class="q-mt-sm" dark />
         </div>
         <div class="row justify-between items-center">
           <fee-bar :builder="builder" />
@@ -190,7 +194,7 @@ import PWCore, {
 import FeeBar from '../components/FeeBar.vue';
 import TxList from '../components/TxList.vue';
 import ContactSelect from '../components/ContactSelect.vue';
-import { useTxFilter } from '../compositions/account';
+import { useTxFilter, useAccount } from '../compositions/account';
 
 export default defineComponent({
   name: 'Send',
@@ -202,6 +206,12 @@ export default defineComponent({
     const pair = useReceivePair();
     const building = useBuilding();
     const address = ref('');
+    const balance = computed(() =>
+      useAccount().balance.value.toString(undefined, {
+        commify: true,
+        fixed: 4,
+      })
+    );
     const amount = computed({
       get: () => pair.amount.toString(AmountUnit.ckb, { commify: true }),
       set: (val) => {
@@ -235,6 +245,7 @@ export default defineComponent({
       pair,
       address,
       amount,
+      balance,
       builder,
       building,
       ens,

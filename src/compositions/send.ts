@@ -144,6 +144,7 @@ export async function send(): Promise<string | undefined> {
       if (!!note.value && note.value.length) {
         try {
           await useApi().addNote(txHash, note.value);
+          note.value = '';
         } catch (e) {
           console.error((e as Error).message);
         }

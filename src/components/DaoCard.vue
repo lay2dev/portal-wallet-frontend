@@ -61,12 +61,12 @@ export default defineComponent({
     );
     const yesterdayAmount = computed(() =>
       showBalance.value
-        ? yesterday.value.toString(AmountUnit.ckb, { commify: true, fixed: 2 })
+        ? yesterday.value.toString(AmountUnit.ckb, { commify: true, fixed: 4 })
         : '****'
     );
     const cumulativeAmount = computed(() =>
       showBalance.value
-        ? cumulative.value.toString(AmountUnit.ckb, { commify: true, fixed: 2 })
+        ? cumulative.value.toString(AmountUnit.ckb, { commify: true, fixed: 4 })
         : '****'
     );
 

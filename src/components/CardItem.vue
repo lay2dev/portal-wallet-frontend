@@ -56,7 +56,7 @@ export default defineComponent({
       const tokenAmount = new Amount(card.payTokenAmount, AmountUnit.shannon);
       return `(${tokenAmount.toString(undefined, {
         commify: true,
-        fixed: 2,
+        fixed: 4,
       })} ${card.payToken})`;
     });
 
