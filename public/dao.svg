@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="800px" height="800px" viewBox="0 0 800 800" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 63.1 (92452) - https://sketch.com -->
+    <title>logo/Dao/Dao_vector</title>
+    <desc>Created with Sketch.</desc>
+    <defs>
+        <linearGradient x1="50.0004968%" y1="107.171432%" x2="50.0004968%" y2="-21.1249397%" id="linearGradient-1">
+            <stop stop-color="#AFAFAF" offset="0%"></stop>
+            <stop stop-color="#AFAFAF" offset="0%"></stop>
+            <stop stop-color="#E6E6E6" offset="100%"></stop>
+        </linearGradient>
+        <linearGradient x1="50%" y1="0%" x2="50%" y2="81.7636907%" id="linearGradient-2">
+            <stop stop-color="#3DC489" offset="0%"></stop>
+            <stop stop-color="#87DAAE" offset="100%"></stop>
+        </linearGradient>
+        <linearGradient x1="50.0000339%" y1="99.6219018%" x2="50.0000339%" y2="7.35314342%" id="linearGradient-3">
+            <stop stop-color="#3DC489" offset="0%"></stop>
+            <stop stop-color="#86D9AD" offset="100%"></stop>
+        </linearGradient>
+    </defs>
+    <g id="logo/Dao/Dao_vector" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Dao">
+            <polygon id="Fill-1" fill="#FFFFFF" points="217.750258 617.750258 583.69453 617.750258 583.69453 143.240454 217.750258 143.240454"></polygon>
+            <polygon id="Fill-2" fill="#D7D7D7" points="570.278638 571.575442 488.039296 489.164087 188.648091 489.374992 189.541513 586.584107 570.278638 586.584107"></polygon>
+            <polygon id="Fill-6" fill="url(#linearGradient-1)" points="487.925697 190.092879 487.925697 489.138343 569.452113 570.897833 583.69453 570.897833 583.69453 190.092879"></polygon>
+            <path d="M0,0 L191.803355,232.907101 L479.648856,232.94138 C529.142493,232.94138 569.264071,273.045912 569.259534,322.518522 L569.25273,480.100381 C569.250462,529.466433 529.289924,569.525621 479.905159,569.668455 L235.318925,570.372198 L122.215666,562.619724 L0.714391969,571.063734 L233.743436,797.841909 L235.440024,799.487897 L562.162445,799.996251 C693.457467,800.192997 800,693.856699 800,562.619724 L800,237.371492 C800,106.272816 693.677479,0 562.525351,0 L0,0 Z" id="Fill-9" fill="url(#linearGradient-2)"></path>
+            <polygon id="Fill-3" fill="url(#linearGradient-3)" points="0 180.538268 0.714391969 571.063734 235.500516 570.416308 235.500516 232.404001 0 0"></polygon>
+        </g>
+    </g>
+</svg>

@@ -180,7 +180,9 @@ export default {
   },
   daoCard: {
     label: {
-      balance: `${dao} ${balance}`,
+      dao,
+      balance,
+      deposited: 'Deposited',
       yesterday: 'Yesterday',
       cumulative: 'Cumulative'
     },

@@ -92,7 +92,7 @@ export function useApi() {
 
     loadDao: async (lockHash: string) => {
       const dao = (await apiGet('/dao/stats', { lockHash }))?.data as {
-        global: unknown;
+        global: { estimated_apc: string };
         user: { locked: string; yesterday: string; yieldCumulative: string };
       };
 
@@ -102,8 +102,9 @@ export function useApi() {
         dao.user.yieldCumulative,
         AmountUnit.shannon
       );
+      const apc = new Number(dao.global.estimated_apc).toFixed(2);
 
-      return { locked, yesterday, cumulative };
+      return { locked, yesterday, cumulative, apc };
     },
 
     loadSwapConfig: async () => {
@@ -351,6 +352,12 @@ export const checkAuthorization = async (
   }
 };
 
+interface ApiResponse {
+  code: number;
+  msg: string;
+  data: unknown;
+}
+
 export const get = async (
   url: string,
   params?: Record<string, string | undefined>,
@@ -396,6 +403,12 @@ export const get = async (
     });
   }
 
+  console.log('[api] get ret', ret);
+
+  if (ret?.data) {
+    ret.data = (ret?.data as ApiResponse).data;
+  }
+
   return ret;
 };
 
@@ -439,6 +452,10 @@ const post = async (
       timeout: 2000,
       color: 'negative'
     });
+  }
+
+  if (ret?.data) {
+    ret.data = (ret?.data as ApiResponse).data;
   }
 
   return ret;

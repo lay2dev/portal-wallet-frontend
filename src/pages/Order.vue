@@ -149,7 +149,7 @@ export default defineComponent({
       }
       if (tokenAmount.value instanceof Amount) {
         useConfirmSend().value = true;
-        watch(sending, (sending) => {
+        const stop = watch(sending, (sending) => {
           if (!sending) {
             root.$q
               .dialog({
@@ -161,6 +161,7 @@ export default defineComponent({
               .onOk(() => {
                 void root.$router.push('/shop/orders');
               });
+            stop();
           }
         });
       }

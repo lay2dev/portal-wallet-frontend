@@ -121,10 +121,12 @@ const initSocket = (address: Address) => {
 // ---------DAO-----------
 
 const dao = reactive<{
+  apc: string;
   locked: Amount;
   yesterday: Amount;
   cumulative: Amount;
 }>({
+  apc: '-',
   locked: Amount.ZERO,
   yesterday: Amount.ZERO,
   cumulative: Amount.ZERO
@@ -133,6 +135,7 @@ const dao = reactive<{
 export async function updateDao(address: Address) {
   const res = await useApi().loadDao(address.toLockScript().toHash());
   if (res) {
+    dao.apc = res.apc;
     dao.locked = res.locked;
     dao.yesterday = res.yesterday;
     dao.cumulative = res.cumulative;
@@ -201,7 +204,7 @@ function loadLocalPending() {
   if (pending) {
     const stillPending = pending.filter(
       p =>
-        new Date().getTime() - p.time < 3600 * 1000 &&
+        new Date().getTime() - p.time < 600 * 1000 &&
         txs.value.find(tx => tx.txHash === p.txHash) === undefined
     );
     LocalStorage.set('pending', stillPending);

@@ -36,6 +36,13 @@ export async function loadCategories() {
   categories.value = await useApi().shop.loadCategories();
 }
 
+const skuOfToday = ref<SKU | undefined>();
+export const useSkuOfToday = () => skuOfToday;
+
+export async function loadSkuOfToday() {
+  skuOfToday.value = await useApi().shop.loadSku(14);
+}
+
 export async function loadSkus(cateId: number) {
   for (let i = 0; i < categories.value.length; i++) {
     if (categories.value[i].id === cateId) {

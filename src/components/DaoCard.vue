@@ -1,103 +1,91 @@
 <template>
-  <q-card
-    flat
-    class="dao-card"
-  >
-    <q-card-section>
-      <div class="row justify-between items-center">
+  <q-card flat class="dao-card">
+    <q-card-section class="q-px-sm q-py-xs">
+      <div class="row justify-between items-center" @click="gotoDao">
         <div class="row items-center">
-          <q-avatar
-            size="lg"
-            color="primary"
-            text-color="white"
-            icon="foundation"
-          />
-          <div class="col-6 q-ml-xs text-center text-dark">{{$t('daoCard.label.balance')}}: </div>
+          <q-avatar size="lg" icon="img:dao.svg" />
+          <div class="q-ml-xs text-center text-subtitle">{{$t('daoCard.label.dao')}}</div>
         </div>
-        <div class="text-subtitle1 text-bold text-accent">{{lockedAmount}} CKB</div>
+        <q-icon size="sm" color="grey" name="chevron_right" />
       </div>
     </q-card-section>
     <q-separator />
-    <q-card-section>
-      <div class="row justify-between items-center">
+    <q-card-section class="row justify-between items-center q-py-sm">
+      <div class="q-ml-xs text-center text-subtitle">{{$t('daoCard.label.deposited')}}:</div>
+      <div class="text-subtitle1 text-accent">{{lockedAmount}} CKB</div>
+    </q-card-section>
+    <q-separator />
+    <q-card-section class="q-pa-sm">
+      <div class="row justify-evenly items-center">
         <div class="column items-start">
-          <div class="text-caption text-accent">{{$t('daoCard.label.yesterday')}}: </div>
+          <div class="text-caption text-accent">{{$t('daoCard.label.yesterday')}}:</div>
           <div class="text-caption text-bold text-primary">+ {{yesterdayAmount}} CKB</div>
         </div>
-        <q-separator
-          spaced
-          inset
-          vertical
-        />
+        <q-separator spaced inset vertical />
         <div class="column items-start">
-          <div class="text-caption text-accent">{{$t('daoCard.label.cumulative')}}: </div>
+          <div class="text-caption text-accent">{{$t('daoCard.label.cumulative')}}:</div>
           <div class="text-caption text-bold text-primary">+ {{cumulativeAmount}} CKB</div>
         </div>
-        <q-separator
-          spaced
-          inset
-          vertical
-        />
-        <q-btn
-          color="grey"
-          flat
-          no-caps
-          icon-right="chevron_right"
-          @click="gotoDao"
-        />
+        <q-separator spaced inset vertical />
+        <div class="column items-start">
+          <div class="text-caption text-accent">APC:</div>
+          <div class="text-caption text-bold text-accent">{{apc}}</div>
+        </div>
       </div>
     </q-card-section>
   </q-card>
 </template>
 
 <script lang="ts">
-  import { defineComponent, computed } from '@vue/composition-api';
-  import { openURL } from 'quasar';
-  import { useDao } from 'src/compositions/account';
-  import { AmountUnit } from '@lay2/pw-core';
-  import { useConfig } from '../compositions/config';
-  import { useSettings } from '../compositions/settings';
+import { defineComponent, computed } from '@vue/composition-api';
+import { openURL } from 'quasar';
+import { useDao } from 'src/compositions/account';
+import { AmountUnit } from '@lay2/pw-core';
+import { useConfig } from '../compositions/config';
+import { useSettings } from '../compositions/settings';
 
-  export default defineComponent({
-    name: 'DaoCard',
-    setup() {
-      const { locked, yesterday, cumulative } = useDao();
+export default defineComponent({
+  name: 'DaoCard',
+  setup() {
+    const { locked, yesterday, cumulative, apc } = useDao();
 
-      const showBalance = computed(() => useSettings().showBalance);
-      const lockedAmount = computed(() =>
-        showBalance.value
-          ? locked.value.toString(AmountUnit.ckb, {
-              commify: true,
-              section: 'whole',
-            })
-          : '****'
-      );
-      const yesterdayAmount = computed(() =>
-        showBalance.value
-          ? yesterday.value.toString(AmountUnit.ckb, { commify: true, fixed: 5 })
-          : '****'
-      );
-      const cumulativeAmount = computed(() =>
-        showBalance.value
-          ? cumulative.value.toString(AmountUnit.ckb, { commify: true, fixed: 5 })
-          : '****'
-      );
+    const apcString = computed(() => `${apc.value}%`);
+    const showBalance = computed(() => useSettings().showBalance);
+    const lockedAmount = computed(() =>
+      showBalance.value
+        ? locked.value.toString(AmountUnit.ckb, {
+            commify: true,
+            section: 'whole',
+          })
+        : '****'
+    );
+    const yesterdayAmount = computed(() =>
+      showBalance.value
+        ? yesterday.value.toString(AmountUnit.ckb, { commify: true, fixed: 2 })
+        : '****'
+    );
+    const cumulativeAmount = computed(() =>
+      showBalance.value
+        ? cumulative.value.toString(AmountUnit.ckb, { commify: true, fixed: 2 })
+        : '****'
+    );
 
-      const gotoDao = () => openURL(useConfig().dao_url);
+    const gotoDao = () => openURL(useConfig().dao_url);
 
-      return {
-        lockedAmount,
-        yesterdayAmount,
-        cumulativeAmount,
-        gotoDao,
-        showBalance,
-      };
-    },
-  });
+    return {
+      apc: apcString,
+      lockedAmount,
+      yesterdayAmount,
+      cumulativeAmount,
+      gotoDao,
+      showBalance,
+    };
+  },
+});
 </script>
 
 <style lang="scss" scoped>
-  .dao-card {
-    border-radius: 5px;
-  }
+.dao-card {
+  border-radius: 5px;
+}
 </style>
