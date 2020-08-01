@@ -344,7 +344,6 @@ export const checkAuthorization = async (
 ): Promise<string | undefined> => {
   const AT = Cookies.get('AT+' + address);
   if (!!AT) {
-    console.log('[api] AT: ', AT);
     const { exp } = jwt.decode(AT) as Record<string, number>;
     if (new Date().getTime() < exp * 1000 || bypass) {
       return AT;

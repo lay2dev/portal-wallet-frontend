@@ -1,12 +1,15 @@
 <template>
   <div>
     <q-card flat>
-      <q-card-section class="column items-center">
+      <q-card-section class="column items-center q-pb-xs">
         <vue-qrcode :value="addresses[type]" :width="200" />
       </q-card-section>
-      <q-card-section class="column items-center">
+      <q-card-section class="column items-center q-py-xs">
         <div class="text-caption text-grey">{{$t('receiveCard.label.address')}}</div>
-        <div class="text-center q-px-lg" style="min-height: 4rem;word-break: break-word">
+        <div
+          class="text-center text-subtitle2 q-px-lg"
+          style="min-height: 3.5rem;word-break: break-word;line-height:1.3"
+        >
           {{addresses[type]}}
           <q-btn
             color="grey"
@@ -19,8 +22,14 @@
           />
         </div>
       </q-card-section>
+      <q-card-section class="column items-center q-py-xs">
+        <div
+          class="text-caption text-accent text-center q-pa-sm"
+          style="min-height: 4rem;line-height: 1.3"
+        >{{$t(`receiveCard.msg.${type}`)}}</div>
+      </q-card-section>
       <q-separator spaced />
-      <div class="text-center text-h6 q-mb-xs">{{$t('receiveCard.msg.where')}}</div>
+      <div class="text-center text-h6 q-mb-sm">{{$t('receiveCard.msg.where')}}</div>
       <q-tabs
         v-model="type"
         class="bg-grey-2 text-grey"
@@ -28,7 +37,7 @@
         active-color="accent"
         no-caps
       >
-        <q-tab name="native" :label="$t('receiveCard.label.native')" />
+        <q-tab name="default" :label="$t('receiveCard.label.native')" />
         <q-tab name="ckb" :label="$t('receiveCard.label.ckb')" />
         <q-tab name="portal" :label="$t('receiveCard.label.portal')" />
       </q-tabs>
@@ -47,10 +56,10 @@ export default defineComponent({
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   components: { VueQrcode },
   setup() {
-    const type: Ref<'native' | 'ckb' | 'portal'> = ref('native');
+    const type: Ref<'default' | 'ckb' | 'portal'> = ref('default');
     const { address, portalAddress } = useAccount();
     const addresses = {
-      native: computed(() => address.value?.addressString || '-'),
+      default: computed(() => address.value?.addressString || '-'),
       ckb: computed(() => address.value?.toCKBAddress() || '-'),
       portal: computed(() => portalAddress.value || '-'),
     };

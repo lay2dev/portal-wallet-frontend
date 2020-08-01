@@ -58,7 +58,7 @@ watch(address, async address => {
       updateAccount(address),
       loadTxRecords({ address }),
       loadSwapRates(),
-      loadCards(),
+      authorized.value && loadCards(),
       updateDao(address),
       getPortalAddress(address),
       initSocket(address)
@@ -328,7 +328,11 @@ export async function checkLoginStatus(address: string) {
 
 watch(authorized, authorized => {
   void loadTxRecords({ address: address.value });
-  authorized && void loadContacts();
+  if (authorized) {
+    console.log('[account] authorized: ', authorized);
+    void loadContacts();
+    void loadCards();
+  }
 });
 
 export function logout() {

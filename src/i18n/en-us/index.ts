@@ -184,7 +184,7 @@ export default {
       sendAmount: 'Pay Amount',
       receiveAmount: 'Receive Amount',
       hash,
-      rate: 'Rate',
+      rate,
       range: 'Amount Range'
     }
   },
@@ -196,7 +196,12 @@ export default {
       address
     },
     msg: {
-      where: 'From where?'
+      where: 'From where?',
+      default:
+        'Current ETH address. Others can send CKB to this address with Portal Wallet.',
+      ckb: 'The CKB full address corresponding to your ETH address.',
+      portal:
+        'A Transit address. When you need to transfer CKB from exchanges or CKB wallets with no full address support, please use this address.'
     }
   },
   daoCard: {

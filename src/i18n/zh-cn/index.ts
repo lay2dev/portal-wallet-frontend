@@ -20,7 +20,7 @@ const loading = '加载中';
 const login = '登录';
 const note = '备注';
 const ok = 'OK';
-const rate = '费率';
+const rate = '汇率';
 const send = '发送';
 const sent = '已发送';
 const settings = '设置';
@@ -184,7 +184,7 @@ export default {
       sendAmount: '支付数量',
       receiveAmount: '获得数量',
       hash,
-      rate: '费率',
+      rate,
       range: '金额范围'
     }
   },
@@ -196,7 +196,12 @@ export default {
       address
     },
     msg: {
-      where: '从哪里收款？'
+      where: '从哪里收款？',
+      default:
+        '当前登陆的以太坊地址。其他人可以通过 Portal Wallet 向这个地址发送 CKB 资产。',
+      ckb: '与当前以太坊地址相对应的 CKB 长地址。',
+      portal:
+        '一个中转地址。当您需要从交易所或者其他不支持长地址格式的 CKB 钱包接收 CKB 资产时，请使用这个地址。'
     }
   },
   daoCard: {
