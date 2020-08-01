@@ -20,6 +20,12 @@ const apiPost = async (
   authorization?: boolean
 ) => post(useConfig().api_base + url, params, authorization);
 
+const apiDelete = async (
+  url: string,
+  params?: Record<string, string | undefined>,
+  authorization?: boolean
+) => del(useConfig().api_base + url, params, authorization);
+
 export function useApi() {
   return {
     login: async (address: string, timestamp: number, signature: string) => {
@@ -55,6 +61,17 @@ export function useApi() {
       const res = await apiPost('/user/contacts', { ...contact }, true);
       if (res?.status !== 201) {
         throw new Error(`Add contact failed: ${JSON.stringify(contact)}`);
+      }
+    },
+
+    deleteContact: async (contactId: number) => {
+      const res = await apiDelete(
+        `/user/contacts/${contactId}`,
+        undefined,
+        true
+      );
+      if (res?.status !== 200) {
+        throw new Error(`Delete contact failed: ${contactId}`);
       }
     },
 
@@ -453,6 +470,60 @@ const post = async (
       color: 'negative'
     });
   }
+
+  if (ret?.data) {
+    ret.data = (ret?.data as ApiResponse).data;
+  }
+
+  return ret;
+};
+
+const del = async (
+  url: string,
+  params?: Record<string, string | undefined>,
+  authorization?: boolean
+) => {
+  let config = undefined;
+  if (authorization) {
+    if (PWCore.provider === undefined) return;
+    const AT = await checkAuthorization(
+      PWCore.provider.address.addressString,
+      url.endsWith('refreshToken')
+    );
+    config = {
+      headers: { Authorization: `Bearer ${AT || ''}` }
+    };
+  }
+
+  url += '?';
+  for (const p in params) {
+    if (params[p] !== undefined) {
+      url += `${p}=${params[p] as string}&`;
+    }
+  }
+  let ret = null;
+  console.log('[apiDelete] url: ', url);
+  try {
+    ret = await axios.delete(url, config);
+  } catch (e) {
+    // GTM.logEvent({
+    //   category: 'exceptions',
+    //   action: `Error: ${e.toString()} | Params: ${JSON.stringify(params)}`,
+    //   label: '[API] - ' + url.split('/').pop()
+    // })
+    if ((e as AxiosError).response?.status === 401) {
+      useShowLogin().value = true;
+      return;
+    }
+    Notify.create({
+      message: `[API] - ${(e as Error).toString()}`,
+      position: 'top',
+      timeout: 2000,
+      color: 'negative'
+    });
+  }
+
+  console.log('[api] delete ret', ret);
 
   if (ret?.data) {
     ret.data = (ret?.data as ApiResponse).data;

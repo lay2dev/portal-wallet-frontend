@@ -7,38 +7,48 @@ const balance = 'Balance';
 const boughtAt = 'Bought At';
 const cancel = 'Cancel';
 const close = 'Close';
-const ckb = 'CKB';
+const confirm = 'Confirm';
+const contacts = 'Contacts';
+const currency = 'Currency';
 const dao = 'Nervos DAO';
 const empty = 'No Records';
 const fee = 'Fee';
 const from = 'From';
 const hash = 'Hash';
+const language = 'Language';
 const loading = 'Loading';
 const login = 'Login';
 const note = 'Note';
 const ok = 'OK';
-const portal = 'Portal';
 const rate = 'Fee Rate';
 const send = 'Send';
 const sent = 'Transaction Sent';
+const settings = 'Settings';
 const success = 'Success';
 const to = 'To';
 const validBefore = 'Expires';
 
 export default {
   common: {
-    copied: 'Copid to Clipboard'
+    copied: 'Copied to Clipboard'
   },
   index: {
     label: {
-      balance
+      balance,
+      language,
+      settings
     },
     btn: {
       send,
+      contacts,
+      language,
+      currency,
+      support: 'Support',
+      aboutus: 'About Us',
       receive: 'Receive',
       swap: 'Swap',
       scan: 'Scan QR',
-      settings: 'Settings'
+      settings
     }
   },
   contacts: {
@@ -49,11 +59,22 @@ export default {
       description: 'Description'
     },
     btn: {
-      save: 'Save'
+      save: 'Save',
+      delete: 'Delete'
     },
     msg: {
-      added: 'Contact Added',
+      added: 'Contact Updated',
+      deleted: 'Contact Deleted',
       empty
+    }
+  },
+  editContact: {
+    title: 'Edit Contact',
+    label: {
+      confirm
+    },
+    msg: {
+      confirmDelete: 'Do you want to delete this contact ?'
     }
   },
   send: {
@@ -74,8 +95,7 @@ export default {
       batch: 'Batch Transaction',
       rate,
       ok,
-      cancel,
-      contacts: 'From Contacts'
+      cancel
     },
     msg: {
       address: 'Address: CKB / ETH / ENS',
@@ -99,7 +119,7 @@ export default {
       buildInput: 'Build from input',
       buildImport: 'Import from link',
       clear: 'Clear',
-      send: 'Send'
+      send
     },
     msg: {
       inputFormat: '0xaaaa...aaaa,100\nckb1bbb...bbb 200\n ',
@@ -126,7 +146,7 @@ export default {
       to,
       note,
       hash,
-      height: 'Height'
+      height: 'Block'
     },
     msg: {
       in: 'Received',
@@ -151,7 +171,7 @@ export default {
       note
     },
     btn: {
-      confirm: 'Confirm'
+      confirm
     }
   },
   swap: {
@@ -165,24 +185,23 @@ export default {
       receiveAmount: 'Receive Amount',
       hash,
       rate: 'Rate',
-      maximum: 'Maximum / TX'
-    },
-    msg: {
-      maxckb: '100,000 CKB'
+      range: 'Amount Range'
     }
   },
   receiveCard: {
     label: {
-      native: 'Native',
-      portal,
-      ckb,
+      native: 'Portal Wallet',
+      portal: 'Wallets / Exchanges',
+      ckb: 'Neuron',
       address
+    },
+    msg: {
+      where: 'From where?'
     }
   },
   daoCard: {
     label: {
       dao,
-      balance,
       deposited: 'Deposited',
       yesterday: 'Yesterday',
       cumulative: 'Cumulative'
@@ -227,10 +246,10 @@ export default {
   orders: {
     title: 'Orders',
     label: {
-      avaliable: 'Avaliable',
+      paid: 'Paid',
       used: 'Used',
-      expired: 'Expired',
-      service: 'Service'
+      service: 'Service',
+      refunded: 'Refunded'
     },
     msg: {
       empty

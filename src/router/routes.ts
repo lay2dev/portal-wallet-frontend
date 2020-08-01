@@ -17,8 +17,12 @@ const routes: RouteConfig[] = [
       },
       { path: 'shop/orders', component: () => import('pages/Orders.vue') },
       {
+        path: 'contacts',
+        component: () => import('pages/Contacts.vue')
+      },
+      {
         path: 'contacts/:id',
-        component: () => import('pages/Contacts.vue'),
+        component: () => import('pages/EditContact.vue'),
         props: true
       }
     ]

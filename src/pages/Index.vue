@@ -1,28 +1,32 @@
 <template>
   <q-page class="column justify-start q-pb-sm">
     <q-toolbar class="bg-accent text-white">
-      <q-btn flat round dense icon="subject" />
+      <q-btn flat round dense icon="subject" @click="showDrawer = true" />
       <q-space />
-      <q-btn flat round dense icon="add">
-        <q-menu>
-          <q-list>
-            <q-item clickable v-close-popup>
-              <div class="row items-center">
-                <q-avatar size="lg" icon="crop_free" />
-                {{$t('index.btn.scan')}}
-              </div>
-            </q-item>
-            <q-separator />
-            <q-item clickable v-close-popup>
-              <div class="row items-center">
-                <q-avatar size="lg" icon="settings" />
-                {{$t('index.btn.settings')}}
-              </div>
-            </q-item>
-          </q-list>
-        </q-menu>
-      </q-btn>
     </q-toolbar>
+    <q-drawer
+      v-model="showDrawer"
+      show-if-above
+      :width="240"
+      :breakpoint="700"
+      elevated
+      content-class="bg-accent text-grey-2"
+    >
+      <q-scroll-area class="fit">
+        <div class="text-h6 q-pa-md">{{$t('index.label.settings')}}</div>
+        <div class="q-pa-sm">
+          <q-list v-for="(menuItem, index) in menuList" :key="index">
+            <q-item clickable v-ripple @click="onMenuClicked(menuItem)">
+              <q-item-section avatar>
+                <q-icon :name="menuItem.icon" />
+              </q-item-section>
+              <q-item-section>{{ menuItem.label }}</q-item-section>
+            </q-item>
+            <q-separator dark class="q-my-sm" v-if="menuItem.separator" />
+          </q-list>
+        </div>
+      </q-scroll-area>
+    </q-drawer>
     <div class="row bg-accent items-center q-px-md q-py-sm">
       <q-item class="col text-white">
         <q-item-section top avatar>
@@ -32,18 +36,6 @@
           <q-item-label class="text-bold">{{originAddress}}</q-item-label>
           <q-item-label caption class="text-warning">{{ckbAddress}}</q-item-label>
         </q-item-section>
-        <!-- <q-item-section side>
-          <div class="row">
-            <q-btn color="white" round flat icon="qr_code" @click="showReceive = true" />
-            <q-btn
-              :color="authorized ? 'primary' : 'white'"
-              round
-              flat
-              icon="login"
-              @click="authorized ? logout() : showLogin = true"
-            />
-          </div>
-        </q-item-section>-->
       </q-item>
     </div>
     <div class="row meta q-px-md q-py-xs">
@@ -54,6 +46,7 @@
           <q-btn
             class="absolute-right q-mr-md"
             color="accent"
+            :ripple="false"
             round
             flat
             :icon="showBalance ? 'visibility' : 'visibility_off'"
@@ -111,7 +104,7 @@ import {
 } from 'src/compositions/account';
 import { AmountUnit, Amount } from '@lay2/pw-core';
 import { Notify } from 'quasar';
-import { ref, computed } from '@vue/composition-api';
+import { ref, computed, onMounted, watch } from '@vue/composition-api';
 import Jazzicon from 'vue-jazzicon';
 import TxList from 'src/components/TxList.vue';
 import ReceiveCard from 'src/components/ReceiveCard.vue';
@@ -125,7 +118,11 @@ export default Vue.extend({
   name: 'PageIndex',
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   components: { Jazzicon, TxList, ReceiveCard, DaoCard, ShopCard },
-  setup() {
+  setup(props, { root }) {
+    const locale = ref<string | undefined>();
+    const showDrawer = ref(false);
+    const menuList = ref<MenuItem[]>([]);
+
     const { address } = useAccount();
     const showBalance = computed({
       get: () => useSettings().showBalance,
@@ -165,6 +162,111 @@ export default Vue.extend({
     const showTxList = computed(() => useTxRecords().txs.value.length);
     const showReceive = ref(false);
 
+    onMounted(() => {
+      locale.value = useSettings().locale;
+    });
+
+    watch(showDrawer, (show) => {
+      if (show) {
+        menuList.value = loadMenuList();
+      }
+    });
+
+    const onMenuClicked = (menuItem: MenuItem) => {
+      console.log('[Drawer] Clicked: ', menuItem.label);
+      switch (menuItem.name) {
+        case 'contacts':
+          void root.$router.push('contacts');
+          break;
+        case 'language':
+          chooseLanguage();
+
+          break;
+        case 'currency':
+          chooseCurrency();
+          break;
+      }
+    };
+
+    const chooseLanguage = () => {
+      root.$q
+        .dialog({
+          title: root.$t('index.label.language').toString(),
+          color: 'accent',
+          options: {
+            type: 'radio',
+            model: useSettings().locale,
+            items: [
+              { label: '中文', value: 'zh-cn', color: 'accent' },
+              { label: 'English', value: 'en-us', color: 'accent' },
+            ],
+          },
+          cancel: true,
+          persistent: true,
+        })
+        .onOk((data: string) => {
+          useSettings().locale = data;
+          showDrawer.value = false;
+          console.log('[Language] ', data);
+        });
+    };
+
+    const chooseCurrency = () => {
+      root.$q
+        .dialog({
+          title: root.$t('index.label.fiatSymbol').toString(),
+          color: 'accent',
+          options: {
+            type: 'radio',
+            model: useSettings().currency,
+            items: [
+              { label: 'USD', value: 'usd', color: 'accent' },
+              { label: 'CNY', value: 'cny', color: 'accent' },
+            ],
+          },
+          cancel: true,
+          persistent: true,
+        })
+        .onOk((data: string) => {
+          useSettings().currency = data;
+          showDrawer.value = false;
+          console.log('[Currency] ', data);
+        });
+    };
+
+    const loadMenuList = (): MenuItem[] => [
+      {
+        name: 'contacts',
+        icon: 'contacts',
+        label: root.$t('index.btn.contacts').toString(),
+        separator: true,
+      },
+      {
+        name: 'language',
+        icon: 'language',
+        label: root.$t('index.btn.language').toString(),
+        separator: false,
+      },
+      {
+        name: 'currency',
+        icon: 'attach_money',
+        label: root.$t('index.btn.currency').toString(),
+        separator: true,
+      },
+      {
+        name: 'support',
+        icon: 'help',
+        label: root.$t('index.btn.support').toString(),
+        separator: false,
+      },
+      {
+        name: 'aboutus',
+        icon: 'home',
+        label: root.$t('index.btn.aboutus').toString(),
+        separator: false,
+      },
+    ];
+
     return {
       originAddress,
       ckbAddress,
@@ -173,11 +275,15 @@ export default Vue.extend({
       balance,
       fiat,
       fiatSymbol,
+      locale,
+      menuList,
       showBalance,
       showTxList,
+      showDrawer,
       showLogin: useShowLogin(),
       toggleVConsole: toggleVConsole,
       authorized: useAuthorized(),
+      onMenuClicked,
       logout: logout,
     };
   },
@@ -206,11 +312,17 @@ function toggleVConsole() {
     ],
   });
 }
+
+interface MenuItem {
+  name: string;
+  icon: string;
+  label: string;
+  separator: boolean;
+}
 </script>
 
 <style lang="scss" scoped>
 .meta {
-  // background: linear-gradient(to bottom, $accent 50%, transparent 50%);
   background: linear-gradient($accent 30%, transparent);
 }
 .balance-card {

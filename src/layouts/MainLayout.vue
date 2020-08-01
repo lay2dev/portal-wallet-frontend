@@ -18,7 +18,7 @@
 </template>
 
 <script lang="ts">
-import { onMounted } from '@vue/composition-api';
+import { onMounted, defineComponent } from '@vue/composition-api';
 import init from '../compositions/init';
 import LoginDialog from '../components/LoginDialog.vue';
 import SignBoard from '../components/SignBoard.vue';
@@ -29,15 +29,17 @@ import { useConfirmSend, send } from '../compositions/send';
 import { Loading, QSpinnerBall, Notify } from 'quasar';
 import { i18n } from '../boot/i18n';
 import { useShowCardinfo } from '../compositions/shop/order';
+import { useSettings } from '../compositions/settings';
 
-export default {
+export default defineComponent({
   name: 'MainLayout',
   components: { LoginDialog, SignBoard, CardInfo },
   created() {
     if (localStorage.getItem('vconsole') === 'on') new vConsole();
   },
-  setup() {
+  setup(props, { root }) {
     onMounted(async () => {
+      useSettings().locale = root.$q.lang.getLocale() || 'en-us';
       await init();
     });
 
@@ -59,7 +61,7 @@ export default {
       onSend,
     };
   },
-};
+});
 
 function loading(show = false) {
   show

@@ -1,9 +1,9 @@
 <template>
   <div class="bg-grey-2 column">
     <q-toolbar class="bg-transparent text-dark">
-      <q-btn flat round dense icon="close" v-close-popup />
-      <center class="col">{{$t('signBoard.label.txDetail')}}</center>
       <q-btn flat round dense icon="more_vert" class="invisible" />
+      <center class="col">{{$t('signBoard.label.txDetail')}}</center>
+      <q-btn flat round dense icon="close" v-close-popup />
     </q-toolbar>
     <q-card flat class="q-mx-md detail-card">
       <q-card-section>

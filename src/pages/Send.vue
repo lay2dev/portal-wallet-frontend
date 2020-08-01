@@ -28,7 +28,7 @@
             <q-btn round dense flat icon="contacts" @click="showContacts = true" />
           </template>
           <template v-slot:loading>
-            <q-spinner-facebook color="accent" />
+            <q-spinner-facebook color="grey" />
           </template>
         </q-input>
         <div class="row justify-between items-center">
@@ -51,7 +51,7 @@
           >
             <template v-slot:after>
               <q-btn
-                style="margin-left: 2px"
+                style="margin-left: 2px; width: 67px"
                 color="primary"
                 rounded
                 @click="confirmSend = true"
@@ -130,7 +130,7 @@
       <q-btn fab icon="keyboard_arrow_up" color="accent" />
     </q-page-scroller>
     <q-dialog v-model="showNote" persistent>
-      <q-card style="min-width: 350px">
+      <q-card style="min-width: 280px">
         <q-card-section>
           <div class="text-h6">{{$t('send.label.note')}}</div>
         </q-card-section>

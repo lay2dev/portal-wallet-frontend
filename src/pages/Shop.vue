@@ -25,15 +25,9 @@
         />
       </q-carousel>
     </div>
-    <div class="col row">
+    <div class="row col">
       <div class="column">
-        <q-tabs
-          class="col"
-          v-model="cateId"
-          vertical
-          active-bg-color="white"
-          indicator-color="transparent"
-        >
+        <q-tabs v-model="cateId" vertical active-bg-color="white" indicator-color="transparent">
           <q-tab
             content-class="tab"
             v-for="cate in categories"
@@ -41,26 +35,30 @@
             :name="cate.id"
             :icon="`img:${cate.icon}`"
           />
-        </q-tabs>
-        <div class="column q-py-sm">
-          <q-btn color="white" flat icon="list_alt" to="/shop/orders" />
           <q-separator spaced inset dark />
-          <q-btn color="white" flat icon="account_balance_wallet" to="/" replace />
-        </div>
+          <div class="column col q-py-sm">
+            <q-btn color="white" flat icon="list_alt" to="/shop/orders" />
+            <!-- <q-btn color="white" flat icon="account_balance_wallet" to="/" replace /> -->
+          </div>
+        </q-tabs>
       </div>
-      <q-tab-panels class="col" vertical v-model="cateId" animated>
+      <q-tab-panels class="col" vertical v-model="cateId">
         <q-tab-panel
           class="position-relative"
           v-for="cate in categories"
           :key="cate.id"
           :name="cate.id"
         >
-          <div class="text-h6">{{cate.name}}</div>
-          <q-separator />
-          <sku-card class="q-my-sm" v-for="sku in cate.skus" :key="sku.id" :sku="sku" />
-          <q-inner-loading :showing="skuLoading">
-            <q-spinner-facebook size="50px" color="accent" />
-          </q-inner-loading>
+          <q-scroll-area class="fit">
+            <div class="text-h6">{{cate.name}}</div>
+            <q-separator />
+            <div class="q-gutter-sm q-mt-sm">
+              <sku-card v-for="sku in cate.skus" :key="sku.id" :sku="sku" />
+            </div>
+            <q-inner-loading :showing="skuLoading">
+              <q-spinner-facebook size="50px" color="accent" />
+            </q-inner-loading>
+          </q-scroll-area>
         </q-tab-panel>
       </q-tab-panels>
     </div>

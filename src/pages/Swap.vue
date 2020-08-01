@@ -93,11 +93,11 @@
         <q-card-section>
           <div class="row justify-between">
             <div class="text-caption text-grey">{{$t('swap.label.rate')}}:</div>
-            <div class="text-caption text-grey">{{$t('swap.label.maximum')}}:</div>
+            <div class="text-caption text-grey">{{$t('swap.label.range')}}:</div>
           </div>
           <div class="row justify-between">
             <div class="text-caption">1 {{left.symbol}} = {{rate}} CKB</div>
-            <div class="text-caption">{{$t('swap.msg.maxckb')}}</div>
+            <div class="text-caption">{{minimum}} - {{maximum}} CKB</div>
           </div>
         </q-card-section>
       </q-card>
@@ -139,6 +139,8 @@ export default defineComponent({
   },
   setup() {
     const amount = ref(0);
+    const minimum = ref(1000);
+    const maximum = ref(100000);
 
     const { lefts, rights } = useSwap();
 
@@ -177,7 +179,7 @@ export default defineComponent({
         left.value.price &&
         new Amount(
           (left.value.price / (right.value.price || 1)).toString()
-        ).toString()
+        ).toString(undefined, { commify: true, fixed: 4 })
     );
 
     const onSwap = async () => {
@@ -202,6 +204,8 @@ export default defineComponent({
       right,
       rightAmount,
       rate,
+      minimum,
+      maximum,
       onSwap,
     };
   },
