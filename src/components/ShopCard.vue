@@ -10,14 +10,18 @@
       </div>
     </q-card-section>
     <q-separator />
-    <q-card-section class="q-pa-sm">
-      <sku-card v-if="!!sku" :sku="sku" />
+    <q-card-section class="q-pa-none">
+      <q-carousel height="auto" autoplay animated v-model="slide" swipeable infinite>
+        <q-carousel-slide class="q-pa-none" v-for="(sku, index) in skus" :name="index" :key="index">
+          <sku-card :sku="sku" class="bg-white" />
+        </q-carousel-slide>
+      </q-carousel>
     </q-card-section>
   </q-card>
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted } from '@vue/composition-api';
+import { defineComponent, onMounted, ref } from '@vue/composition-api';
 import { useSkuOfToday, loadSkuOfToday, SKU } from '../compositions/shop/sku';
 import SkuCard from '../components/SkuCard.vue';
 
@@ -25,7 +29,8 @@ export default defineComponent({
   name: 'DaoCard',
   components: { SkuCard },
   setup(props, { root }) {
-    const sku = useSkuOfToday();
+    const skus = useSkuOfToday();
+    const slide = ref(0);
 
     onMounted(() => {
       void loadSkuOfToday();
@@ -36,7 +41,8 @@ export default defineComponent({
       root.$router.push(`shop/${sku.cid}/${sku.id}`);
 
     return {
-      sku,
+      skus,
+      slide,
       gotoShop,
       gotoSku,
     };
@@ -47,5 +53,9 @@ export default defineComponent({
 <style lang="scss" scoped>
 .shop-card {
   border-radius: 5px;
+}
+.custom-caption {
+  text-align: center;
+  background-color: rgba(0, 0, 0, 0.3);
 }
 </style>

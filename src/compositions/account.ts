@@ -1,4 +1,4 @@
-import { reactive, toRefs, ref, watch } from '@vue/composition-api';
+import { reactive, toRefs, ref, watch, toRef } from '@vue/composition-api';
 import {
   Amount,
   Address,
@@ -10,7 +10,6 @@ import { useConfig } from './config';
 import { useApi, checkAuthorization } from './api';
 import { LocalStorage, Cookies } from 'quasar';
 import { loadSwapRates } from './swap';
-import { useInit } from './init';
 import { LoginSigner } from './login-signer';
 import IoClient from 'socket.io-client';
 import { loadCards } from './shop/order';
@@ -24,8 +23,6 @@ const account = reactive<{
   portalAddress: undefined,
   balance: Amount.ZERO
 });
-
-const { address } = useInit();
 
 export async function updateAccount(address: Address) {
   if (address instanceof Address) {
@@ -50,7 +47,7 @@ const updateData = (address: Address) => {
   void updateDao(address);
 };
 
-watch(address, async address => {
+watch(toRef(account, 'address'), async address => {
   console.log('[account.ts] address updated', address?.addressString);
   if (address instanceof Address) {
     await checkLoginStatus(address.addressString);
@@ -78,13 +75,12 @@ const getPortalAddress = async (address: Address) => {
   );
 };
 
-const socket = ref<SocketIOClient.Socket>(
-  IoClient(useConfig().socket_url, {
-    transports: ['websocket']
-  })
-);
-
 const initSocket = (address: Address) => {
+  const socket = ref<SocketIOClient.Socket>(
+    IoClient(useConfig().socket_url, {
+      transports: ['websocket']
+    })
+  );
   if (socket.value !== undefined) {
     socket.value.on('connect', () => {
       console.log('[socket] connected: ', socket.value.connected);
@@ -327,7 +323,7 @@ export async function checkLoginStatus(address: string) {
 }
 
 watch(authorized, authorized => {
-  void loadTxRecords({ address: address.value });
+  void loadTxRecords({ address: account.address });
   if (authorized) {
     console.log('[account] authorized: ', authorized);
     void loadContacts();

@@ -1774,10 +1774,10 @@
   dependencies:
     "@hapi/hoek" "^8.3.0"
 
-"@lay2/pw-core@^0.3.0":
-  version "0.3.0"
-  resolved "https://registry.yarnpkg.com/@lay2/pw-core/-/pw-core-0.3.0.tgz#f416b67fb2c67cf54f77803a845b955c7330b573"
-  integrity sha512-jZeMRZqjOJU7S8JXA62kfWoPIc3sqhsDB57L7ZKXZ4W2rw2oM6arsypDN5Z/JFj+CUqrvsVOtklP7fYawJP9lg==
+"@lay2/pw-core@^0.3.1":
+  version "0.3.1"
+  resolved "https://registry.yarnpkg.com/@lay2/pw-core/-/pw-core-0.3.1.tgz#58c59b412823f21dd2dbd6f30ff33591babc7bbd"
+  integrity sha512-0zQjV+XvvKpRrw/+En+XAEj+7ahEUX20nkweF1vqhU37lsHLDgRNyt98nBFObjZLFQc8VXfB2H30bvbFssJx1A==
   dependencies:
     "@ckb-lumos/types" "^0.2.4"
     "@nervosnetwork/ckb-sdk-utils" "^0.32.0"

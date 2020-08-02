@@ -13,6 +13,13 @@
       content-class="bg-accent text-grey-2"
     >
       <q-scroll-area class="fit">
+        <q-btn
+          flat
+          v-if="showNetworkSwitch"
+          color="primary"
+          label="Switch Network"
+          @click="showSwitchNetwork"
+        />
         <div class="text-h6 q-pa-md">{{$t('index.label.settings')}}</div>
         <div class="q-pa-sm">
           <q-list v-for="(menuItem, index) in menuList" :key="index">
@@ -103,7 +110,7 @@ import {
   logout,
 } from 'src/compositions/account';
 import { AmountUnit, Amount } from '@lay2/pw-core';
-import { Notify } from 'quasar';
+import { Notify, LocalStorage } from 'quasar';
 import { ref, computed, onMounted, watch } from '@vue/composition-api';
 import Jazzicon from 'vue-jazzicon';
 import TxList from 'src/components/TxList.vue';
@@ -111,7 +118,7 @@ import ReceiveCard from 'src/components/ReceiveCard.vue';
 import DaoCard from 'src/components/DaoCard.vue';
 import ShopCard from 'src/components/ShopCard.vue';
 import { useSwap, useFiatRates } from '../compositions/swap';
-import { useFiatSymbol } from '../compositions/config';
+import { useFiatSymbol, switchNetwork } from '../compositions/config';
 import { useSettings } from '../compositions/settings';
 
 export default Vue.extend({
@@ -164,6 +171,7 @@ export default Vue.extend({
 
     onMounted(() => {
       locale.value = useSettings().locale;
+      console.log('[Index.vue] RC ', process.env.RC);
     });
 
     watch(showDrawer, (show) => {
@@ -234,6 +242,27 @@ export default Vue.extend({
         });
     };
 
+    const showSwitchNetwork = () => {
+      root.$q
+        .dialog({
+          title: 'Switch Network',
+          options: {
+            type: 'radio',
+            model: LocalStorage.getItem<string>('network') || 'main',
+            items: [
+              { label: 'Mainnet', value: 'main' },
+              { label: 'Testnet', value: 'test', color: 'accent' },
+              { label: 'Lay2net', value: 'lay2', color: 'orange' },
+            ],
+          },
+          cancel: true,
+          persistent: true,
+        })
+        .onOk((data: string) => {
+          switchNetwork(data);
+        });
+    };
+
     const loadMenuList = (): MenuItem[] => [
       {
         name: 'contacts',
@@ -280,6 +309,8 @@ export default Vue.extend({
       showBalance,
       showTxList,
       showDrawer,
+      showNetworkSwitch: process.env.RC,
+      showSwitchNetwork,
       showLogin: useShowLogin(),
       toggleVConsole: toggleVConsole,
       authorized: useAuthorized(),

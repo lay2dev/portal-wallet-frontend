@@ -212,6 +212,12 @@ export function useApi() {
         return categories;
       },
 
+      loadSelectedSkus: async () => {
+        const res = await apiGet('/store/selectedProducts');
+        if (res?.status === 200) {
+          return res.data as SKU[];
+        }
+      },
       loadSku: async (skuId: number) => {
         const res = await apiGet(`/store/productInfo/${skuId}`);
         if (res?.status === 200) {

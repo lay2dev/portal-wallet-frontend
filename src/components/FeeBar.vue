@@ -1,33 +1,23 @@
 <template>
   <div>
-    <q-expansion-item
-      dense
-      dark
-      expand-icon-toggle
-      v-model="expanded"
-      header-style="padding: 2px;"
-    >
+    <q-expansion-item dense dark expand-icon-toggle v-model="expanded" header-style="padding: 2px;">
       <template slot="header">
         <q-item-section>
           <div class="row items-center text-caption">
-            <q-icon
-              class="q-mr-xs text-grey-4"
-              name="speed"
-            />
+            <q-icon class="q-mr-xs text-grey-4" name="speed" />
             <div v-if="expanded">
-              <span class="text-grey-4">{{$t('feebar.label.rate')}}: </span>
+              <span class="text-grey-4">{{$t('feebar.label.rate')}}:</span>
               <b>{{rate}}</b>
-              <span> Shn/KB</span>
+              <span>Shn/KB</span>
             </div>
-            <div
-              class="row q-gutter-xs"
-              v-else
-            >
-              <span class="text-grey-4">{{$t('feebar.label.fee')}}: </span>
+            <div class="row q-gutter-xs" v-else>
+              <span class="text-grey-4">{{$t('feebar.label.fee')}}:</span>
               <div v-if="building">
                 <q-spinner-facebook color="white" />
               </div>
-              <span v-else><b>{{feeAmount}}</b> CKB</span>
+              <span v-else>
+                <b>{{feeAmount}}</b> CKB
+              </span>
             </div>
           </div>
         </q-item-section>
@@ -50,51 +40,67 @@
 </template>
 
 <script lang="ts">
-  import { defineComponent, PropType, ref, computed } from '@vue/composition-api';
-  import { Builder, Amount } from '@lay2/pw-core';
-  import { useFee, useRate, useBuilding } from '../compositions/send';
+import {
+  defineComponent,
+  PropType,
+  ref,
+  computed,
+  watch,
+} from '@vue/composition-api';
+import { Builder, Amount, Transaction } from '@lay2/pw-core';
+import { useFee, useRate, useBuilding } from '../compositions/send';
 
-  export default defineComponent({
-    name: 'FeeBar',
-    props: {
-      builder: {
-        type: (Builder as unknown) as PropType<Builder>
+export default defineComponent({
+  name: 'FeeBar',
+  props: {
+    builder: {
+      type: (Builder as unknown) as PropType<Builder>,
+    },
+  },
+  setup(props) {
+    const expanded = ref(false);
+    const tx = ref<Transaction | undefined>();
+    const rate = useRate();
+    const fee = useFee();
+    const building = useBuilding();
+    const feeAmount = computed(() => fee.value.toString());
+
+    watch(rate, async (rate) => {
+      if (!tx.value && props.builder) {
+        useBuilding().value = true;
+        tx.value = await props.builder.build();
+        useBuilding().value = false;
+      }
+      if (tx.value) fee.value = Builder.calcFee(tx.value, rate);
+    });
+
+    return {
+      expanded,
+      rate,
+      fee,
+      feeAmount,
+      building,
+    };
+  },
+  watch: {
+    async builder(builder: Builder) {
+      if (builder) {
+        useBuilding().value = true;
+        console.log('[FeeBar] building');
+        const tx = await builder.build();
+        this.fee = Builder.calcFee(tx, this.rate);
+        useBuilding().value = false;
+      } else {
+        this.fee = Amount.ZERO;
       }
     },
-    setup() {
-      const expanded = ref(false);
-      const rate = useRate();
-      const fee = useFee();
-      const building = useBuilding();
-      const feeAmount = computed(() => fee.value.toString());
-
-      return {
-        expanded,
-        rate,
-        fee,
-        feeAmount,
-        building
-      };
-    },
-    watch: {
-      async builder(builder: Builder) {
-        if (builder) {
-          useBuilding().value = true;
-          console.log('[FeeBar] building');
-          const tx = await builder.build();
-          this.fee = Builder.calcFee(tx, this.rate);
-          useBuilding().value = false;
-        } else {
-          this.fee = Amount.ZERO;
-        }
-      }
-    }
-  });
+  },
+});
 </script>
 
 <style lang="scss" scoped>
-  .q-item--dense {
-    padding-left: 0;
-    padding-right: 0;
-  }
+.q-item--dense {
+  padding-left: 0;
+  padding-right: 0;
+}
 </style>

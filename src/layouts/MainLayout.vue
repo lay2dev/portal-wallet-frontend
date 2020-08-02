@@ -30,12 +30,14 @@ import { Loading, QSpinnerBall, Notify } from 'quasar';
 import { i18n } from '../boot/i18n';
 import { useShowCardinfo } from '../compositions/shop/order';
 import { useSettings } from '../compositions/settings';
+import { loadConfig } from '../compositions/config';
 
 export default defineComponent({
   name: 'MainLayout',
   components: { LoginDialog, SignBoard, CardInfo },
   created() {
     if (localStorage.getItem('vconsole') === 'on') new vConsole();
+    loadConfig();
   },
   setup(props, { root }) {
     onMounted(async () => {
