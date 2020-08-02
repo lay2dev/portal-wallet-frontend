@@ -181,6 +181,7 @@ export default {
     },
     label: {
       balance,
+      loading,
       sendAmount: 'Pay Amount',
       receiveAmount: 'Receive Amount',
       hash,

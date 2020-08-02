@@ -6,7 +6,7 @@ import { useApi } from './api';
 import { useAccount } from './account';
 import { toWei, fromWei } from 'ethjs-unit';
 import USDT_ABI from 'src/assets/usdt.json';
-import PWCore, { Amount } from '@lay2/pw-core';
+import PWCore, { Amount, Address } from '@lay2/pw-core';
 import { useConfig } from './config';
 
 export interface SwapItem {
@@ -108,19 +108,28 @@ export async function loadSwapRates() {
   }
 }
 
-export async function loadSwapBalances() {
+const swapBalancesLoading = ref(false);
+export function useSwapBalancesLoading() {
+  return swapBalancesLoading;
+}
+
+export async function loadSwapBalances(address: Address) {
+  swapBalancesLoading.value = true;
+  const promises: Promise<string>[] = [];
   for (const left of lefts.value) {
-    try {
-      left.balance = new Amount(
-        fromWei(
-          await getBalance(PWCore.provider.address.addressString, left.address),
-          DecimalMap[left.decimal]
-        )
-      ).toString(undefined, { commify: true, fixed: 6 });
-    } catch (e) {
-      console.error((e as Error).message);
-    }
+    promises.push(getBalance(address.addressString, left.address));
   }
+  try {
+    const balances = await Promise.all(promises);
+    for (let i = 0; i < balances.length; i++) {
+      lefts.value[i].balance = new Amount(
+        fromWei(balances[i], DecimalMap[lefts.value[i].decimal])
+      ).toString(undefined, { commify: true, fixed: 6 });
+    }
+  } catch (e) {
+    console.error((e as Error).message);
+  }
+  swapBalancesLoading.value = false;
 }
 
 export async function swap(

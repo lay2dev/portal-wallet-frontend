@@ -28,7 +28,9 @@
                   <!-- <q-icon :name="scope.opt.icon" /> -->
                   <q-item-section>
                     <q-item-label v-html="scope.opt.symbol" />
-                    <q-item-label caption>{{$t('swap.label.balance')}}: {{ scope.opt.balance }}</q-item-label>
+                    <q-item-label
+                      caption
+                    >{{$t('swap.label.balance')}}: {{ balancesLoading ? $t('swap.label.loading') : scope.opt.balance }}</q-item-label>
                   </q-item-section>
                   <q-item-section side>
                     <q-icon v-if="left.symbol === scope.opt.symbol" name="done" color="primary" />
@@ -120,6 +122,7 @@ import {
   onMounted,
   computed,
   watch,
+  Ref,
 } from '@vue/composition-api';
 import { useConfig } from '../compositions/config';
 import {
@@ -128,9 +131,11 @@ import {
   loadSwapConfig,
   loadSwapRates,
   loadSwapBalances,
+  useSwapBalancesLoading,
 } from '../compositions/swap';
-import { Amount } from '@lay2/pw-core';
+import PWCore, { Amount } from '@lay2/pw-core';
 import SwapTxList from '../components/SwapTxList.vue';
+import { useAccount } from '../compositions/account';
 
 export default defineComponent({
   name: 'Swap',
@@ -141,6 +146,7 @@ export default defineComponent({
     const amount = ref(0);
     const minimum = ref(1000);
     const maximum = ref(100000);
+    const balance = useAccount().balance as Ref<Amount>;
 
     const { lefts, rights } = useSwap();
 
@@ -152,8 +158,8 @@ export default defineComponent({
       get: () =>
         amount.value
           ? new Amount(`${amount.value / left.value.price}`).toString(
-              undefined,
-              { fixed: 6 }
+              undefined
+              // { fixed: 6 }
             )
           : undefined,
       set: (val) => {
@@ -161,16 +167,18 @@ export default defineComponent({
       },
     });
 
-    const right = ref(rights[0]);
+    const right = rights[0];
+    watch(balance, (balance) => {
+      right.balance = balance.toString(undefined, { commify: true, fixed: 4 });
+    });
+
     const rightAmount = computed({
       get: () =>
         amount.value
-          ? new Amount(
-              `${amount.value / right.value.price}`
-            ).toString(undefined, { fixed: 4 })
+          ? new Amount(`${amount.value / right.price}`).toString(undefined)
           : undefined,
       set: (val) => {
-        amount.value = Number(val) * right.value.price;
+        amount.value = Number(val) * right.price;
       },
     });
 
@@ -178,7 +186,7 @@ export default defineComponent({
       () =>
         left.value.price &&
         new Amount(
-          (left.value.price / (right.value.price || 1)).toString()
+          (left.value.price / (right.price || 1)).toString()
         ).toString(undefined, { commify: true, fixed: 4 })
     );
 
@@ -191,12 +199,17 @@ export default defineComponent({
     onMounted(async () => {
       await loadSwapConfig();
       await loadSwapRates();
-      await loadSwapBalances();
+      PWCore.provider && (await loadSwapBalances(PWCore.provider.address));
+    });
+
+    watch(useAccount().address, (address) => {
+      address && void loadSwapBalances(address);
     });
 
     return {
       showHeader: useConfig().showHeader,
       openLeft: ref(false),
+      balancesLoading: useSwapBalancesLoading(),
       lefts,
       left,
       leftAmount,
