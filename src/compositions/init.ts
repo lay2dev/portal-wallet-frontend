@@ -16,9 +16,9 @@ const ethProvider = new EthProvider((newAddress: Address) => {
 });
 
 export default async function init() {
-  await new PWCore('https://lay2.ckb.dev').init(
+  await new PWCore(useConfig().node_url).init(
     ethProvider,
-    new PwCollector('https://cellapi.ckb.pw'),
+    new PwCollector(useConfig().api_base),
     ChainID.ckb_dev,
     CHAIN_SPECS.Lay2
   );

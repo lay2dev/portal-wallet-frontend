@@ -1,8 +1,7 @@
 import { reactive, toRefs, ref, watch, toRef } from '@vue/composition-api';
-import {
+import PWCore, {
   Amount,
   Address,
-  PwCollector,
   AddressType,
   AmountUnit
 } from '@lay2/pw-core';
@@ -26,9 +25,9 @@ const account = reactive<{
 
 export async function updateAccount(address: Address) {
   if (address instanceof Address) {
-    const collector = new PwCollector('https://cellapi.ckb.pw');
+    // const collector = new PwCollector(useConfig().api_base);
     account.address = address;
-    account.balance = await collector.getBalance(address);
+    account.balance = await PWCore.defaultCollector.getBalance(address);
   }
 }
 
