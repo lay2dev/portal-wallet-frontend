@@ -171,7 +171,6 @@ export default Vue.extend({
 
     onMounted(() => {
       locale.value = useSettings().locale;
-      console.log('[Index.vue] RC ', process.env.RC);
     });
 
     watch(showDrawer, (show) => {
@@ -181,7 +180,6 @@ export default Vue.extend({
     });
 
     const onMenuClicked = (menuItem: MenuItem) => {
-      console.log('[Drawer] Clicked: ', menuItem.label);
       switch (menuItem.name) {
         case 'contacts':
           void root.$router.push('contacts');
@@ -215,7 +213,6 @@ export default Vue.extend({
         .onOk((data: string) => {
           useSettings().locale = data;
           showDrawer.value = false;
-          console.log('[Language] ', data);
         });
     };
 
@@ -238,7 +235,6 @@ export default Vue.extend({
         .onOk((data: string) => {
           useSettings().currency = data;
           showDrawer.value = false;
-          console.log('[Currency] ', data);
         });
     };
 

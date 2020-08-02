@@ -51,8 +51,8 @@ export default defineComponent({
       if (txHash) {
         console.log('sent: ', txHash);
         useConfirmSend().value = false;
+        notify('send.msg.sent', 'positive');
       }
-      notify('send.msg.sent', 'positive');
       loading(false);
     };
 

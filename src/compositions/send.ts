@@ -130,17 +130,21 @@ export async function send(): Promise<string | undefined> {
         const pw = new PWCore(useConfig().node_url);
         txHash = await pw.send(address, amount, rate.value);
       }
-      addPendingTx(
-        new TX(
-          txHash,
-          new Date().getTime(),
-          PWCore.provider.address,
-          address,
-          amount,
-          Amount.ZERO,
-          'out'
-        )
-      );
+
+      if (txHash) {
+        addPendingTx(
+          new TX(
+            txHash,
+            new Date().getTime(),
+            PWCore.provider.address,
+            address,
+            amount,
+            Amount.ZERO,
+            'out'
+          )
+        );
+      }
+
       sending.value = false;
 
       if (!!note.value && note.value.length) {
@@ -154,6 +158,7 @@ export async function send(): Promise<string | undefined> {
 
       return txHash;
     } catch (e) {
+      console.error((e as Error).message);
       sending.value = false;
     }
   }

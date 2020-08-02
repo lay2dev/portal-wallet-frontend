@@ -10,18 +10,26 @@ import PWCore, {
 } from '@lay2/pw-core';
 import { useConfig } from './config';
 import { useAccount } from './account';
+import { LocalStorage } from 'quasar';
 
 const ethProvider = new EthProvider((newAddress: Address) => {
   useAccount().address.value = newAddress;
 });
 
 export default async function init() {
-  await new PWCore(useConfig().node_url).init(
-    ethProvider,
-    new PwCollector(useConfig().api_base),
-    ChainID.ckb_dev,
-    CHAIN_SPECS.Lay2
-  );
+  if (LocalStorage.getItem('network') === 'lay2') {
+    await new PWCore(useConfig().node_url).init(
+      ethProvider,
+      new PwCollector(useConfig().api_base),
+      ChainID.ckb,
+      CHAIN_SPECS.Lay2
+    );
+  } else {
+    await new PWCore(useConfig().node_url).init(
+      ethProvider,
+      new PwCollector(useConfig().api_base)
+    );
+  }
 
   useAccount().address.value = PWCore.provider.address;
 

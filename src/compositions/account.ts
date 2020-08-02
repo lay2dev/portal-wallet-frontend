@@ -25,7 +25,6 @@ const account = reactive<{
 
 export async function updateAccount(address: Address) {
   if (address instanceof Address) {
-    // const collector = new PwCollector(useConfig().api_base);
     account.address = address;
     account.balance = await PWCore.defaultCollector.getBalance(address);
   }
