@@ -246,7 +246,8 @@ export default {
     msg: {
       noSku: 'Can not find product',
       expired: 'Order expired, please reload this page',
-      paid: 'Payment submitted, you can go to check the order status'
+      paid:
+        'Payment submitted, please wait for comfirmation. you can go to check the order status'
     },
     label: {
       success,

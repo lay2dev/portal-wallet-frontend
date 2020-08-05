@@ -120,13 +120,18 @@ export async function send(): Promise<string | undefined> {
       const pw = new PWCore(useConfig().node_url);
       if (useSendMode().value === 'remote') {
         const builder = new SimpleBuilder(address, amount, rate.value);
-        const tx = await new EthSigner(
-          PWCore.provider.address.addressString
-        ).sign(await builder.build());
-        txHash = tx.raw.toHash();
-        const orderNo = await payOrder(tx);
-        if (orderNo) {
-          void loadPendingCard(orderNo, txHash);
+        try {
+          const tx = await new EthSigner(
+            PWCore.provider.address.addressString
+          ).sign(await builder.build());
+          txHash = tx.raw.toHash();
+          const orderNo = await payOrder(tx);
+          if (orderNo) {
+            void loadPendingCard(orderNo, txHash);
+          }
+        } catch (e) {
+          console.error('[send.ts] remote send ', (e as Error).message);
+          return;
         }
       } else if (useSendMode().value === 'clear') {
         txHash = await pw.sendTransaction(

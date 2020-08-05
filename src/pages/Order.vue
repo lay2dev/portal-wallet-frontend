@@ -155,7 +155,17 @@ export default defineComponent({
               .dialog({
                 title: root.$t('order.label.success').toString(),
                 message: root.$t('order.msg.paid').toString(),
-                cancel: true,
+                ok: {
+                  flat: true,
+                  label: root.$t('order.btn.checkOrders'),
+                  noCaps: true,
+                },
+                cancel: {
+                  color: 'grey',
+                  flat: true,
+                  label: root.$t('order.btn.cancel'),
+                  noCaps: true,
+                },
                 persistent: true,
               })
               .onOk(() => {
