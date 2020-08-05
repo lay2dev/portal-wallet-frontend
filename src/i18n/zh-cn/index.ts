@@ -13,6 +13,7 @@ const currency = '货币单位';
 const dao = 'Nervos DAO';
 const empty = '暂无记录';
 const fee = '手续费';
+const feeRate = '费率';
 const from = '来自';
 const hash = '哈希';
 const language = '语言';
@@ -95,7 +96,6 @@ export default {
       send,
       sendAll: '发送全部 CKB',
       batch: '批量转账',
-      rate,
       ok,
       cancel
     },
@@ -140,7 +140,7 @@ export default {
   feebar: {
     label: {
       fee,
-      rate
+      feeRate
     }
   },
   txlist: {
@@ -172,7 +172,7 @@ export default {
       from,
       to,
       fee,
-      rate,
+      feeRate,
       note
     },
     btn: {
@@ -249,7 +249,7 @@ export default {
     },
     label: {
       success,
-      rate: '当前汇率'
+      rate
     }
   },
 

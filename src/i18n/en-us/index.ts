@@ -13,6 +13,7 @@ const currency = 'Currency';
 const dao = 'Nervos DAO';
 const empty = 'No Records';
 const fee = 'Fee';
+const feeRate = 'Fee Rate';
 const from = 'From';
 const hash = 'Hash';
 const language = 'Language';
@@ -95,7 +96,6 @@ export default {
       send,
       sendAll: 'Send All CKB',
       batch: 'Batch Transaction',
-      rate,
       ok,
       cancel
     },
@@ -140,7 +140,7 @@ export default {
   feebar: {
     label: {
       fee,
-      rate
+      feeRate
     }
   },
   txlist: {
@@ -172,7 +172,7 @@ export default {
       from,
       to,
       fee,
-      rate,
+      feeRate,
       note
     },
     btn: {
@@ -250,7 +250,7 @@ export default {
     },
     label: {
       success,
-      rate: 'Current Rate'
+      rate
     }
   },
 

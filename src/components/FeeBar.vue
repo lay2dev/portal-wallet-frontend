@@ -6,8 +6,8 @@
           <div class="row items-center text-caption">
             <q-icon class="q-mr-xs text-grey-4" name="speed" />
             <div v-if="expanded">
-              <span class="text-grey-4">{{$t('feebar.label.rate')}}:</span>
-              <b>{{rate}}</b>
+              <span class="text-grey-4">{{$t('feebar.label.feeRate')}}:</span>
+              <b class="q-mx-xs">{{rate}}</b>
               <span>Shn/KB</span>
             </div>
             <div class="row q-gutter-xs" v-else>

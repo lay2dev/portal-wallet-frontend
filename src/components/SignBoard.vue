@@ -22,7 +22,7 @@
         <div class="row q-gutter-xs">
           <div class="text-caption text-grey">{{$t('signBoard.label.fee')}}:</div>
           <div class="text-caption text-dark">{{fee}} CKB</div>
-          <div class="text-caption text-grey">({{$t('signBoard.label.rate')}}: {{rate}})</div>
+          <div class="text-caption text-grey">({{$t('signBoard.label.feeRate')}}: {{rate}})</div>
         </div>
         <q-separator spaced />
         <div class="row q-gutter-xs">
