@@ -1,10 +1,11 @@
 <template>
   <q-page class="column justify-start q-pb-sm">
-    <q-toolbar class="bg-accent text-white">
+    <!-- <q-toolbar class="bg-accent text-white">
       <q-btn flat round dense icon="subject" @click="showDrawer = true" />
       <q-space />
-    </q-toolbar>
+    </q-toolbar>-->
     <q-drawer
+      side="right"
       v-model="showDrawer"
       show-if-above
       :width="240"
@@ -34,7 +35,7 @@
         </div>
       </q-scroll-area>
     </q-drawer>
-    <div class="row bg-accent items-center q-px-md q-py-sm">
+    <div class="row bg-accent items-center q-pa-sm q-pl-xs">
       <q-item class="col text-white">
         <q-item-section top avatar>
           <jazzicon :address="lockHash" :diameter="48" :shape-count="5" />
@@ -43,6 +44,14 @@
           <q-item-label class="text-bold">{{originAddress}}</q-item-label>
           <q-item-label caption class="text-warning">{{ckbAddress}}</q-item-label>
         </q-item-section>
+        <q-btn
+          class="absolute-top-right"
+          flat
+          round
+          dense
+          icon="subject"
+          @click="showDrawer = true"
+        />
       </q-item>
     </div>
     <div class="row meta q-px-md q-py-xs">

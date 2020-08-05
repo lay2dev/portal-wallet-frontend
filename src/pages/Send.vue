@@ -217,9 +217,14 @@ export default defineComponent({
         fixed: 4,
       })
     );
+
+    let dot = false;
     const amount = computed({
-      get: () => pair.amount.toString(AmountUnit.ckb, { commify: true }),
+      get: () =>
+        pair.amount.toString(AmountUnit.ckb, { commify: true }) +
+        (dot ? '.' : ''),
       set: (val) => {
+        dot = val.endsWith('.');
         try {
           pair.amount = setAmount(val);
           pair.valid.amount = isValidAmount(pair.amount as Amount);

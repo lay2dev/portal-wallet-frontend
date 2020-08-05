@@ -60,6 +60,7 @@ export default {
       description: '描述'
     },
     btn: {
+      add: '新增',
       save: '保存',
       delete: '删除'
     },

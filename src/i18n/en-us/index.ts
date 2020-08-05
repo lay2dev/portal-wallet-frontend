@@ -60,6 +60,7 @@ export default {
       description: 'Description'
     },
     btn: {
+      add: 'Add',
       save: 'Save',
       delete: 'Delete'
     },
