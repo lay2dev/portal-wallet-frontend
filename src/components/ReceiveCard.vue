@@ -49,8 +49,8 @@
 import { defineComponent, ref, Ref, computed } from '@vue/composition-api';
 import { useAccount } from '../compositions/account';
 import VueQrcode from 'vue-qrcode';
-import { copyToClipboard, Notify } from 'quasar';
-import { i18n } from '../boot/i18n';
+import { copy } from '../compositions/api';
+
 export default defineComponent({
   name: 'ReceiveCard',
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
@@ -62,15 +62,6 @@ export default defineComponent({
       default: computed(() => address.value?.addressString || '-'),
       ckb: computed(() => address.value?.toCKBAddress() || '-'),
       portal: computed(() => portalAddress.value || '-'),
-    };
-
-    const copy = async (content: string) => {
-      await copyToClipboard(content);
-      Notify.create({
-        message: i18n.t('common.copied').toString(),
-        type: 'positive',
-        timeout: 2000,
-      });
     };
 
     return { addresses, type, copy };

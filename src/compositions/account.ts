@@ -81,7 +81,6 @@ const initSocket = (address: Address) => {
   );
   if (socket.value !== undefined) {
     socket.value.on('connect', () => {
-      console.log('[socket] connected: ', socket.value.connected);
       const type = authorized.value ? 'token' : 'address';
       const value =
         type === 'token'
@@ -94,12 +93,10 @@ const initSocket = (address: Address) => {
     });
 
     socket.value.on('newTx', () => {
-      console.log('[socket] nex tx');
       void updateData(address);
     });
 
     socket.value.on('store.order.success', () => {
-      console.log('[socket] new order');
       void loadCards();
     });
 

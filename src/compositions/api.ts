@@ -1,4 +1,4 @@
-import { Notify, Cookies, LocalStorage } from 'quasar';
+import { Notify, Cookies, LocalStorage, copyToClipboard } from 'quasar';
 import axios, { AxiosError } from 'axios';
 import { useConfig } from './config';
 import PWCore, { Amount, AmountUnit, Transaction } from '@lay2/pw-core';
@@ -7,6 +7,8 @@ import * as jwt from 'jsonwebtoken';
 import { Contact, useShowLogin } from './account';
 import { CATE, SKU } from './shop/sku';
 import { Order, CardStatus, Card } from './shop/order';
+import ABCWallet from 'abcwallet';
+import { i18n } from 'src/boot/i18n';
 
 const apiGet = async (
   url: string,
@@ -535,4 +537,26 @@ const del = async (
   }
 
   return ret;
+};
+
+export const copy = async (content: string) => {
+  try {
+    await copyToClipboard(content);
+  } catch (e) {
+    if (useConfig().platform === 'ImToken') {
+      window.imToken.callAPI('native.setClipboard', content);
+    } else if (useConfig().platform === 'ABCWallet') {
+      await ABCWallet.webview.copy({ text: content });
+    } else {
+      console.log(e); // long address not work on android
+      return;
+    }
+  }
+  console.log('[api] copied: ', content);
+  Notify.create({
+    message: i18n.t('common.copied').toString(),
+    position: 'top',
+    timeout: 2000,
+    color: 'positive'
+  });
 };

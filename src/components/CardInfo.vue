@@ -7,7 +7,18 @@
         <div class="text-positive">{{$t('cardInfo.label.validBefore')}}: {{validBefore}}</div>
         <q-separator spaced />
         <vue-qrcode v-if="!!card.uniqueCode" :value="card.uniqueCode" :margin="1" :width="200" />
-        <div v-if="!!card.cardPwd" class="text-h6 text-accent bg-grey-2 q-pa-lg">{{ card.cardPwd}}</div>
+        <div v-if="!!card.cardPwd" class="text-h6 text-accent bg-grey-2 q-pa-lg">
+          {{ card.cardPwd}}
+          <q-btn
+            color="grey"
+            icon="content_copy"
+            size="xs"
+            round
+            dense
+            flat
+            @click="copy(card.cardPwd)"
+          />
+        </div>
         <q-separator spaced />
         <div class="text-left q-px-sm" style="white-space: pre-line;">{{ card.description }}</div>
       </q-card-section>
@@ -19,6 +30,7 @@
 import { defineComponent, computed } from '@vue/composition-api';
 import { useSelectedCard } from '../compositions/shop/order';
 import VueQrcode from 'vue-qrcode';
+import { copy } from '../compositions/api';
 
 export default defineComponent({
   name: 'CardInfo',
@@ -30,7 +42,7 @@ export default defineComponent({
       card.value ? new Date(card.value.expiresTime).toLocaleString() : '-'
     );
 
-    return { card, validBefore };
+    return { card, validBefore, copy };
   },
 });
 </script>

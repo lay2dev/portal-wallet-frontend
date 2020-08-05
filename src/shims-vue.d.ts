@@ -4,10 +4,14 @@ declare module '*.vue' {
   export default Vue;
 }
 
+interface ImToken {
+  callAPI: (string, unknown) => void;
+  callPromisifyAPI: (string) => Promise<known>;
+}
 interface Window {
   web3: any;
   ethereum: any;
-  imToken: any;
+  imToken: ImToken;
 }
 
 declare module 'vue-qrcode';
