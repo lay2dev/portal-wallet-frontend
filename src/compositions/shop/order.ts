@@ -104,14 +104,14 @@ export async function loadPendingCard(orderNo: string, txHash: string) {
 export async function loadCards(type?: string, lastOrderId?: number) {
   let status = CardStatus.SUCCESS;
   switch (type) {
-    case 'avaliable':
+    case 'paid':
       status = CardStatus.SUCCESS;
       break;
     case 'used':
       status = CardStatus.FINISHED;
       break;
-    case 'expired':
-      status = CardStatus.EXPIRED;
+    case 'refunded':
+      status = CardStatus.REFUNDED;
       break;
     case 'service':
       status = CardStatus.REFUNDING;

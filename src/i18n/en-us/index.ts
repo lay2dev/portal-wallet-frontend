@@ -83,6 +83,7 @@ export default {
       address,
       amount,
       balance,
+      caution: 'Caution',
       all: 'All',
       in: 'In',
       out: 'Out',
@@ -92,6 +93,7 @@ export default {
     },
     btn: {
       send,
+      sendAll: 'Send All CKB',
       batch: 'Batch Transaction',
       rate,
       ok,
@@ -99,6 +101,9 @@ export default {
     },
     msg: {
       address: 'Address: CKB / ETH / ENS',
+      clear:
+        "The remaining balance is too small (less than 61 CKB). Transaction won't succeed. Do you want to send ALL you CKB out?",
+      // sendAll: 'Do you want to send ALL you CKB out?',
       sent,
       requireAddress: 'Address is required',
       requireAmount: 'Amount is required',

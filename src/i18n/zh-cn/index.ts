@@ -82,6 +82,7 @@ export default {
     label: {
       address,
       amount,
+      caution: '注意',
       balance,
       all: '全部',
       in: '收入',
@@ -92,6 +93,7 @@ export default {
     },
     btn: {
       send,
+      sendAll: '发送全部 CKB',
       batch: '批量转账',
       rate,
       ok,
@@ -99,6 +101,9 @@ export default {
     },
     msg: {
       address: '地址格式: CKB / ETH / ENS',
+      clear:
+        '剩余金额过低（小于 61 CKB），无法发送交易。是否要发送全部的 CKB？',
+      // sendAll: '是否要发送全部的 CKB？',
       sent,
       requireAddress: '地址不能为空',
       requireAmount: '金额不能为空',
@@ -251,7 +256,7 @@ export default {
   orders: {
     title: '订单列表',
     label: {
-      avaliable: '已付款',
+      paid: '已付款',
       used: '已使用',
       service: '售后中',
       refunded: '已退款'

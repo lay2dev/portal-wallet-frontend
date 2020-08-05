@@ -6,10 +6,10 @@
       <q-btn flat round icon="more_vert" class="invisible" />
     </q-toolbar>
     <q-tabs v-model="tab" no-caps class="bg-accent text-white">
-      <q-tab name="available" :label="$t('orders.label.paid')" />
-      <q-tab name="used" :label="$t('orders.label.used')" />
+      <q-tab name="paid" :label="$t('orders.label.paid')" />
+      <!-- <q-tab name="used" :label="$t('orders.label.used')" /> -->
       <q-tab name="service" :label="$t('orders.label.service')" />
-      <q-tab name="expired" :label="$t('orders.label.refunded')" />
+      <q-tab name="refunded" :label="$t('orders.label.refunded')" />
     </q-tabs>
     <div class="column q-py-md q-px-sm q-gutter-md relative-position">
       <card-item v-for="card in cards" :key="card.cardId" :card="card" />
@@ -38,7 +38,7 @@ export default defineComponent({
   setup() {
     const cardsLoading = ref(false);
     const cards = useCards();
-    const tab = ref('available');
+    const tab = ref('paid');
 
     onMounted(async () => {
       cardsLoading.value = true;

@@ -15,6 +15,7 @@ import { i18n } from 'src/boot/i18n';
 import { useApi } from './api';
 import { payOrder } from './shop/shop';
 import { loadPendingCard } from './shop/order';
+import { ClearBuilder } from './clear-builder';
 
 export class Pair {
   public address: Address | undefined;
@@ -99,7 +100,7 @@ export function useReceivePair() {
   return receivePair;
 }
 
-const sendMode = ref<'local' | 'remote'>('local');
+const sendMode = ref<'local' | 'remote' | 'clear'>('local');
 export function useSendMode() {
   return sendMode;
 }
@@ -116,6 +117,7 @@ export async function send(): Promise<string | undefined> {
     sending.value = true;
     try {
       let txHash = '';
+      const pw = new PWCore(useConfig().node_url);
       if (useSendMode().value === 'remote') {
         const builder = new SimpleBuilder(address, amount, rate.value);
         const tx = await new EthSigner(
@@ -126,8 +128,12 @@ export async function send(): Promise<string | undefined> {
         if (orderNo) {
           void loadPendingCard(orderNo, txHash);
         }
+      } else if (useSendMode().value === 'clear') {
+        txHash = await pw.sendTransaction(
+          new ClearBuilder(address, rate.value),
+          new EthSigner(PWCore.provider.address.addressString)
+        );
       } else {
-        const pw = new PWCore(useConfig().node_url);
         txHash = await pw.send(address, amount, rate.value);
       }
 

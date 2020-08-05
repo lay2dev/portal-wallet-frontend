@@ -54,7 +54,7 @@
                 style="margin-left: 2px; width: 67px"
                 color="primary"
                 rounded
-                @click="confirmSend = true"
+                @click="onSend"
                 :disable="building || !canSend"
                 :loading="building"
               >
@@ -191,22 +191,26 @@ import PWCore, {
   Amount,
   EthProvider,
   AmountUnit,
+  Builder,
 } from '@lay2/pw-core';
 import FeeBar from '../components/FeeBar.vue';
 import TxList from '../components/TxList.vue';
 import ContactSelect from '../components/ContactSelect.vue';
 import { useTxFilter, useAccount } from '../compositions/account';
+import { ClearBuilder } from 'src/compositions/clear-builder';
 
 export default defineComponent({
   name: 'Send',
   components: { FeeBar, TxList, ContactSelect },
-  setup() {
+  setup(props, { root }) {
     const filter = useTxFilter();
     const ens = ref('');
     const note = useNote();
     const pair = useReceivePair();
     const building = useBuilding();
     const address = ref('');
+    const sending = useSending();
+
     const balance = computed(() =>
       useAccount().balance.value.toString(undefined, {
         commify: true,
@@ -225,13 +229,26 @@ export default defineComponent({
       },
     });
     const canSend = computed(() => pair.isValidPair());
-    const sending = useSending();
-
+    const needClear = computed(() => {
+      const balanceAmount = new Amount(balance.value.split(',').join(''));
+      const neededAmount = pair.amount.add(Builder.MIN_CHANGE);
+      return balanceAmount.lte(neededAmount);
+    });
     const builder = computed(() =>
       pair.isValidPair()
-        ? new SimpleBuilder(pair.address as Address, pair.amount as Amount)
+        ? needClear
+          ? new ClearBuilder(pair.address as Address)
+          : new SimpleBuilder(pair.address as Address, pair.amount as Amount)
         : undefined
     );
+
+    const onSend = () => {
+      if (needClear) {
+        showSendSelect();
+      } else {
+        useConfirmSend().value = true;
+      }
+    };
 
     const scan = async () => {
       address.value = await scanQR();
@@ -242,6 +259,29 @@ export default defineComponent({
       useIsBatch().value = false;
       useSendMode().value = 'local';
     });
+
+    const showSendSelect = () => {
+      root.$q
+        .dialog({
+          title: root.$t('send.label.caution').toString(),
+          message: root.$t('send.msg.clear').toString(),
+          ok: {
+            label: root.$t('send.btn.sendAll'),
+            flat: true,
+          },
+          cancel: {
+            label: root.$t('send.btn.cancel'),
+            flat: true,
+            color: 'grey',
+            noCaps: true,
+          },
+        })
+        .onOk(() => {
+          useSendMode().value = 'clear';
+          pair.amount = new Amount(balance.value);
+          useConfirmSend().value = true;
+        });
+    };
 
     return {
       showHeader: useConfig().showHeader,
@@ -256,7 +296,7 @@ export default defineComponent({
       ens,
       resolvingEns: ref(false),
       canSend,
-      confirmSend: useConfirmSend(),
+      onSend,
       sending,
       scan,
       filter,
