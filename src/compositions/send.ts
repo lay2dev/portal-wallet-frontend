@@ -6,9 +6,10 @@ import PWCore, {
   AddressType,
   Amount,
   EthSigner,
-  SimpleBuilder
+  SimpleBuilder,
+  ChainID
 } from '@lay2/pw-core';
-import { addPendingTx, TX } from './account';
+import { addPendingTx, TX, useAccount } from './account';
 import { BatchBuilder } from './batch-builder';
 import { useConfig } from './config';
 import { i18n } from 'src/boot/i18n';
@@ -240,7 +241,13 @@ export async function scanQR() {
   ethAddress && (address = ethAddress[0]);
 
   // check if is ckb address
-  let ckbAddress = /ck[bt]1.+/.exec(address);
+  let regex = undefined;
+  if (PWCore.chainId === ChainID.ckb) {
+    regex = /ckb1.+/;
+  } else {
+    regex = /ckt1.+/;
+  }
+  let ckbAddress = regex.exec(address);
   !ckbAddress && (ckbAddress = /ck[bt]1.{42}/.exec(address));
   ckbAddress && (address = ckbAddress[0]);
 
@@ -254,14 +261,23 @@ export function isValidAddress(address: Address | undefined): boolean | string {
   }
   try {
     address.valid();
+    address.toLockScript();
     return true;
   } catch (e) {
     return (e as Error).message;
   }
 }
 export function isValidAmount(amount: Amount) {
-  if (amount.lt(new Amount('61')))
+  if (amount.lt(new Amount('61'))) {
     return i18n.t('send.msg.minAmount').toString();
+  }
+  if (
+    useAccount().balance.value &&
+    amount.gte(useAccount().balance.value as Amount)
+  ) {
+    return i18n.t('send.msg.maxAmount');
+  }
+
   return true;
 }
 
