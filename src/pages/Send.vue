@@ -94,7 +94,7 @@
         </div>
       </q-card-section>
     </q-card>
-    <div class="row q-px-sm q-mt-md">
+    <div v-if="showBatch" class="row q-px-sm q-mt-md">
       <q-btn
         class="col q-mx-md"
         icon="account_tree"
@@ -292,6 +292,7 @@ export default defineComponent({
 
     return {
       showHeader: useConfig().showHeader,
+      showBatch: process.env.RC,
       showNote: ref(false),
       showContacts: ref(false),
       pair,
