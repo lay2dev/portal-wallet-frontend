@@ -272,7 +272,7 @@ export function isValidAmount(amount: Amount) {
     return i18n.t('send.msg.minAmount').toString();
   }
   if (
-    useAccount().balance.value.lt(Amount.ZERO) &&
+    useAccount().balance.value.gt(Amount.ZERO) &&
     amount.gte(useAccount().balance.value as Amount)
   ) {
     return i18n.t('send.msg.maxAmount').toString();

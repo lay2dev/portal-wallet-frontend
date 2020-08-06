@@ -235,20 +235,22 @@ export default defineComponent({
     });
     const canSend = computed(() => pair.isValidPair());
     const needClear = computed(() => {
-      const balanceAmount = new Amount(balance.value.split(',').join(''));
-      const neededAmount = pair.amount.add(Builder.MIN_CHANGE);
-      return balanceAmount.lte(neededAmount);
+      if (useAccount().balance.value.gt(Amount.ZERO)) {
+        const neededAmount = pair.amount.add(Builder.MIN_CHANGE);
+        return useAccount().balance.value.lte(neededAmount);
+      }
+      return false;
     });
     const builder = computed(() =>
       pair.isValidPair()
-        ? needClear
+        ? needClear.value
           ? new ClearBuilder(pair.address as Address)
           : new SimpleBuilder(pair.address as Address, pair.amount as Amount)
         : undefined
     );
 
     const onSend = () => {
-      if (needClear) {
+      if (needClear.value) {
         showSendSelect();
       } else {
         useConfirmSend().value = true;
@@ -260,7 +262,7 @@ export default defineComponent({
     };
 
     onMounted(() => {
-      amount.value = '100';
+      amount.value = '0';
       useIsBatch().value = false;
       useSendMode().value = 'local';
     });
