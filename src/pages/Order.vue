@@ -66,7 +66,7 @@ import {
 import { Notify, Loading, QSpinnerBall } from 'quasar';
 import { i18n } from '../boot/i18n';
 import FeeBar from '../components/FeeBar.vue';
-import { useOrderNo } from '../compositions/shop/shop';
+import { useOrderNo, useShopConfig } from '../compositions/shop/shop';
 import { useConfig } from '../compositions/config';
 
 export default defineComponent({
@@ -96,9 +96,12 @@ export default defineComponent({
 
       useSendMode().value = 'remote';
       sku.value = await useApi().shop.loadSku(Number(props.sid));
-      const config = await useApi().shop.loadConfig();
-      if (!!config) {
-        useReceivePair().address = new Address(config.address, AddressType.ckb);
+      const config = useShopConfig();
+      if (!!config.value) {
+        useReceivePair().address = new Address(
+          config.value.address,
+          AddressType.ckb
+        );
       } else {
         throw new Error('Shop config undefined');
       }

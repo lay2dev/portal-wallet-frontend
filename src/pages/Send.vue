@@ -10,7 +10,7 @@
         <q-input
           v-model="address"
           dense
-          debounce="500"
+          debounce="300"
           dark
           color="white"
           standout
@@ -38,7 +38,7 @@
             input-style="font-size: 1.2em"
             v-model="amount"
             dense
-            debounce="500"
+            debounce="300"
             dark
             color="white"
             standout
@@ -47,6 +47,7 @@
             type="phone"
             suffix="CKB"
             :rules="[val => pair.valid.amount]"
+            @blur="amount = pair.amount.toString(undefined, {commify: true})"
             hide-bottom-space
           >
             <template v-slot:after>
@@ -190,7 +191,6 @@ import PWCore, {
   Address,
   Amount,
   EthProvider,
-  AmountUnit,
   Builder,
 } from '@lay2/pw-core';
 import FeeBar from '../components/FeeBar.vue';
@@ -209,6 +209,7 @@ export default defineComponent({
     const pair = useReceivePair();
     const building = useBuilding();
     const address = ref('');
+    const amount = ref('');
     const sending = useSending();
 
     const balance = computed(() =>
@@ -218,21 +219,26 @@ export default defineComponent({
       })
     );
 
-    let dot = false;
-    const amount = computed({
-      get: () =>
-        pair.amount.toString(AmountUnit.ckb, { commify: true }) +
-        (dot ? '.' : ''),
-      set: (val) => {
-        dot = val.endsWith('.');
-        try {
-          pair.amount = setAmount(val);
-          pair.valid.amount = isValidAmount(pair.amount as Amount);
-        } catch (e) {
-          pair.valid.amount = (e as Error).message;
-        }
-      },
-    });
+    // let dot = false;
+    // const amount = computed({
+    //   get: () => {
+    //     console.log('[Send.vue] amount get dot', dot);
+    //     return (
+    //       pair.amount.toString(AmountUnit.ckb, { commify: true }) +
+    //       (dot ? '.' : '')
+    //     );
+    //   },
+    //   set: (val) => {
+    //     dot = val.endsWith('.');
+    //     console.log('[Send.vue] amount set dot', dot);
+    //     try {
+    //       pair.amount = setAmount(val);
+    //       pair.valid.amount = isValidAmount(pair.amount as Amount);
+    //     } catch (e) {
+    //       pair.valid.amount = (e as Error).message;
+    //     }
+    //   },
+    // });
     const canSend = computed(() => pair.isValidPair());
     const needClear = computed(() => {
       if (useAccount().balance.value.gt(Amount.ZERO)) {
@@ -262,7 +268,7 @@ export default defineComponent({
     };
 
     onMounted(() => {
-      amount.value = '0';
+      amount.value = '100';
       useIsBatch().value = false;
       useSendMode().value = 'local';
     });
@@ -285,7 +291,7 @@ export default defineComponent({
         })
         .onOk(() => {
           useSendMode().value = 'clear';
-          pair.amount = new Amount(balance.value);
+          pair.amount = setAmount(balance.value);
           useConfirmSend().value = true;
         });
     };
@@ -329,6 +335,15 @@ export default defineComponent({
           this.pair.valid.address = (e as Error).message;
           this.pair.address = undefined;
         }
+      }
+    },
+    amount(amount: string | undefined) {
+      try {
+        this.pair.amount = setAmount(amount);
+        this.pair.valid.amount = isValidAmount(this.pair.amount as Amount);
+      } catch (e) {
+        this.pair.valid.amount = (e as Error).message;
+        this.pair.amount = Amount.ZERO;
       }
     },
     async ens(ens: string) {

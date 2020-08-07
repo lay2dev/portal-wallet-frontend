@@ -234,7 +234,10 @@ export default {
     }
   },
   shop: {
-    title: '雷兔商城'
+    title: '雷兔商城',
+    msg: {
+      service: '如果你有任何问题或者建议，欢迎关注我们的公众号，并直接向我们发送消息。'
+    }
   },
 
   order: {

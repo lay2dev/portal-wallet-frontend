@@ -7,6 +7,11 @@ export function useOrderNo() {
   return orderNo;
 }
 
+const config = ref<{ address: string; name: string; img: string }>();
+export function useShopConfig() {
+  return config;
+}
+
 export async function payOrder(tx: Transaction) {
   if (!!orderNo.value) {
     await useApi().shop.payOrder(orderNo.value, tx);

@@ -94,9 +94,13 @@ export default defineComponent({
     const categories = useCategories();
 
     onMounted(async () => {
-      await loadCategories();
+      const res = await Promise.all([
+        loadCategories(),
+        useApi().shop.loadConfig(),
+        useApi().shop.loadBanners(),
+      ]);
       cateId.value = 1;
-      banners.value = await useApi().shop.loadBanners();
+      banners.value = res.length > 2 ? res[2] : [];
     });
 
     const goto = (url: string) => {

@@ -9,6 +9,7 @@ import { CATE, SKU } from './shop/sku';
 import { Order, CardStatus, Card } from './shop/order';
 import ABCWallet from 'abcwallet';
 import { i18n } from 'src/boot/i18n';
+import { useShopConfig } from './shop/shop';
 
 const apiGet = async (
   url: string,
@@ -189,11 +190,16 @@ export function useApi() {
     shop: {
       loadConfig: async () => {
         const res = await apiGet('/store/config');
-        console.log('[api] shop.loadConfig', res);
         if (res?.status === 200) {
           const paymentList = (res.data as Record<string, []>)
             .receivePaymentList as { address: string; token: string }[];
-          return { address: paymentList[0].address };
+          useShopConfig().value = {
+            address: paymentList[0].address,
+            ...((res.data as Record<string, unknown>).service as {
+              name: string;
+              img: string;
+            })
+          };
         }
       },
       loadBanners: async (): Promise<{ img: string; link: string }[]> => {

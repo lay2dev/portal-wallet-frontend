@@ -85,7 +85,7 @@ export function setAddress(val: string): Address {
   }
 }
 
-export function setAmount(val: string): Amount {
+export function setAmount(val: string | undefined): Amount {
   if (!val) val = '0';
   val = val.split(',').join('');
   if (/^\d+(\.\d+)?$/.test(val)) {

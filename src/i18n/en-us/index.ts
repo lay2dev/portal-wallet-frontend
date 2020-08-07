@@ -235,7 +235,11 @@ export default {
     }
   },
   shop: {
-    title: 'Lay2 Shop'
+    title: 'Lay2 Shop',
+    msg: {
+      service:
+        'If you have any problems or suggestions, please follow this channel on WeChat and send message to us.'
+    }
   },
 
   order: {
