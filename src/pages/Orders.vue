@@ -20,7 +20,7 @@
       <q-page-sticky position="bottom-right" :offset="[18, 18]">
         <q-btn fab padding="0.9em" icon="headset" color="accent" @click="showServiceDialog = true" />
       </q-page-sticky>
-      <q-dialog v-model="showServiceDialog">
+      <q-dialog v-if="config" v-model="showServiceDialog">
         <q-card>
           <q-card-section class="column items-center">
             <q-img :src="config.img" />
@@ -42,6 +42,7 @@ import { useConfig } from '../compositions/config';
 import { loadCards, useCards } from 'src/compositions/shop/order';
 import CardItem from '../components/CardItem.vue';
 import { useShopConfig } from 'src/compositions/shop/shop';
+import { useApi } from 'src/compositions/api';
 
 export default defineComponent({
   name: 'Orders',
@@ -57,6 +58,9 @@ export default defineComponent({
 
     onMounted(async () => {
       cardsLoading.value = true;
+      if (!config.value) {
+        void useApi().shop.loadConfig();
+      }
       await loadCards(tab.value);
       cardsLoading.value = false;
     });

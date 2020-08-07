@@ -27,7 +27,7 @@ const sent = '已发送';
 const settings = '设置';
 const success = '成功';
 const to = '去往';
-const validBefore = '有效期至';
+const validBefore = '质保期至';
 
 export default {
   common: {
@@ -236,7 +236,8 @@ export default {
   shop: {
     title: '雷兔商城',
     msg: {
-      service: '如果你有任何问题或者建议，欢迎关注我们的公众号，并直接向我们发送消息。'
+      service:
+        '如果你有任何问题或者建议，欢迎关注我们的公众号，并直接向我们发送消息。'
     }
   },
 

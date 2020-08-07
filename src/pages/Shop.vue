@@ -38,7 +38,6 @@
           <q-separator spaced inset dark />
           <div class="column col q-py-sm">
             <q-btn color="white" flat icon="list_alt" to="/shop/orders" />
-            <!-- <q-btn color="white" flat icon="account_balance_wallet" to="/" replace /> -->
           </div>
         </q-tabs>
       </div>
@@ -49,7 +48,7 @@
           :key="cate.id"
           :name="cate.id"
         >
-          <q-scroll-area class="fit">
+          <q-scroll-area :visible="false" :thumb-style="{ width: '1px', opacity: 0 }" class="fit">
             <div class="text-h6">{{cate.name}}</div>
             <q-separator />
             <div class="q-gutter-sm q-mt-sm">
@@ -75,11 +74,12 @@ import {
 import SkuCard from '../components/SkuCard.vue';
 import { useApi } from '../compositions/api';
 import { useConfig } from '../compositions/config';
+import { openURL } from 'quasar';
 
 export default defineComponent({
   name: 'Shop',
   components: { SkuCard },
-  setup() {
+  setup(props, { root }) {
     const slide = ref(1);
     const cateId = ref(0);
     const skuLoading = ref(false);
@@ -104,7 +104,11 @@ export default defineComponent({
     });
 
     const goto = (url: string) => {
-      alert(url);
+      if (url.startsWith('http')) {
+        openURL(url);
+      } else if (url.startsWith('/')) {
+        void root.$router.push(url);
+      }
     };
 
     return {

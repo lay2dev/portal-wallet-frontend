@@ -97,6 +97,9 @@ export default defineComponent({
       useSendMode().value = 'remote';
       sku.value = await useApi().shop.loadSku(Number(props.sid));
       const config = useShopConfig();
+      if (!config.value) {
+        await useApi().shop.loadConfig();
+      }
       if (!!config.value) {
         useReceivePair().address = new Address(
           config.value.address,

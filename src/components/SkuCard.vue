@@ -2,7 +2,7 @@
   <q-card class="sku-card" flat>
     <q-card-section class="q-pa-sm">
       <div class="row q-gutter-md">
-        <q-img contain width="100px" :src="sku.img" :ratio="8/5" spinner-color="primary" />
+        <q-img contain width="90px" :src="sku.img" :ratio="8/5" spinner-color="primary" />
         <div class="column justify-between">
           <div class="text-subtitle">{{ sku.name }}</div>
           <div class="text-caption text-grey text-strike">¥ {{ sku.officialPrice / 100 }}</div>

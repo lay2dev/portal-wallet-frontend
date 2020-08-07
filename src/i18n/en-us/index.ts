@@ -27,7 +27,7 @@ const sent = 'Transaction Sent';
 const settings = 'Settings';
 const success = 'Success';
 const to = 'To';
-const validBefore = 'Expires';
+const validBefore = 'Warranty';
 
 export default {
   common: {
