@@ -11381,6 +11381,11 @@ vue-qrcode@^0.3.3:
   resolved "https://registry.yarnpkg.com/vue-qrcode/-/vue-qrcode-0.3.3.tgz#b303e3a67d0f311b5f40539ca4129dc801f68d12"
   integrity sha512-VkkRe3nbb+KY746TuBwdKAntXiCjwCCcZCsHir7KdwKupebfA8NxCzfF9lBmTeT4cSSLDuRM9oGuGHf6ZZrKuA==
 
+vue-router@3.0.1:
+  version "3.0.1"
+  resolved "https://registry.yarnpkg.com/vue-router/-/vue-router-3.0.1.tgz#d9b05ad9c7420ba0f626d6500d693e60092cc1e9"
+  integrity sha512-vLLoY452L+JBpALMP5UHum9+7nzR9PeIBCghU9ZtJ1eWm6ieUI8Zb/DI3MYxH32bxkjzYV1LRjNv4qr8d+uX/w==
+
 vue-router@3.2.0:
   version "3.2.0"
   resolved "https://registry.yarnpkg.com/vue-router/-/vue-router-3.2.0.tgz#da35195ffe37fdf0bec9f5f8f72781d2a7718815"

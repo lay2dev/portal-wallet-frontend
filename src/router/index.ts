@@ -1,6 +1,7 @@
 import { route } from 'quasar/wrappers';
 import VueRouter from 'vue-router';
 import routes from './routes';
+import { RouteCallback } from '@quasar/app';
 
 /*
  * If not building with SSR mode, you can
@@ -22,4 +23,4 @@ export default route(function({ Vue }) {
   });
 
   return Router;
-});
+} as RouteCallback);
