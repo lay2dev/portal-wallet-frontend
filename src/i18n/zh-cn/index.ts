@@ -37,7 +37,8 @@ export default {
     label: {
       balance,
       language,
-      settings
+      settings,
+      fiatSymbol: '货币单位'
     },
     btn: {
       send,

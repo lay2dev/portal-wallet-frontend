@@ -29,7 +29,7 @@ import { useConfirmSend, send } from '../compositions/send';
 import { Loading, QSpinnerBall, Notify } from 'quasar';
 import { i18n } from '../boot/i18n';
 import { useShowCardinfo } from '../compositions/shop/order';
-import { useSettings } from '../compositions/settings';
+import { useSettings, loadSettings } from '../compositions/settings';
 import { loadConfig } from '../compositions/config';
 
 export default defineComponent({
@@ -42,6 +42,7 @@ export default defineComponent({
   setup(props, { root }) {
     onMounted(async () => {
       useSettings().locale = root.$q.lang.getLocale() || 'en-us';
+      loadSettings();
       await init();
     });
 
