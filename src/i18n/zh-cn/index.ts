@@ -245,12 +245,14 @@ export default {
     title: '提交订单',
     btn: {
       pay: '支付',
+      home: '前往钱包',
       checkOrders: '查看订单',
       cancel
     },
     msg: {
       noSku: '无法找到商品信息',
       expired: '订单已过期，请刷新本页面重新下单',
+      notEnough: '余额不足，请向账户中转入更多资产',
       paid: '付款已提交，需要等待确认发货，您可以去订单列表查看订单状态'
     },
     label: {

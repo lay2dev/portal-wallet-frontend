@@ -68,6 +68,7 @@ import { i18n } from '../boot/i18n';
 import FeeBar from '../components/FeeBar.vue';
 import { useOrderNo, useShopConfig } from '../compositions/shop/shop';
 import { useConfig } from '../compositions/config';
+import { useAccount, useAuthorized } from 'src/compositions/account';
 
 export default defineComponent({
   name: 'Order',
@@ -92,6 +93,30 @@ export default defineComponent({
     const sending = useSending();
 
     onMounted(async () => {
+      await init();
+    });
+
+    const amount = computed(() =>
+      (tokenAmount.value || Amount.ZERO).toString(undefined, { commify: true })
+    );
+
+    const rate = computed(() => {
+      if (sku.value && tokenAmount.value) {
+        return (
+          sku.value.sellPrice /
+          100 /
+          Number(tokenAmount.value.toString())
+        ).toFixed(4);
+      }
+      return 0;
+    });
+
+    const stop = watch(useAuthorized(), (auth) => {
+      stop();
+      auth && init();
+    });
+
+    const init = async () => {
       loading(true);
 
       useSendMode().value = 'remote';
@@ -127,22 +152,7 @@ export default defineComponent({
         }
       }
       placingOrder.value = false;
-    });
-
-    const amount = computed(() =>
-      (tokenAmount.value || Amount.ZERO).toString(undefined, { commify: true })
-    );
-
-    const rate = computed(() => {
-      if (sku.value && tokenAmount.value) {
-        return (
-          sku.value.sellPrice /
-          100 /
-          Number(tokenAmount.value.toString())
-        ).toFixed(4);
-      }
-      return 0;
-    });
+    };
 
     const onPay = () => {
       if (expiresIn.value < new Date().getTime()) {
@@ -154,6 +164,24 @@ export default defineComponent({
         return;
       }
       if (tokenAmount.value instanceof Amount) {
+        if (useAccount().balance.value?.lte(tokenAmount.value)) {
+          Notify.create({
+            type: 'warning',
+            message: i18n.t('order.msg.notEnough').toString(),
+            progress: true,
+            actions: [
+              { label: root.$t('order.btn.cancel'), color: 'white' },
+              {
+                label: root.$t('order.btn.home'),
+                color: 'accent',
+                handler: () => {
+                  void root.$router.push('/');
+                },
+              },
+            ],
+          });
+          return;
+        }
         useConfirmSend().value = true;
         const stop = watch(sending, (sending) => {
           if (!sending) {

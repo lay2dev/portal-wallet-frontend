@@ -247,11 +247,14 @@ export default {
     btn: {
       pay: 'Pay',
       checkOrders: 'Check Orders',
+      home: 'Back to Wallet',
       cancel
     },
     msg: {
       noSku: 'Can not find product',
       expired: 'Order expired, please reload this page',
+      notEnouth:
+        'Insufficient balance, please transfer more assets to your account.',
       paid:
         'Payment submitted, please wait for comfirmation. you can go to check the order status'
     },
