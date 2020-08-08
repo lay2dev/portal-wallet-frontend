@@ -78,11 +78,15 @@ export function useFiatRates() {
   return fiatRates;
 }
 
-export async function loadSwapRates() {
-  const {
-    marketPrices: rates,
-    otcUSDTPrices: otcRates
-  } = await useApi().loadSwapRates();
+export interface SwapRates {
+  marketPrices: [];
+  otcUSDTPrices: Record<string, number>;
+}
+
+export async function loadSwapRates(data?: string) {
+  const { marketPrices: rates, otcUSDTPrices: otcRates } = data
+    ? JSON.parse(data)
+    : await useApi().loadSwapRates();
   if (rates && lefts.value) {
     for (let i = 0; i < lefts.value.length; i++) {
       lefts.value[i].price =

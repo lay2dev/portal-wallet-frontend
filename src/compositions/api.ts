@@ -2,7 +2,7 @@ import { Notify, Cookies, LocalStorage, copyToClipboard } from 'quasar';
 import axios, { AxiosError } from 'axios';
 import { useConfig } from './config';
 import PWCore, { Amount, AmountUnit, Transaction } from '@lay2/pw-core';
-import { SwapTX, SwapTxStatus, SwapConfig } from './swap';
+import { SwapTX, SwapTxStatus, SwapConfig, SwapRates } from './swap';
 import * as jwt from 'jsonwebtoken';
 import { Contact, useShowLogin } from './account';
 import { CATE, SKU } from './shop/sku';
@@ -132,10 +132,7 @@ export function useApi() {
     },
 
     loadSwapRates: async () => {
-      const rates = (await apiGet('/swap/tokenRate'))?.data as {
-        marketPrices: [];
-        otcUSDTPrices: Record<string, number>;
-      };
+      const rates = (await apiGet('/swap/tokenRate'))?.data as SwapRates;
       return rates;
     },
 

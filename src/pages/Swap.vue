@@ -72,6 +72,7 @@
               v-model="leftAmount"
               input-class="text-bold"
               type="number"
+              clearable
               borderless
               :placeholder="$t('swap.label.sendAmount')"
             />
@@ -79,7 +80,8 @@
               class="col"
               input-class="text-right text-bold"
               v-model="rightAmount"
-              type="tel"
+              type="number"
+              clearable
               borderless
               :placeholder="$t('swap.label.receiveAmount')"
             />
@@ -151,6 +153,8 @@ export default defineComponent({
     const amount = ref(0);
     const minimum = ref(1000);
     const maximum = ref(100000);
+    const inputSide = ref('');
+    const inputAmount = ref('');
     const balance = useAccount().balance as Ref<Amount>;
 
     const { lefts, rights } = useSwap();
@@ -163,6 +167,8 @@ export default defineComponent({
       get: () =>
         amount.value ? tofixed(amount.value / left.value.price, 6) : undefined,
       set: (val) => {
+        inputSide.value = 'left';
+        inputAmount.value = val || '';
         amount.value = Number(val) * left.value.price;
       },
     });
@@ -176,6 +182,8 @@ export default defineComponent({
       get: () =>
         amount.value ? tofixed(amount.value / right.price, 4) : undefined,
       set: (val) => {
+        inputSide.value = 'right';
+        inputAmount.value = val || '';
         amount.value = Number(val) * right.price;
       },
     });
@@ -207,6 +215,15 @@ export default defineComponent({
 
     watch(useAccount().address, (address) => {
       address && void loadSwapBalances(address);
+    });
+
+    watch(rate, () => {
+      console.log('[Swap.vue] inputSide', inputSide.value);
+      if (inputSide.value === 'left') {
+        leftAmount.value = inputAmount.value;
+      } else if (inputSide.value === 'right') {
+        rightAmount.value = inputAmount.value;
+      }
     });
 
     return {
