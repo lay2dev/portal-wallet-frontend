@@ -70,7 +70,7 @@
             <q-input
               class="col"
               v-model="leftAmount"
-              type="tel"
+              type="number"
               borderless
               :placeholder="$t('swap.label.sendAmount')"
             />

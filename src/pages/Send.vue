@@ -34,6 +34,7 @@
         <div class="row justify-between items-center">
           <q-input
             class="col"
+            type="number"
             input-class="text-bold"
             input-style="font-size: 1.2em"
             v-model="amount"
@@ -44,7 +45,6 @@
             standout
             clearable
             autogrow
-            type="phone"
             suffix="CKB"
             :rules="[val => pair.valid.amount]"
             @blur="amount = pair.amount.toString(undefined, {commify: true})"
