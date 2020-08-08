@@ -1774,10 +1774,10 @@
   dependencies:
     "@hapi/hoek" "^8.3.0"
 
-"@lay2/pw-core@^0.3.3":
-  version "0.3.3"
-  resolved "https://registry.yarnpkg.com/@lay2/pw-core/-/pw-core-0.3.3.tgz#96ca708b88af68fc25f1ef760ae69f175ba8cb5f"
-  integrity sha512-VPdR46lB6VwI6pHvYTlqRUCt7rv1+YtP89FzczCY784pPaqkH4FxlnC7dWsCbEMiyGrcwUfZu0CHiHl9cFUa9g==
+"@lay2/pw-core@^0.3.4":
+  version "0.3.4"
+  resolved "https://registry.yarnpkg.com/@lay2/pw-core/-/pw-core-0.3.4.tgz#96d334649f4da4c0c7ed90f5bdd2fa182bffc7f5"
+  integrity sha512-puQzrp7/59w7mqGq9X0dqsybKTFye8Fv6TwWi9rop/BvCrHlFYOqj77dwqvLNUcXtTAQqWgAlVqBZyOlmwiQNQ==
   dependencies:
     "@ckb-lumos/types" "^0.2.4"
     "@nervosnetwork/ckb-sdk-utils" "^0.32.0"
@@ -5236,9 +5236,9 @@ ethereumjs-util@^6.0.0:
     secp256k1 "^3.0.1"
 
 ethereumjs-util@^7.0.2:
-  version "7.0.3"
-  resolved "https://registry.yarnpkg.com/ethereumjs-util/-/ethereumjs-util-7.0.3.tgz#d055fc7f852d79065d2e689002a789b1323cf3fd"
-  integrity sha512-uLQsGPOwsRxe50WV1Dybh5N8zXDz4ev7wP49LKX9kr28I5TmcDILPgpKK/BFe5zYSfRGEeo+hPT7W3tjghYLuA==
+  version "7.0.4"
+  resolved "https://registry.yarnpkg.com/ethereumjs-util/-/ethereumjs-util-7.0.4.tgz#f4b2022a91416bf421b35b0d5b81c21e8abd8b7f"
+  integrity sha512-isldtbCn9fdnhBPxedMNbFkNWVZ8ZdQvKRDSrdflame/AycAPKMer+vEpndpBxYIB3qxN6bd3Gh1YCQW9LDkCQ==
   dependencies:
     "@types/bn.js" "^4.11.3"
     bn.js "^5.1.2"
