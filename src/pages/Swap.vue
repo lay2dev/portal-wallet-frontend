@@ -70,13 +70,14 @@
             <q-input
               class="col"
               v-model="leftAmount"
+              input-class="text-bold"
               type="number"
               borderless
               :placeholder="$t('swap.label.sendAmount')"
             />
             <q-input
               class="col"
-              input-class="text-right"
+              input-class="text-right text-bold"
               v-model="rightAmount"
               type="tel"
               borderless
@@ -99,7 +100,10 @@
           </div>
           <div class="row justify-between">
             <div class="text-caption">1 {{left.symbol}} = {{rate}} CKB</div>
-            <div class="text-caption">{{minimum}} - {{maximum}} CKB</div>
+            <div
+              class="text-caption"
+              :class="rightAmount && outOfRange && 'text-negative'"
+            >{{minimum}} - {{maximum}} CKB</div>
           </div>
         </q-card-section>
       </q-card>
@@ -107,6 +111,7 @@
         class="full-width q-mx-sm q-mt-md"
         color="primary"
         icon="cached"
+        :disable="outOfRange"
         :label="$t('swap.btn.swap')"
         @click="onSwap"
       />
@@ -156,12 +161,7 @@ export default defineComponent({
     });
     const leftAmount = computed({
       get: () =>
-        amount.value
-          ? new Amount(`${amount.value / left.value.price}`).toString(
-              undefined
-              // { fixed: 6 }
-            )
-          : undefined,
+        amount.value ? tofixed(amount.value / left.value.price, 6) : undefined,
       set: (val) => {
         amount.value = Number(val) * left.value.price;
       },
@@ -174,9 +174,7 @@ export default defineComponent({
 
     const rightAmount = computed({
       get: () =>
-        amount.value
-          ? new Amount(`${amount.value / right.price}`).toString(undefined)
-          : undefined,
+        amount.value ? tofixed(amount.value / right.price, 4) : undefined,
       set: (val) => {
         amount.value = Number(val) * right.price;
       },
@@ -189,6 +187,11 @@ export default defineComponent({
           (left.value.price / (right.price || 1)).toString()
         ).toString(undefined, { commify: true, fixed: 4 })
     );
+
+    const outOfRange = computed(
+      () => (rightAmount.value || 0) < 1000 || (rightAmount.value || 0) > 100000
+    );
+    watch(outOfRange, (val) => console.log('[Swap.vue] out of range', val));
 
     const onSwap = async () => {
       if (leftAmount.value && rightAmount.value) {
@@ -216,6 +219,7 @@ export default defineComponent({
       rights,
       right,
       rightAmount,
+      outOfRange,
       rate,
       minimum,
       maximum,
@@ -228,6 +232,9 @@ export default defineComponent({
     },
   },
 });
+
+const tofixed = (n: number, fixed: number) =>
+  `${n}`.split('.')[1]?.length > fixed ? n.toFixed(fixed) : `${n}`;
 </script>
 
 <style lang="scss" scoped>

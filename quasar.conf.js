@@ -48,7 +48,8 @@ module.exports = configure(function(ctx) {
       vueRouterMode: 'hash', // available values: 'hash', 'history'
 
       env: {
-        RC: process.env.RC
+        RC: process.env.RC,
+        VUE_ROUTER_BASE: process.env.VUE_ROUTER_BASE
       },
       // transpile: false,
 
