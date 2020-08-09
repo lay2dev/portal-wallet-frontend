@@ -170,20 +170,20 @@ export function useApi() {
 
     submitPendingSwap: async (
       txhash: string,
+      nonce: number,
       ckbAmount: string,
       tokenSymbol: string,
       tokenAmount: string,
       from: string
-    ) => {
+    ) =>
       await apiPost('/swap/submitPendingSwap', {
         txhash,
+        nonce,
         ckbAmount,
         tokenSymbol,
         tokenAmount,
         from
-      });
-    },
-
+      }),
     shop: {
       loadConfig: async () => {
         const res = await apiGet('/store/config');

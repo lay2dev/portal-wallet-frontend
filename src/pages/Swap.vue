@@ -139,6 +139,7 @@ import {
   loadSwapRates,
   loadSwapBalances,
   useSwapBalancesLoading,
+  loadSwapTxs,
 } from '../compositions/swap';
 import PWCore, { Amount } from '@lay2/pw-core';
 import SwapTxList from '../components/SwapTxList.vue';
@@ -214,7 +215,11 @@ export default defineComponent({
     });
 
     watch(useAccount().address, (address) => {
-      address && void loadSwapBalances(address);
+      console.log('[Swap.vue] address changed', address);
+      if (!!address) {
+        void loadSwapBalances(address);
+        void loadSwapTxs();
+      }
     });
 
     watch(rate, () => {

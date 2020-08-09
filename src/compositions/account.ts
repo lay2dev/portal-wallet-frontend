@@ -8,7 +8,7 @@ import PWCore, {
 import { useConfig } from './config';
 import { useApi, checkAuthorization } from './api';
 import { LocalStorage, Cookies } from 'quasar';
-import { loadSwapRates } from './swap';
+import { loadSwapRates, loadSwapTxs } from './swap';
 import { LoginSigner } from './login-signer';
 import IoClient from 'socket.io-client';
 import { loadCards } from './shop/order';
@@ -94,6 +94,7 @@ const initSocket = (address: Address) => {
 
     socket.value.on('newTx', () => {
       void updateData(address);
+      void loadSwapTxs();
     });
 
     socket.value.on('store.order.success', () => {

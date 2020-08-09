@@ -142,7 +142,7 @@ export async function swap(
   rightAmount: string
 ) {
   if (config.value) {
-    const txHash = await sendAssets(
+    const { res, nonce } = await sendAssets(
       PWCore.provider.address.addressString,
       config.value.depositEthAddress,
       leftAmount,
@@ -151,13 +151,16 @@ export async function swap(
     );
 
     const ret = await useApi().submitPendingSwap(
-      txHash,
+      res,
+      Number(nonce),
       rightAmount,
       left.symbol,
       leftAmount,
       PWCore.provider.address.addressString
     );
-    console.log('[SwapCard] tx sent: ', txHash, ret);
+
+    void loadSwapTxs();
+    console.log('[SwapCard] tx sent: ', res, ret);
   }
 }
 
@@ -231,11 +234,26 @@ export async function loadSwapTxs(lastId?: number) {
 // eth tools
 
 const sendAsync = async (
+  from: string,
   params: Array<unknown>,
   method: string
-  // from: string
-) =>
-  new Promise<string>((resolve, reject) => {
+) => {
+  let nonce = '0';
+  if (method === 'eth_sendTransaction') {
+    nonce = await new Promise<string>((resolve, reject) => {
+      window.web3.eth.getTransactionCount(from, function(
+        err: Error,
+        result: number
+      ) {
+        err && reject(err);
+        resolve(`${result}`);
+      });
+    });
+    (params[0] as Record<string, string>).nonce = nonce;
+    console.log('[swap] sendAsync params ', params);
+  }
+
+  const res = await new Promise<string>((resolve, reject) => {
     window.web3.currentProvider.sendAsync({ method, params }, function(
       err: Error,
       result: Record<string, string>
@@ -245,6 +263,9 @@ const sendAsync = async (
       resolve(result.result);
     });
   });
+
+  return { res, nonce };
+};
 
 const DecimalMap: Record<number, string> = {
   6: 'mwei',
@@ -285,7 +306,7 @@ export const sendAssets = async (
   }
 
   console.log('[sendAssets]', params[0]);
-  return sendAsync(params, method);
+  return sendAsync(fromAddress, params, method);
 };
 
 export const getBalance = async (fromAddress: string, tokenAddress: string) => {
@@ -304,5 +325,5 @@ export const getBalance = async (fromAddress: string, tokenAddress: string) => {
     method = 'eth_getBalance';
   }
 
-  return sendAsync(params, method);
+  return (await sendAsync(fromAddress, params, method)).res;
 };
