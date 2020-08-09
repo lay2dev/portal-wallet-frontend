@@ -149,12 +149,14 @@ export default {
   txlist: {
     label: {
       amount,
+      cancel,
       fee,
       from,
       to,
       note,
       hash,
-      height: 'Block'
+      height: 'Block',
+      set: 'Set'
     },
     msg: {
       in: 'Received',

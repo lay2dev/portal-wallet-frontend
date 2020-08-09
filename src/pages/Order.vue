@@ -69,15 +69,12 @@ import FeeBar from '../components/FeeBar.vue';
 import { useOrderNo, useShopConfig } from '../compositions/shop/shop';
 import { useConfig } from '../compositions/config';
 import { useAccount, useAuthorized } from 'src/compositions/account';
+import GTM from '../compositions/gtm';
 
 export default defineComponent({
   name: 'Order',
   components: { FeeBar },
   props: {
-    cid: {
-      type: String,
-      required: true,
-    },
     sid: {
       type: String,
       required: true,
@@ -180,11 +177,23 @@ export default defineComponent({
               },
             ],
           });
+          GTM.logEvent({
+            category: 'Fail',
+            action: 'pay-order',
+            label: 'insufficient-balance',
+            value: new Date().getTime(),
+          });
           return;
         }
         useConfirmSend().value = true;
         const stop = watch(sending, (sending) => {
           if (!sending) {
+            GTM.logEvent({
+              category: 'Conversions',
+              action: 'pay-order',
+              label: sku.value?.name || '',
+              value: Number(tokenAmount.value?.toString()),
+            });
             root.$q
               .dialog({
                 title: root.$t('order.label.success').toString(),

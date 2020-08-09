@@ -12,6 +12,7 @@ interface Window {
   web3: any;
   ethereum: any;
   imToken: ImToken;
+  dataLayer: any;
 }
 
 declare module 'vue-qrcode';

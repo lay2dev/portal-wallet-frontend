@@ -49,14 +49,21 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, Ref, computed } from '@vue/composition-api';
+import {
+  defineComponent,
+  ref,
+  Ref,
+  computed,
+  onActivated,
+  onMounted,
+} from '@vue/composition-api';
 import { useAccount } from '../compositions/account';
 import VueQrcode from 'vue-qrcode';
 import { copy } from '../compositions/api';
+import GTM from '../compositions/gtm';
 
 export default defineComponent({
   name: 'ReceiveCard',
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   components: { VueQrcode },
   setup() {
     const type: Ref<'default' | 'ckb' | 'portal'> = ref('default');
@@ -66,6 +73,15 @@ export default defineComponent({
       ckb: computed(() => address.value?.toCKBAddress() || '-'),
       portal: computed(() => portalAddress.value || '-'),
     };
+
+    onMounted(() => {
+      GTM.logEvent({
+        category: 'Actions',
+        action: 'show-dialog',
+        label: 'receive-card',
+        value: new Date().getTime(),
+      });
+    });
 
     return { addresses, type, copy };
   },

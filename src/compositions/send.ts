@@ -17,6 +17,7 @@ import { useApi } from './api';
 import { payOrder } from './shop/shop';
 import { loadPendingCard } from './shop/order';
 import { ClearBuilder } from './clear-builder';
+import GTM from '../compositions/gtm';
 
 export class Pair {
   public address: Address | undefined;
@@ -155,6 +156,12 @@ export async function send(): Promise<string | undefined> {
             'out'
           )
         );
+        GTM.logEvent({
+          category: 'Conversions',
+          action: 'send-tx',
+          label: txHash,
+          value: Number(amount.toString())
+        });
       }
 
       sending.value = false;
@@ -171,6 +178,12 @@ export async function send(): Promise<string | undefined> {
       return txHash;
     } catch (e) {
       console.error((e as Error).message);
+      GTM.logEvent({
+        category: 'Exceptions',
+        action: 'send-tx',
+        label: (e as Error).message,
+        value: new Date().getTime()
+      });
       sending.value = false;
     }
   }

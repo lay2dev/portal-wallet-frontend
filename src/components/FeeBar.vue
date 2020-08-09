@@ -49,6 +49,7 @@ import {
 } from '@vue/composition-api';
 import { Builder, Amount, Transaction } from '@lay2/pw-core';
 import { useFee, useRate, useBuilding } from '../compositions/send';
+import GTM from '../compositions/gtm';
 
 export default defineComponent({
   name: 'FeeBar',
@@ -72,6 +73,17 @@ export default defineComponent({
         useBuilding().value = false;
       }
       if (tx.value) fee.value = Builder.calcFee(tx.value, rate);
+    });
+
+    watch(expanded, (expanded) => {
+      if (expanded) {
+        GTM.logEvent({
+          category: 'Actions',
+          action: 'show-feebar',
+          label: `${rate.value}`,
+          value: new Date().getTime(),
+        });
+      }
     });
 
     return {

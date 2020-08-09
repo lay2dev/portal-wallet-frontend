@@ -198,6 +198,7 @@ import TxList from '../components/TxList.vue';
 import ContactSelect from '../components/ContactSelect.vue';
 import { useTxFilter, useAccount } from '../compositions/account';
 import { ClearBuilder } from 'src/compositions/clear-builder';
+import GTM from '../compositions/gtm';
 
 export default defineComponent({
   name: 'Send',
@@ -265,6 +266,12 @@ export default defineComponent({
 
     const scan = async () => {
       address.value = await scanQR();
+      GTM.logEvent({
+        category: 'Actions',
+        action: 'scan-qr',
+        label: address.value,
+        value: new Date().getTime(),
+      });
     };
 
     onMounted(() => {
@@ -359,6 +366,12 @@ export default defineComponent({
         }
         this.ens = '';
         this.resolvingEns = false;
+        GTM.logEvent({
+          category: 'Actions',
+          action: 'resolve-ens',
+          label: ens,
+          value: new Date().getTime(),
+        });
       }
     },
   },

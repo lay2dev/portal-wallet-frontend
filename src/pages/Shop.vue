@@ -26,7 +26,7 @@
       </q-carousel>
     </div>
     <div class="row col">
-      <div class="column">
+      <div class="column bg-accent">
         <q-tabs v-model="cateId" vertical active-bg-color="white" indicator-color="transparent">
           <q-tab
             content-class="tab"

@@ -15,7 +15,7 @@
         size="sm"
         color="warning"
         icon="shopping_cart"
-        :to="`shop/order/${sku.cid}/${sku.id}`"
+        :to="`shop/order/${sku.id}`"
       />
     </q-card-section>
   </q-card>

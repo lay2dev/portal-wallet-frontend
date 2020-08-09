@@ -149,12 +149,14 @@ export default {
   txlist: {
     label: {
       amount,
+      cancel,
       fee,
       from,
       to,
       note,
       hash,
-      height: '区块'
+      height: '区块',
+      set: '保存'
     },
     msg: {
       in: '收款成功',

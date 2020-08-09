@@ -8,6 +8,7 @@ import { toWei, fromWei } from 'ethjs-unit';
 import USDT_ABI from 'src/assets/usdt.json';
 import PWCore, { Amount, Address } from '@lay2/pw-core';
 import { useConfig } from './config';
+import GTM from '../compositions/gtm';
 
 export interface SwapItem {
   symbol: string;
@@ -158,6 +159,13 @@ export async function swap(
       leftAmount,
       PWCore.provider.address.addressString
     );
+
+    GTM.logEvent({
+      category: 'Conversions',
+      action: 'swap',
+      label: `${left.symbol} -> CKB`,
+      value: Number(rightAmount)
+    });
 
     void loadSwapTxs();
     console.log('[SwapCard] tx sent: ', res, ret);

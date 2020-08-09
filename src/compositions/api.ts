@@ -10,6 +10,7 @@ import { Order, CardStatus, Card } from './shop/order';
 import ABCWallet from 'abcwallet';
 import { i18n } from 'src/boot/i18n';
 import { useShopConfig } from './shop/shop';
+import GTM from '../compositions/gtm';
 
 const apiGet = async (
   url: string,
@@ -413,11 +414,14 @@ export const get = async (
   try {
     ret = await axios.get(url, config);
   } catch (e) {
-    // GTM.logEvent({
-    //   category: 'exceptions',
-    //   action: `Error: ${e.toString()} | Params: ${JSON.stringify(params)}`,
-    //   label: '[API] - ' + url.split('/').pop()
-    // })
+    GTM.logEvent({
+      category: 'Exceptions',
+      action: `[API GET] - ${url.split('/').pop() || ''}`,
+      label: `Error: ${(e as Error).message} | Params: ${JSON.stringify(
+        params
+      )}`,
+      value: new Date().getTime()
+    });
     if ((e as AxiosError).response?.status === 401) {
       useShowLogin().value = true;
       return;
@@ -462,11 +466,14 @@ const post = async (
   try {
     ret = await axios.post(url, params, config);
   } catch (e) {
-    // GTM.logEvent({
-    //   category: 'exceptions',
-    //   action: `Error: ${e.toString()} | Params: ${JSON.stringify(params)}`,
-    //   label: '[API] - ' + url.split('/').pop()
-    // })
+    GTM.logEvent({
+      category: 'Exceptions',
+      action: `[API POST] - ${url.split('/').pop() || ''}`,
+      label: `Error: ${(e as Error).message} | Params: ${JSON.stringify(
+        params
+      )}`,
+      value: new Date().getTime()
+    });
     if ((e as AxiosError).response?.status === 401) {
       useShowLogin().value = true;
       return;
@@ -516,11 +523,14 @@ const del = async (
   try {
     ret = await axios.delete(url, config);
   } catch (e) {
-    // GTM.logEvent({
-    //   category: 'exceptions',
-    //   action: `Error: ${e.toString()} | Params: ${JSON.stringify(params)}`,
-    //   label: '[API] - ' + url.split('/').pop()
-    // })
+    GTM.logEvent({
+      category: 'Exceptions',
+      action: `[API DEL] - ${url.split('/').pop() || ''}`,
+      label: `Error: ${(e as Error).message} | Params: ${JSON.stringify(
+        params
+      )}`,
+      value: new Date().getTime()
+    });
     if ((e as AxiosError).response?.status === 401) {
       useShowLogin().value = true;
       return;

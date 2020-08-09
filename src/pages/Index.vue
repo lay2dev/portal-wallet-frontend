@@ -125,6 +125,7 @@ import ShopCard from 'src/components/ShopCard.vue';
 import { useSwap, useFiatRates } from '../compositions/swap';
 import { useFiatSymbol, switchNetwork } from '../compositions/config';
 import { useSettings } from '../compositions/settings';
+import GTM from '../compositions/gtm';
 
 export default Vue.extend({
   name: 'PageIndex',
@@ -185,6 +186,12 @@ export default Vue.extend({
     });
 
     const onMenuClicked = (menuItem: MenuItem) => {
+      GTM.logEvent({
+        category: 'Actions',
+        action: 'click-menu',
+        label: menuItem.name,
+        value: new Date().getTime(),
+      });
       switch (menuItem.name) {
         case 'contacts':
           void root.$router.push('contacts');
@@ -199,6 +206,7 @@ export default Vue.extend({
           openURL('https://portalwallet.zendesk.com');
           break;
         case 'aboutus':
+          openURL('https://ckb.pw/about-us');
           break;
       }
     };

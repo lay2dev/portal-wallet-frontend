@@ -7,7 +7,7 @@
           <div class="column q-px-sm justify-center">
             <div class="q-pb-xs" :class="used ? 'text-grey' : 'text-accent'">{{card.productName}}</div>
             <div class="q-gutter-xs">
-              <span>{{fiatPrice}}</span>
+              <span :class="used && 'text-grey'">{{fiatPrice}}</span>
               <span class="text-grey">{{tokenPrice}}</span>
             </div>
             <div
