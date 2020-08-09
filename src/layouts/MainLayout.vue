@@ -1,7 +1,7 @@
 <template>
   <q-layout view="lHh Lpr lFf">
-    <q-page-container style="max-width: 600px; margin: 0 auto" class="bg-grey-2">
-      <router-view />
+    <q-page-container class="bg-grey-1">
+      <router-view class="bg-grey-2" style="max-width: 600px; margin: 0 auto" />
       <q-dialog v-model="showLogin" persistent>
         <login-dialog />
       </q-dialog>

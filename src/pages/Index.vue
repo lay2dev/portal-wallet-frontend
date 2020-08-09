@@ -1,15 +1,10 @@
 <template>
   <q-page class="column justify-start q-pb-sm">
-    <!-- <q-toolbar class="bg-accent text-white">
-      <q-btn flat round dense icon="subject" @click="showDrawer = true" />
-      <q-space />
-    </q-toolbar>-->
     <q-drawer
       side="left"
       v-model="showDrawer"
-      show-if-above
       :width="240"
-      :breakpoint="700"
+      :breakpoint="600"
       elevated
       overlay
       content-class="bg-accent text-grey-2"

@@ -7,8 +7,8 @@
       <q-card-section class="column items-center q-py-xs">
         <div class="text-caption text-grey">{{$t('receiveCard.label.address')}}</div>
         <div
-          class="text-center text-subtitle2 q-px-lg"
-          style="min-height: 3.5rem;word-break: break-word;line-height:1.3"
+          class="text-center text-subtitle2 q-px-lg q-mt-sm"
+          style="min-height: 2rem;word-break: break-word;line-height:1.3"
         >
           {{addresses[type]}}
           <q-btn
@@ -24,21 +24,22 @@
       </q-card-section>
       <q-card-section class="column items-center q-py-xs">
         <div
-          class="text-caption text-accent text-center q-pa-sm"
-          style="min-height: 4rem;line-height: 1.3"
+          class="text-caption text-accent q-pa-md"
+          style="min-height: 2rem;line-height: 1.5"
         >{{$t(`receiveCard.msg.${type}`)}}</div>
       </q-card-section>
       <q-separator spaced />
       <div class="text-center text-h6 q-mb-sm">{{$t('receiveCard.msg.where')}}</div>
       <q-tabs
         v-model="type"
+        align="justify"
         class="bg-grey-2 text-grey"
         active-bg-color="white"
         active-color="accent"
         no-caps
       >
         <q-tab name="default" :label="$t('receiveCard.label.native')" />
-        <q-tab name="ckb" :label="$t('receiveCard.label.ckb')" />
+        <!-- <q-tab name="ckb" :label="$t('receiveCard.label.ckb')" /> -->
         <q-tab name="portal" :label="$t('receiveCard.label.portal')" />
       </q-tabs>
     </q-card>
