@@ -8,7 +8,7 @@ import PWCore, {
 import { useConfig } from './config';
 import { useApi, checkAuthorization } from './api';
 import { LocalStorage, Cookies } from 'quasar';
-import { loadSwapRates, SwapRates } from './swap';
+import { loadSwapRates } from './swap';
 import { LoginSigner } from './login-signer';
 import IoClient from 'socket.io-client';
 import { loadCards } from './shop/order';

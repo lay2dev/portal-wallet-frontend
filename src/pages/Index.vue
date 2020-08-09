@@ -5,12 +5,13 @@
       <q-space />
     </q-toolbar>-->
     <q-drawer
-      side="right"
+      side="left"
       v-model="showDrawer"
       show-if-above
       :width="240"
       :breakpoint="700"
       elevated
+      overlay
       content-class="bg-accent text-grey-2"
     >
       <q-scroll-area class="fit">
@@ -50,7 +51,7 @@
           round
           dense
           icon="subject"
-          @click="showDrawer = true"
+          @click="showDrawer = !showDrawer"
         />
       </q-item>
     </div>
@@ -119,7 +120,7 @@ import {
   logout,
 } from 'src/compositions/account';
 import { AmountUnit, Amount } from '@lay2/pw-core';
-import { Notify, LocalStorage } from 'quasar';
+import { Notify, LocalStorage, openURL } from 'quasar';
 import { ref, computed, onMounted, watch } from '@vue/composition-api';
 import Jazzicon from 'vue-jazzicon';
 import TxList from 'src/components/TxList.vue';
@@ -195,10 +196,14 @@ export default Vue.extend({
           break;
         case 'language':
           chooseLanguage();
-
           break;
         case 'currency':
           chooseCurrency();
+          break;
+        case 'support':
+          openURL('https://portalwallet.zendesk.com');
+          break;
+        case 'aboutus':
           break;
       }
     };

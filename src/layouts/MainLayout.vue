@@ -1,6 +1,6 @@
 <template>
   <q-layout view="lHh Lpr lFf">
-    <q-page-container class="bg-grey-2">
+    <q-page-container style="max-width: 600px; margin: 0 auto" class="bg-grey-2">
       <router-view />
       <q-dialog v-model="showLogin" persistent>
         <login-dialog />
