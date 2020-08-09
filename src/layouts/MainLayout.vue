@@ -37,7 +37,7 @@ export default defineComponent({
   components: { LoginDialog, SignBoard, CardInfo },
   created() {
     if (localStorage.getItem('vconsole') === 'on') new vConsole();
-    if (process.env.PROD)
+    if (process.env.PROD && !process.env.RC)
       console.log = () => {
         return 0;
       };
