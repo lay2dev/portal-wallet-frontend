@@ -72,7 +72,6 @@
               v-model="leftAmount"
               input-class="text-bold"
               type="number"
-              clearable
               borderless
               :placeholder="$t('swap.label.sendAmount')"
             />
@@ -81,7 +80,6 @@
               input-class="text-right text-bold"
               v-model="rightAmount"
               type="number"
-              clearable
               borderless
               :placeholder="$t('swap.label.receiveAmount')"
             />
@@ -97,15 +95,17 @@
         <q-separator />
         <q-card-section>
           <div class="row justify-between">
-            <div class="text-caption text-grey">{{$t('swap.label.rate')}}:</div>
-            <div class="text-caption text-grey">{{$t('swap.label.range')}}:</div>
+            <div
+              class="text-caption text-grey"
+            >{{$t('swap.label.rate')}}({{left.symbol}}/{{right.symbol}}):</div>
+            <div class="text-caption text-grey">{{$t('swap.label.range')}}(CKB):</div>
           </div>
           <div class="row justify-between">
-            <div class="text-caption">1 {{left.symbol}} = {{rate}} CKB</div>
+            <div class="text-caption">{{rate}}</div>
             <div
               class="text-caption"
               :class="rightAmount && outOfRange && 'text-negative'"
-            >{{minimum}} - {{maximum}} CKB</div>
+            >{{minimum}} - {{maximum}}</div>
           </div>
         </q-card-section>
       </q-card>

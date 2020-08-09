@@ -6,27 +6,27 @@
           <q-avatar size="lg" icon="img:dao.svg" />
           <div class="q-ml-xs text-center text-subtitle">{{$t('daoCard.label.dao')}}</div>
         </div>
-        <q-icon size="sm" color="grey" name="chevron_right" />
+        <q-icon size="sm" color="grey-4" name="chevron_right" />
       </div>
     </q-card-section>
-    <q-separator />
+    <q-separator color="grey-2" />
     <q-card-section class="row justify-between items-center q-py-sm">
       <div class="q-ml-xs text-center text-subtitle">{{$t('daoCard.label.deposited')}}:</div>
       <div class="text-subtitle1 text-accent">{{lockedAmount}} CKB</div>
     </q-card-section>
-    <q-separator />
+    <q-separator color="grey-2" />
     <q-card-section class="q-pa-sm">
       <div class="row justify-evenly items-center">
         <div class="column items-start">
           <div class="text-caption text-accent">{{$t('daoCard.label.yesterday')}}:</div>
           <div class="text-caption text-bold text-primary">+ {{yesterdayAmount}} CKB</div>
         </div>
-        <q-separator spaced inset vertical />
+        <q-separator color="grey-2" spaced inset vertical />
         <div class="column items-start">
           <div class="text-caption text-accent">{{$t('daoCard.label.cumulative')}}:</div>
           <div class="text-caption text-bold text-primary">+ {{cumulativeAmount}} CKB</div>
         </div>
-        <q-separator spaced inset vertical />
+        <q-separator color="grey-2" spaced inset vertical />
         <div class="column items-start">
           <div class="text-caption text-accent">APC:</div>
           <div class="text-caption text-bold text-accent">{{apc}}</div>

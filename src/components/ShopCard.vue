@@ -6,10 +6,10 @@
           <q-avatar size="lg" icon="img:lay2.svg" />
           <div class="q-ml-xs text-center text-subtitle">{{$t('shop.title')}}</div>
         </div>
-        <q-icon size="sm" color="grey" name="chevron_right" />
+        <q-icon size="sm" color="grey-4" name="chevron_right" />
       </div>
     </q-card-section>
-    <q-separator />
+    <q-separator color="grey-2" />
     <q-card-section class="q-pa-none">
       <q-carousel height="auto" autoplay animated v-model="slide" swipeable infinite>
         <q-carousel-slide class="q-pa-none" v-for="(sku, index) in skus" :name="index" :key="index">
