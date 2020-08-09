@@ -1,14 +1,14 @@
 <template>
   <div>
     <q-card flat>
-      <q-card-section class="column items-center q-pb-xs">
+      <q-card-section class="column items-center q-pa-none">
         <vue-qrcode :value="addresses[type]" :width="200" />
       </q-card-section>
       <q-card-section class="column items-center q-py-xs">
-        <div class="text-caption text-grey">{{$t('receiveCard.label.address')}}</div>
+        <!-- <div class="text-caption text-grey">{{$t('receiveCard.label.address')}}</div> -->
         <div
-          class="text-center text-subtitle2 q-px-lg q-mt-sm"
-          style="min-height: 2rem;word-break: break-word;line-height:1.3"
+          class="text-center text-bold q-px-lg q-mt-sm"
+          style="font-size: 1.2em;word-break: break-word;line-height:1.3"
         >
           {{addresses[type]}}
           <q-btn
@@ -22,14 +22,16 @@
           />
         </div>
       </q-card-section>
-      <q-card-section class="column items-center q-py-xs">
+      <q-card-section class="column items-center q-py-sm">
         <div
-          class="text-caption text-accent q-pa-md"
-          style="min-height: 2rem;line-height: 1.5"
+          class="text-caption text-accent text-center q-px-lg"
+          style="min-height: 3.5rem;line-height: 1.5"
         >{{$t(`receiveCard.msg.${type}`)}}</div>
       </q-card-section>
       <q-separator spaced />
-      <div class="text-center text-h6 q-mb-sm">{{$t('receiveCard.msg.where')}}</div>
+      <div
+        class="text-center text-subtitle text-grey-6 text-bold q-my-sm"
+      >- {{$t('receiveCard.msg.where')}} -</div>
       <q-tabs
         v-model="type"
         align="justify"
