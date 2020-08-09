@@ -25,7 +25,7 @@ export default {
     console.log('[GTM Event]', e);
   },
 
-  logPage(path: any) {
+  logPage(path: string) {
     // Here you can preprocess the path, if needed
     window.dataLayer.push({
       event: 'customPageView',

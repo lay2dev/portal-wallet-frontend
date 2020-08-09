@@ -54,7 +54,6 @@ import {
   ref,
   Ref,
   computed,
-  onActivated,
   onMounted,
 } from '@vue/composition-api';
 import { useAccount } from '../compositions/account';
@@ -64,6 +63,7 @@ import GTM from '../compositions/gtm';
 
 export default defineComponent({
   name: 'ReceiveCard',
+  /* eslint-disable @typescript-eslint/no-unsafe-assignment */
   components: { VueQrcode },
   setup() {
     const type: Ref<'default' | 'ckb' | 'portal'> = ref('default');
