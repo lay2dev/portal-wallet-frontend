@@ -208,7 +208,9 @@ export default Vue.extend({
           chooseCurrency();
           break;
         case 'support':
-          openURL('https://portalwallet.zendesk.com');
+          openURL(
+            `https://portalwallet.zendesk.com/hc/${useSettings().locale}`
+          );
           break;
         case 'aboutus':
           openURL('https://ckb.pw/about-us');
