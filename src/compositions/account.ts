@@ -17,16 +17,20 @@ const account = reactive<{
   address: Address | undefined;
   portalAddress: string | undefined;
   balance: Amount;
+  loading: boolean;
 }>({
   address: undefined,
   portalAddress: undefined,
-  balance: Amount.ZERO
+  balance: Amount.ZERO,
+  loading: false
 });
 
 export async function updateAccount(address: Address) {
   if (address instanceof Address) {
     account.address = address;
+    account.loading = true;
     account.balance = await PWCore.defaultCollector.getBalance(address);
+    account.loading = false;
   }
 }
 

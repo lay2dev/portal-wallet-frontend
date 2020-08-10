@@ -53,8 +53,12 @@
     <div class="row meta q-px-md q-py-xs">
       <q-card class="col bg-grey-1 balance-card" v-touch-hold:2000="toggleVConsole">
         <q-card-section class="relative-position">
-          <div class="text-h6 text-accent">{{balance}} CKB</div>
-          <div class="text-subtitle2 text-grey-8">{{fiatSymbol}} {{fiat}}</div>
+          <div
+            class="text-h6 text-accent"
+          >{{accountLoading ? $t('index.label.loading') : balance}} CKB</div>
+          <div
+            class="text-subtitle2 text-grey-8"
+          >{{fiatSymbol}} {{accountLoading ? $t('index.label.loading') : fiat}}</div>
           <q-btn
             class="absolute-right q-mr-md"
             color="accent"
@@ -137,6 +141,7 @@ export default Vue.extend({
     const menuList = ref<MenuItem[]>([]);
 
     const { address } = useAccount();
+    const accountLoading = useAccount().loading;
     const showBalance = computed({
       get: () => useSettings().showBalance,
       set: (val) => (useSettings().showBalance = val),
@@ -310,6 +315,7 @@ export default Vue.extend({
     ];
 
     return {
+      accountLoading,
       originAddress,
       ckbAddress,
       lockHash,

@@ -37,6 +37,7 @@ export default {
     label: {
       balance,
       language,
+      loading,
       settings,
       fiatSymbol: 'Currency'
     },
