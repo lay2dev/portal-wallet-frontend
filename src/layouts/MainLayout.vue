@@ -26,7 +26,7 @@ import CardInfo from '../components/CardInfo.vue';
 import vConsole from 'vconsole';
 import { useShowLogin } from '../compositions/account';
 import { useConfirmSend, send } from '../compositions/send';
-import { Loading, QSpinnerBall, Notify } from 'quasar';
+import { Loading, QSpinnerBall, Notify, openURL } from 'quasar';
 import { i18n } from '../boot/i18n';
 import { useShowCardinfo } from '../compositions/shop/order';
 import { useSettings, loadSettings } from '../compositions/settings';
@@ -48,7 +48,29 @@ export default defineComponent({
       useSettings().locale = root.$q.lang.getLocale() || 'en-us';
       loadSettings();
       await init();
+      if (process.env.RC) {
+        showRCNotice();
+      }
     });
+
+    const showRCNotice = () => {
+      root.$q
+        .dialog({
+          title: root.$t('index.label.caution').toString(),
+          message: root.$t('index.msg.rc').toString(),
+          ok: {
+            label: root.$t('index.btn.gotoOfficial'),
+            color: 'positive',
+          },
+          cancel: {
+            label: root.$t('index.btn.understood'),
+            color: 'grey',
+          },
+        })
+        .onOk(() => {
+          openURL('https://ckb.pw');
+        });
+    };
 
     const onSend = async () => {
       loading(true);

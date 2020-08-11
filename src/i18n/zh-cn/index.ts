@@ -6,6 +6,7 @@ const amount = '金额';
 const balance = '余额';
 const boughtAt = '购买时间';
 const cancel = '取消';
+const caution = '注意';
 const close = '关闭';
 const confirm = '确认';
 const contacts = '联系人';
@@ -36,6 +37,7 @@ export default {
   index: {
     label: {
       balance,
+      caution,
       language,
       loading,
       settings,
@@ -51,7 +53,13 @@ export default {
       receive: '收款',
       swap: '兑换',
       scan: '扫码',
-      settings
+      settings,
+      gotoOfficial: '前往正式版',
+      understood: '我已知晓'
+    },
+    msg: {
+      rc:
+        '这是 Portal Wallet 的预览版，功能可能不稳定，也可能出现 Bug，请小心使用'
     }
   },
   contacts: {
@@ -86,7 +94,7 @@ export default {
     label: {
       address,
       amount,
-      caution: '注意',
+      caution,
       balance,
       all: '全部',
       in: '收入',

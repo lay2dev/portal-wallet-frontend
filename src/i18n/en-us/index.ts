@@ -6,6 +6,7 @@ const amount = 'Amount';
 const balance = 'Balance';
 const boughtAt = 'Bought At';
 const cancel = 'Cancel';
+const caution = 'Caution';
 const close = 'Close';
 const confirm = 'Confirm';
 const contacts = 'Contacts';
@@ -36,6 +37,7 @@ export default {
   index: {
     label: {
       balance,
+      caution,
       language,
       loading,
       settings,
@@ -51,7 +53,13 @@ export default {
       receive: 'Receive',
       swap: 'Swap',
       scan: 'Scan QR',
-      settings
+      settings,
+      gotoOfficial: 'Go To Official Version',
+      understood: 'I Understand'
+    },
+    msg: {
+      rc:
+        'This is the RC version of Portal Wallet. Features may be unstable and bugs may appear. Please use carefully.'
     }
   },
   contacts: {
@@ -87,7 +95,7 @@ export default {
       address,
       amount,
       balance,
-      caution: 'Caution',
+      caution,
       all: 'All',
       in: 'In',
       out: 'Out',
