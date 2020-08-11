@@ -14,7 +14,7 @@
         autoplay
         swipeable
         infinite
-        style="height: 40vw;"
+        style="height: 200px;"
       >
         <q-carousel-slide
           v-for="(banner, index) in banners"
