@@ -1,7 +1,7 @@
 <template>
   <q-layout view="lHh Lpr lFf">
-    <q-page-container class="bg-grey-2">
-      <router-view />
+    <q-page-container class="bg-grey-1">
+      <router-view class="bg-grey-2" style="max-width: 600px; margin: 0 auto" />
       <q-dialog v-model="showLogin" persistent>
         <login-dialog />
       </q-dialog>
@@ -29,17 +29,24 @@ import { useConfirmSend, send } from '../compositions/send';
 import { Loading, QSpinnerBall, Notify } from 'quasar';
 import { i18n } from '../boot/i18n';
 import { useShowCardinfo } from '../compositions/shop/order';
-import { useSettings } from '../compositions/settings';
+import { useSettings, loadSettings } from '../compositions/settings';
+import { loadConfig } from '../compositions/config';
 
 export default defineComponent({
   name: 'MainLayout',
   components: { LoginDialog, SignBoard, CardInfo },
   created() {
     if (localStorage.getItem('vconsole') === 'on') new vConsole();
+    if (process.env.PROD && !process.env.RC)
+      console.log = () => {
+        return 0;
+      };
+    loadConfig();
   },
   setup(props, { root }) {
     onMounted(async () => {
       useSettings().locale = root.$q.lang.getLocale() || 'en-us';
+      loadSettings();
       await init();
     });
 
@@ -49,8 +56,8 @@ export default defineComponent({
       if (txHash) {
         console.log('sent: ', txHash);
         useConfirmSend().value = false;
+        notify('send.msg.sent', 'positive');
       }
-      notify('send.msg.sent', 'positive');
       loading(false);
     };
 

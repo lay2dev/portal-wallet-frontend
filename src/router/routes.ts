@@ -11,7 +11,7 @@ const routes: RouteConfig[] = [
       { path: 'swap', component: () => import('pages/Swap.vue') },
       { path: 'shop', component: () => import('pages/Shop.vue') },
       {
-        path: 'shop/order/:cid/:sid',
+        path: 'shop/order/:sid',
         component: () => import('pages/Order.vue'),
         props: true
       },

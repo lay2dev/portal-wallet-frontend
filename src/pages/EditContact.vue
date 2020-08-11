@@ -76,14 +76,13 @@ export default defineComponent({
     const contact = ref(new Contact('', '', '', id.value));
 
     if (id.value) {
-      console.log('[EditContact] id', id.value);
       const res = useContacts().value.find((c) => c.id === id.value);
-      console.log('[EditContact] ', res);
-      if (!!res) contact.value = res;
+      if (!!res) contact.value = { ...res };
     }
 
     const canSave = computed(() => {
-      return contact.value.address.length && contact.value.name.length;
+      return contact.value.address?.length && contact.value.name?.length;
+      // return true;
     });
 
     const adding = ref(false);

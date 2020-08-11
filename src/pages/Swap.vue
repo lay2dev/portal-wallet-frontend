@@ -28,7 +28,9 @@
                   <!-- <q-icon :name="scope.opt.icon" /> -->
                   <q-item-section>
                     <q-item-label v-html="scope.opt.symbol" />
-                    <q-item-label caption>{{$t('swap.label.balance')}}: {{ scope.opt.balance }}</q-item-label>
+                    <q-item-label
+                      caption
+                    >{{$t('swap.label.balance')}}: {{ balancesLoading ? $t('swap.label.loading') : scope.opt.balance }}</q-item-label>
                   </q-item-section>
                   <q-item-section side>
                     <q-icon v-if="left.symbol === scope.opt.symbol" name="done" color="primary" />
@@ -68,15 +70,16 @@
             <q-input
               class="col"
               v-model="leftAmount"
-              type="tel"
+              input-class="text-bold"
+              type="number"
               borderless
               :placeholder="$t('swap.label.sendAmount')"
             />
             <q-input
               class="col"
-              input-class="text-right"
+              input-class="text-right text-bold"
               v-model="rightAmount"
-              type="tel"
+              type="number"
               borderless
               :placeholder="$t('swap.label.receiveAmount')"
             />
@@ -92,12 +95,17 @@
         <q-separator />
         <q-card-section>
           <div class="row justify-between">
-            <div class="text-caption text-grey">{{$t('swap.label.rate')}}:</div>
-            <div class="text-caption text-grey">{{$t('swap.label.range')}}:</div>
+            <div
+              class="text-caption text-grey"
+            >{{$t('swap.label.rate')}}({{left.symbol}}/{{right.symbol}}):</div>
+            <div class="text-caption text-grey">{{$t('swap.label.range')}}(CKB):</div>
           </div>
           <div class="row justify-between">
-            <div class="text-caption">1 {{left.symbol}} = {{rate}} CKB</div>
-            <div class="text-caption">{{minimum}} - {{maximum}} CKB</div>
+            <div class="text-caption">{{rate}}</div>
+            <div
+              class="text-caption"
+              :class="rightAmount && outOfRange && 'text-negative'"
+            >{{minimum}} - {{maximum}}</div>
           </div>
         </q-card-section>
       </q-card>
@@ -105,6 +113,7 @@
         class="full-width q-mx-sm q-mt-md"
         color="primary"
         icon="cached"
+        :disable="outOfRange"
         :label="$t('swap.btn.swap')"
         @click="onSwap"
       />
@@ -120,6 +129,7 @@ import {
   onMounted,
   computed,
   watch,
+  Ref,
 } from '@vue/composition-api';
 import { useConfig } from '../compositions/config';
 import {
@@ -128,9 +138,12 @@ import {
   loadSwapConfig,
   loadSwapRates,
   loadSwapBalances,
+  useSwapBalancesLoading,
+  loadSwapTxs,
 } from '../compositions/swap';
-import { Amount } from '@lay2/pw-core';
+import PWCore, { Amount } from '@lay2/pw-core';
 import SwapTxList from '../components/SwapTxList.vue';
+import { useAccount } from '../compositions/account';
 
 export default defineComponent({
   name: 'Swap',
@@ -141,6 +154,9 @@ export default defineComponent({
     const amount = ref(0);
     const minimum = ref(1000);
     const maximum = ref(100000);
+    const inputSide = ref('');
+    const inputAmount = ref('');
+    const balance = useAccount().balance as Ref<Amount>;
 
     const { lefts, rights } = useSwap();
 
@@ -150,27 +166,26 @@ export default defineComponent({
     });
     const leftAmount = computed({
       get: () =>
-        amount.value
-          ? new Amount(`${amount.value / left.value.price}`).toString(
-              undefined,
-              { fixed: 6 }
-            )
-          : undefined,
+        amount.value ? tofixed(amount.value / left.value.price, 6) : undefined,
       set: (val) => {
+        inputSide.value = 'left';
+        inputAmount.value = val || '';
         amount.value = Number(val) * left.value.price;
       },
     });
 
-    const right = ref(rights[0]);
+    const right = rights[0];
+    watch(balance, (balance) => {
+      right.balance = balance.toString(undefined, { commify: true, fixed: 4 });
+    });
+
     const rightAmount = computed({
       get: () =>
-        amount.value
-          ? new Amount(
-              `${amount.value / right.value.price}`
-            ).toString(undefined, { fixed: 4 })
-          : undefined,
+        amount.value ? tofixed(amount.value / right.price, 4) : undefined,
       set: (val) => {
-        amount.value = Number(val) * right.value.price;
+        inputSide.value = 'right';
+        inputAmount.value = val || '';
+        amount.value = Number(val) * right.price;
       },
     });
 
@@ -178,9 +193,14 @@ export default defineComponent({
       () =>
         left.value.price &&
         new Amount(
-          (left.value.price / (right.value.price || 1)).toString()
+          (left.value.price / (right.price || 1)).toString()
         ).toString(undefined, { commify: true, fixed: 4 })
     );
+
+    const outOfRange = computed(
+      () => (rightAmount.value || 0) < 1000 || (rightAmount.value || 0) > 100000
+    );
+    watch(outOfRange, (val) => console.log('[Swap.vue] out of range', val));
 
     const onSwap = async () => {
       if (leftAmount.value && rightAmount.value) {
@@ -191,18 +211,37 @@ export default defineComponent({
     onMounted(async () => {
       await loadSwapConfig();
       await loadSwapRates();
-      await loadSwapBalances();
+      PWCore.provider && (await loadSwapBalances(PWCore.provider.address));
+    });
+
+    watch(useAccount().address, (address) => {
+      console.log('[Swap.vue] address changed', address);
+      if (!!address) {
+        void loadSwapBalances(address);
+        void loadSwapTxs();
+      }
+    });
+
+    watch(rate, () => {
+      console.log('[Swap.vue] inputSide', inputSide.value);
+      if (inputSide.value === 'left') {
+        leftAmount.value = inputAmount.value;
+      } else if (inputSide.value === 'right') {
+        rightAmount.value = inputAmount.value;
+      }
     });
 
     return {
       showHeader: useConfig().showHeader,
       openLeft: ref(false),
+      balancesLoading: useSwapBalancesLoading(),
       lefts,
       left,
       leftAmount,
       rights,
       right,
       rightAmount,
+      outOfRange,
       rate,
       minimum,
       maximum,
@@ -215,6 +254,9 @@ export default defineComponent({
     },
   },
 });
+
+const tofixed = (n: number, fixed: number) =>
+  `${n}`.split('.')[1]?.length > fixed ? n.toFixed(fixed) : `${n}`;
 </script>
 
 <style lang="scss" scoped>

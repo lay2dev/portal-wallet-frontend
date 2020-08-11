@@ -13,6 +13,7 @@ const currency = 'Currency';
 const dao = 'Nervos DAO';
 const empty = 'No Records';
 const fee = 'Fee';
+const feeRate = 'Fee Rate';
 const from = 'From';
 const hash = 'Hash';
 const language = 'Language';
@@ -26,7 +27,7 @@ const sent = 'Transaction Sent';
 const settings = 'Settings';
 const success = 'Success';
 const to = 'To';
-const validBefore = 'Expires';
+const validBefore = 'Warranty';
 
 export default {
   common: {
@@ -36,7 +37,9 @@ export default {
     label: {
       balance,
       language,
-      settings
+      loading,
+      settings,
+      fiatSymbol: 'Currency'
     },
     btn: {
       send,
@@ -59,6 +62,7 @@ export default {
       description: 'Description'
     },
     btn: {
+      add: 'Add',
       save: 'Save',
       delete: 'Delete'
     },
@@ -83,6 +87,7 @@ export default {
       address,
       amount,
       balance,
+      caution: 'Caution',
       all: 'All',
       in: 'In',
       out: 'Out',
@@ -92,17 +97,21 @@ export default {
     },
     btn: {
       send,
+      sendAll: 'Send All CKB',
       batch: 'Batch Transaction',
-      rate,
       ok,
       cancel
     },
     msg: {
       address: 'Address: CKB / ETH / ENS',
+      clear:
+        "The remaining balance is too small (less than 61 CKB). Transaction won't succeed. Do you want to send ALL you CKB out?",
+      // sendAll: 'Do you want to send ALL you CKB out?',
       sent,
       requireAddress: 'Address is required',
       requireAmount: 'Amount is required',
       minAmount: 'minimal amount is 61 CKB',
+      maxAmount: 'amount must be smaller than balance',
       wrongEns: 'ENS cannot be resolved',
       wrongAddress: 'Invalid address foramt',
       wrongAmount: 'Invalid amount foramt'
@@ -135,18 +144,20 @@ export default {
   feebar: {
     label: {
       fee,
-      rate
+      feeRate
     }
   },
   txlist: {
     label: {
       amount,
+      cancel,
       fee,
       from,
       to,
       note,
       hash,
-      height: 'Block'
+      height: 'Block',
+      set: 'Set'
     },
     msg: {
       in: 'Received',
@@ -167,7 +178,7 @@ export default {
       from,
       to,
       fee,
-      rate,
+      feeRate,
       note
     },
     btn: {
@@ -181,6 +192,7 @@ export default {
     },
     label: {
       balance,
+      loading,
       sendAmount: 'Pay Amount',
       receiveAmount: 'Receive Amount',
       hash,
@@ -227,7 +239,11 @@ export default {
     }
   },
   shop: {
-    title: 'Lay2 Shop'
+    title: 'Lay2 Shop',
+    msg: {
+      service:
+        'If you have any problems or suggestions, please follow this channel on WeChat and send message to us.'
+    }
   },
 
   order: {
@@ -235,16 +251,20 @@ export default {
     btn: {
       pay: 'Pay',
       checkOrders: 'Check Orders',
+      home: 'Back to Wallet',
       cancel
     },
     msg: {
       noSku: 'Can not find product',
       expired: 'Order expired, please reload this page',
-      paid: 'Payment submitted, you can go to check the order status'
+      notEnouth:
+        'Insufficient balance, please transfer more assets to your account.',
+      paid:
+        'Payment submitted, please wait for comfirmation. you can go to check the order status'
     },
     label: {
       success,
-      rate: 'Current Rate'
+      rate
     }
   },
 

@@ -36,11 +36,11 @@ export async function loadCategories() {
   categories.value = await useApi().shop.loadCategories();
 }
 
-const skuOfToday = ref<SKU | undefined>();
+const skuOfToday = ref<SKU[]>([]);
 export const useSkuOfToday = () => skuOfToday;
 
 export async function loadSkuOfToday() {
-  skuOfToday.value = await useApi().shop.loadSku(14);
+  skuOfToday.value = (await useApi().shop.loadSelectedSkus()) || [];
 }
 
 export async function loadSkus(cateId: number) {

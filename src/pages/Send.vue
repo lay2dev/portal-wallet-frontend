@@ -10,7 +10,7 @@
         <q-input
           v-model="address"
           dense
-          debounce="500"
+          debounce="300"
           dark
           color="white"
           standout
@@ -34,19 +34,20 @@
         <div class="row justify-between items-center">
           <q-input
             class="col"
+            type="number"
             input-class="text-bold"
             input-style="font-size: 1.2em"
             v-model="amount"
             dense
-            debounce="500"
+            debounce="300"
             dark
             color="white"
             standout
             clearable
             autogrow
-            type="phone"
             suffix="CKB"
             :rules="[val => pair.valid.amount]"
+            @blur="amount = pair.amount.toString(undefined, {commify: true})"
             hide-bottom-space
           >
             <template v-slot:after>
@@ -54,7 +55,7 @@
                 style="margin-left: 2px; width: 67px"
                 color="primary"
                 rounded
-                @click="confirmSend = true"
+                @click="onSend"
                 :disable="building || !canSend"
                 :loading="building"
               >
@@ -94,7 +95,7 @@
         </div>
       </q-card-section>
     </q-card>
-    <div class="row q-px-sm q-mt-md">
+    <div v-if="showBatch" class="row q-px-sm q-mt-md">
       <q-btn
         class="col q-mx-md"
         icon="account_tree"
@@ -190,51 +191,87 @@ import PWCore, {
   Address,
   Amount,
   EthProvider,
-  AmountUnit,
+  Builder,
 } from '@lay2/pw-core';
 import FeeBar from '../components/FeeBar.vue';
 import TxList from '../components/TxList.vue';
 import ContactSelect from '../components/ContactSelect.vue';
 import { useTxFilter, useAccount } from '../compositions/account';
+import { ClearBuilder } from 'src/compositions/clear-builder';
+import GTM from '../compositions/gtm';
 
 export default defineComponent({
   name: 'Send',
   components: { FeeBar, TxList, ContactSelect },
-  setup() {
+  setup(props, { root }) {
     const filter = useTxFilter();
     const ens = ref('');
     const note = useNote();
     const pair = useReceivePair();
     const building = useBuilding();
     const address = ref('');
+    const amount = ref('');
+    const sending = useSending();
+
     const balance = computed(() =>
       useAccount().balance.value.toString(undefined, {
         commify: true,
         fixed: 4,
       })
     );
-    const amount = computed({
-      get: () => pair.amount.toString(AmountUnit.ckb, { commify: true }),
-      set: (val) => {
-        try {
-          pair.amount = setAmount(val);
-          pair.valid.amount = isValidAmount(pair.amount as Amount);
-        } catch (e) {
-          pair.valid.amount = (e as Error).message;
-        }
-      },
-    });
-    const canSend = computed(() => pair.isValidPair());
-    const sending = useSending();
 
+    // let dot = false;
+    // const amount = computed({
+    //   get: () => {
+    //     console.log('[Send.vue] amount get dot', dot);
+    //     return (
+    //       pair.amount.toString(AmountUnit.ckb, { commify: true }) +
+    //       (dot ? '.' : '')
+    //     );
+    //   },
+    //   set: (val) => {
+    //     dot = val.endsWith('.');
+    //     console.log('[Send.vue] amount set dot', dot);
+    //     try {
+    //       pair.amount = setAmount(val);
+    //       pair.valid.amount = isValidAmount(pair.amount as Amount);
+    //     } catch (e) {
+    //       pair.valid.amount = (e as Error).message;
+    //     }
+    //   },
+    // });
+    const canSend = computed(() => pair.isValidPair());
+    const needClear = computed(() => {
+      if (useAccount().balance.value.gt(Amount.ZERO)) {
+        const neededAmount = pair.amount.add(Builder.MIN_CHANGE);
+        return useAccount().balance.value.lte(neededAmount);
+      }
+      return false;
+    });
     const builder = computed(() =>
       pair.isValidPair()
-        ? new SimpleBuilder(pair.address as Address, pair.amount as Amount)
+        ? needClear.value
+          ? new ClearBuilder(pair.address as Address)
+          : new SimpleBuilder(pair.address as Address, pair.amount as Amount)
         : undefined
     );
 
+    const onSend = () => {
+      if (needClear.value) {
+        showSendSelect();
+      } else {
+        useConfirmSend().value = true;
+      }
+    };
+
     const scan = async () => {
       address.value = await scanQR();
+      GTM.logEvent({
+        category: 'Actions',
+        action: 'scan-qr',
+        label: address.value,
+        value: new Date().getTime(),
+      });
     };
 
     onMounted(() => {
@@ -243,8 +280,32 @@ export default defineComponent({
       useSendMode().value = 'local';
     });
 
+    const showSendSelect = () => {
+      root.$q
+        .dialog({
+          title: root.$t('send.label.caution').toString(),
+          message: root.$t('send.msg.clear').toString(),
+          ok: {
+            label: root.$t('send.btn.sendAll'),
+            flat: true,
+          },
+          cancel: {
+            label: root.$t('send.btn.cancel'),
+            flat: true,
+            color: 'grey',
+            noCaps: true,
+          },
+        })
+        .onOk(() => {
+          useSendMode().value = 'clear';
+          pair.amount = setAmount(balance.value);
+          useConfirmSend().value = true;
+        });
+    };
+
     return {
       showHeader: useConfig().showHeader,
+      showBatch: process.env.RC,
       showNote: ref(false),
       showContacts: ref(false),
       pair,
@@ -256,7 +317,7 @@ export default defineComponent({
       ens,
       resolvingEns: ref(false),
       canSend,
-      confirmSend: useConfirmSend(),
+      onSend,
       sending,
       scan,
       filter,
@@ -283,6 +344,15 @@ export default defineComponent({
         }
       }
     },
+    amount(amount: string | undefined) {
+      try {
+        this.pair.amount = setAmount(amount);
+        this.pair.valid.amount = isValidAmount(this.pair.amount as Amount);
+      } catch (e) {
+        this.pair.valid.amount = (e as Error).message;
+        this.pair.amount = Amount.ZERO;
+      }
+    },
     async ens(ens: string) {
       if (ens.endsWith('.eth')) {
         this.resolvingEns = true;
@@ -296,6 +366,12 @@ export default defineComponent({
         }
         this.ens = '';
         this.resolvingEns = false;
+        GTM.logEvent({
+          category: 'Actions',
+          action: 'resolve-ens',
+          label: ens,
+          value: new Date().getTime(),
+        });
       }
     },
   },

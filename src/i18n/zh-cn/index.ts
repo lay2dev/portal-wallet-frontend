@@ -13,6 +13,7 @@ const currency = '货币单位';
 const dao = 'Nervos DAO';
 const empty = '暂无记录';
 const fee = '手续费';
+const feeRate = '费率';
 const from = '来自';
 const hash = '哈希';
 const language = '语言';
@@ -26,7 +27,7 @@ const sent = '已发送';
 const settings = '设置';
 const success = '成功';
 const to = '去往';
-const validBefore = '有效期至';
+const validBefore = '质保期至';
 
 export default {
   common: {
@@ -36,7 +37,9 @@ export default {
     label: {
       balance,
       language,
-      settings
+      loading,
+      settings,
+      fiatSymbol: '货币单位'
     },
     btn: {
       send,
@@ -59,6 +62,7 @@ export default {
       description: '描述'
     },
     btn: {
+      add: '新增',
       save: '保存',
       delete: '删除'
     },
@@ -82,6 +86,7 @@ export default {
     label: {
       address,
       amount,
+      caution: '注意',
       balance,
       all: '全部',
       in: '收入',
@@ -92,17 +97,21 @@ export default {
     },
     btn: {
       send,
+      sendAll: '发送全部 CKB',
       batch: '批量转账',
-      rate,
       ok,
       cancel
     },
     msg: {
       address: '地址格式: CKB / ETH / ENS',
+      clear:
+        '剩余金额过低（小于 61 CKB），无法发送交易。是否要发送全部的 CKB？',
+      // sendAll: '是否要发送全部的 CKB？',
       sent,
       requireAddress: '地址不能为空',
       requireAmount: '金额不能为空',
       minAmount: '最小金额为 61 CKB',
+      maxAmount: '转账金额必须小于余额',
       wrongEns: 'ENS 无法解析',
       wrongAddress: '错误的地址格式',
       wrongAmount: '错误的金额格式'
@@ -135,18 +144,20 @@ export default {
   feebar: {
     label: {
       fee,
-      rate
+      feeRate
     }
   },
   txlist: {
     label: {
       amount,
+      cancel,
       fee,
       from,
       to,
       note,
       hash,
-      height: '区块'
+      height: '区块',
+      set: '保存'
     },
     msg: {
       in: '收款成功',
@@ -167,7 +178,7 @@ export default {
       from,
       to,
       fee,
-      rate,
+      feeRate,
       note
     },
     btn: {
@@ -227,31 +238,37 @@ export default {
     }
   },
   shop: {
-    title: '雷兔商城'
+    title: '雷兔商城',
+    msg: {
+      service:
+        '如果你有任何问题或者建议，欢迎关注我们的公众号，并直接向我们发送消息。'
+    }
   },
 
   order: {
     title: '提交订单',
     btn: {
       pay: '支付',
+      home: '前往钱包',
       checkOrders: '查看订单',
       cancel
     },
     msg: {
       noSku: '无法找到商品信息',
       expired: '订单已过期，请刷新本页面重新下单',
-      paid: '付款已提交，现在您可以去订单列表查看订单状态'
+      notEnough: '余额不足，请向账户中转入更多资产',
+      paid: '付款已提交，需要等待确认发货，您可以去订单列表查看订单状态'
     },
     label: {
       success,
-      rate: '当前汇率'
+      rate
     }
   },
 
   orders: {
     title: '订单列表',
     label: {
-      avaliable: '已付款',
+      paid: '已付款',
       used: '已使用',
       service: '售后中',
       refunded: '已退款'

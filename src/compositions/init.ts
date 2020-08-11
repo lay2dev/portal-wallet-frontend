@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unsafe-call */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
-import { reactive, toRefs } from '@vue/composition-api';
 import ABCWallet from 'abcwallet';
 import PWCore, {
   Address,
@@ -10,39 +9,33 @@ import PWCore, {
   CHAIN_SPECS
 } from '@lay2/pw-core';
 import { useConfig } from './config';
-
-interface Init {
-  pw: PWCore | undefined;
-  address: Address | undefined;
-  platform: string | undefined;
-}
-
-const state = reactive<Init>({
-  pw: undefined,
-  address: undefined,
-  platform: undefined
-});
+import { useAccount } from './account';
+import { LocalStorage } from 'quasar';
 
 const ethProvider = new EthProvider((newAddress: Address) => {
-  state.address = newAddress;
+  useAccount().address.value = newAddress;
 });
 
 export default async function init() {
-  state.pw = await new PWCore('https://lay2.ckb.dev').init(
-    ethProvider,
-    new PwCollector('https://cellapi.ckb.pw'),
-    ChainID.ckb_dev,
-    CHAIN_SPECS.Lay2
-  );
-  state.address = PWCore.provider.address;
+  if (LocalStorage.getItem('network') === 'lay2') {
+    await new PWCore(useConfig().node_url).init(
+      ethProvider,
+      new PwCollector(useConfig().api_base),
+      ChainID.ckb,
+      CHAIN_SPECS.Lay2
+    );
+  } else {
+    await new PWCore(useConfig().node_url).init(
+      ethProvider,
+      new PwCollector(useConfig().api_base)
+    );
+  }
+
+  useAccount().address.value = PWCore.provider.address;
 
   const { platform, showHeader } = initProvider();
   useConfig().showHeader = showHeader;
   useConfig().platform = platform;
-}
-
-export function useInit() {
-  return toRefs(state);
 }
 
 export const initProvider = () => {

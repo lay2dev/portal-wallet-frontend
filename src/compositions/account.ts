@@ -1,16 +1,14 @@
-import { reactive, toRefs, ref, watch } from '@vue/composition-api';
-import {
+import { reactive, toRefs, ref, watch, toRef } from '@vue/composition-api';
+import PWCore, {
   Amount,
   Address,
-  PwCollector,
   AddressType,
   AmountUnit
 } from '@lay2/pw-core';
 import { useConfig } from './config';
 import { useApi, checkAuthorization } from './api';
 import { LocalStorage, Cookies } from 'quasar';
-import { loadSwapRates } from './swap';
-import { useInit } from './init';
+import { loadSwapRates, loadSwapTxs } from './swap';
 import { LoginSigner } from './login-signer';
 import IoClient from 'socket.io-client';
 import { loadCards } from './shop/order';
@@ -19,19 +17,20 @@ const account = reactive<{
   address: Address | undefined;
   portalAddress: string | undefined;
   balance: Amount;
+  loading: boolean;
 }>({
   address: undefined,
   portalAddress: undefined,
-  balance: Amount.ZERO
+  balance: Amount.ZERO,
+  loading: false
 });
-
-const { address } = useInit();
 
 export async function updateAccount(address: Address) {
   if (address instanceof Address) {
-    const collector = new PwCollector('https://cellapi.ckb.pw');
     account.address = address;
-    account.balance = await collector.getBalance(address);
+    account.loading = true;
+    account.balance = await PWCore.defaultCollector.getBalance(address);
+    account.loading = false;
   }
 }
 
@@ -50,7 +49,7 @@ const updateData = (address: Address) => {
   void updateDao(address);
 };
 
-watch(address, async address => {
+watch(toRef(account, 'address'), async address => {
   console.log('[account.ts] address updated', address?.addressString);
   if (address instanceof Address) {
     await checkLoginStatus(address.addressString);
@@ -78,16 +77,14 @@ const getPortalAddress = async (address: Address) => {
   );
 };
 
-const socket = ref<SocketIOClient.Socket>(
-  IoClient(useConfig().socket_url, {
-    transports: ['websocket']
-  })
-);
-
 const initSocket = (address: Address) => {
+  const socket = ref<SocketIOClient.Socket>(
+    IoClient(useConfig().socket_url, {
+      transports: ['websocket']
+    })
+  );
   if (socket.value !== undefined) {
     socket.value.on('connect', () => {
-      console.log('[socket] connected: ', socket.value.connected);
       const type = authorized.value ? 'token' : 'address';
       const value =
         type === 'token'
@@ -100,13 +97,16 @@ const initSocket = (address: Address) => {
     });
 
     socket.value.on('newTx', () => {
-      console.log('[socket] nex tx');
       void updateData(address);
+      void loadSwapTxs();
     });
 
     socket.value.on('store.order.success', () => {
-      console.log('[socket] new order');
       void loadCards();
+    });
+
+    socket.value.on('tokenPrice', (data: string) => {
+      void loadSwapRates(data);
     });
 
     socket.value.on(
@@ -327,7 +327,7 @@ export async function checkLoginStatus(address: string) {
 }
 
 watch(authorized, authorized => {
-  void loadTxRecords({ address: address.value });
+  void loadTxRecords({ address: account.address });
   if (authorized) {
     console.log('[account] authorized: ', authorized);
     void loadContacts();

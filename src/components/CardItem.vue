@@ -5,14 +5,15 @@
         <div class="row justify-start items-center">
           <q-img :src="card.img" :ratio="8/5" width="90px" contain />
           <div class="column q-px-sm justify-center">
-            <div class="text-accent q-pb-xs">{{card.productName}}</div>
+            <div class="q-pb-xs" :class="used ? 'text-grey' : 'text-accent'">{{card.productName}}</div>
             <div class="q-gutter-xs">
-              <span>{{fiatPrice}}</span>
+              <span :class="used && 'text-grey'">{{fiatPrice}}</span>
               <span class="text-grey">{{tokenPrice}}</span>
             </div>
             <div
               v-if="card.buyTime"
-              class="text-positive text-caption"
+              class="text-caption"
+              :class="used ? 'text-grey' : 'text-positive'"
             >{{$t('cardItem.label.validBefore')}}: {{validBefore}}</div>
           </div>
         </div>
@@ -33,6 +34,7 @@ import {
   Card,
   useSelectedCard,
   useShowCardinfo,
+  CardStatus,
 } from 'src/compositions/shop/order';
 import { AmountUnit, Amount } from '@lay2/pw-core';
 export default defineComponent({
@@ -59,6 +61,7 @@ export default defineComponent({
         fixed: 4,
       })} ${card.payToken})`;
     });
+    const used = computed(() => card.status === CardStatus.FINISHED);
 
     const onClick = () => {
       if (!card.buyTime) return;
@@ -70,6 +73,7 @@ export default defineComponent({
       fiatPrice,
       tokenPrice,
       validBefore,
+      used,
       boughtAt,
       onClick,
     };

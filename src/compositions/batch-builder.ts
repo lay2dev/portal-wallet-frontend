@@ -1,4 +1,12 @@
-import PWCore, { Builder, Transaction, Cell, Amount, AmountUnit, RawTransaction, Address } from '@lay2/pw-core';
+import PWCore, {
+  Builder,
+  Transaction,
+  Cell,
+  Amount,
+  AmountUnit,
+  RawTransaction,
+  Address
+} from '@lay2/pw-core';
 import { Pair } from './send';
 
 export class BatchBuilder extends Builder {
@@ -10,9 +18,9 @@ export class BatchBuilder extends Builder {
     let neededAmount = Builder.MIN_CHANGE.add(fee);
 
     const outputCells: Cell[] = [];
-    for(const pair of this.receivePairs) {
-      if (!pair.isValidPair())
-        throw new Error('Invalid receive pair: ' + JSON.stringify(pair));
+    for (const pair of this.receivePairs) {
+      // if (!pair.isValidPair())
+      //   throw new Error('Invalid receive pair: ' + JSON.stringify(pair));
       outputCells.push(
         new Cell(pair.amount, (pair.address as Address).toLockScript())
       );

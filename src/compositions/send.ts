@@ -6,15 +6,18 @@ import PWCore, {
   AddressType,
   Amount,
   EthSigner,
-  SimpleBuilder
+  SimpleBuilder,
+  ChainID
 } from '@lay2/pw-core';
-import { addPendingTx, TX } from './account';
+import { addPendingTx, TX, useAccount } from './account';
 import { BatchBuilder } from './batch-builder';
 import { useConfig } from './config';
 import { i18n } from 'src/boot/i18n';
 import { useApi } from './api';
 import { payOrder } from './shop/shop';
 import { loadPendingCard } from './shop/order';
+import { ClearBuilder } from './clear-builder';
+import GTM from '../compositions/gtm';
 
 export class Pair {
   public address: Address | undefined;
@@ -83,7 +86,7 @@ export function setAddress(val: string): Address {
   }
 }
 
-export function setAmount(val: string): Amount {
+export function setAmount(val: string | undefined): Amount {
   if (!val) val = '0';
   val = val.split(',').join('');
   if (/^\d+(\.\d+)?$/.test(val)) {
@@ -99,7 +102,7 @@ export function useReceivePair() {
   return receivePair;
 }
 
-const sendMode = ref<'local' | 'remote'>('local');
+const sendMode = ref<'local' | 'remote' | 'clear'>('local');
 export function useSendMode() {
   return sendMode;
 }
@@ -116,31 +119,51 @@ export async function send(): Promise<string | undefined> {
     sending.value = true;
     try {
       let txHash = '';
+      const pw = new PWCore(useConfig().node_url);
       if (useSendMode().value === 'remote') {
         const builder = new SimpleBuilder(address, amount, rate.value);
-        const tx = await new EthSigner(
-          PWCore.provider.address.addressString
-        ).sign(await builder.build());
-        txHash = tx.raw.toHash();
-        const orderNo = await payOrder(tx);
-        if (orderNo) {
-          void loadPendingCard(orderNo, txHash);
+        try {
+          const tx = await new EthSigner(
+            PWCore.provider.address.addressString
+          ).sign(await builder.build());
+          txHash = tx.raw.toHash();
+          const orderNo = await payOrder(tx);
+          if (orderNo) {
+            void loadPendingCard(orderNo, txHash);
+          }
+        } catch (e) {
+          console.error('[send.ts] remote send ', (e as Error).message);
+          return;
         }
+      } else if (useSendMode().value === 'clear') {
+        txHash = await pw.sendTransaction(
+          new ClearBuilder(address, rate.value),
+          new EthSigner(PWCore.provider.address.addressString)
+        );
       } else {
-        const pw = new PWCore(useConfig().node_url);
         txHash = await pw.send(address, amount, rate.value);
       }
-      addPendingTx(
-        new TX(
-          txHash,
-          new Date().getTime(),
-          PWCore.provider.address,
-          address,
-          amount,
-          Amount.ZERO,
-          'out'
-        )
-      );
+
+      if (txHash) {
+        addPendingTx(
+          new TX(
+            txHash,
+            new Date().getTime(),
+            PWCore.provider.address,
+            address,
+            amount,
+            Amount.ZERO,
+            'out'
+          )
+        );
+        GTM.logEvent({
+          category: 'Conversions',
+          action: 'send-tx',
+          label: txHash,
+          value: Number(amount.toString())
+        });
+      }
+
       sending.value = false;
 
       if (!!note.value && note.value.length) {
@@ -154,6 +177,13 @@ export async function send(): Promise<string | undefined> {
 
       return txHash;
     } catch (e) {
+      console.error((e as Error).message);
+      GTM.logEvent({
+        category: 'Exceptions',
+        action: 'send-tx',
+        label: (e as Error).message,
+        value: new Date().getTime()
+      });
       sending.value = false;
     }
   }
@@ -224,7 +254,13 @@ export async function scanQR() {
   ethAddress && (address = ethAddress[0]);
 
   // check if is ckb address
-  let ckbAddress = /ck[bt]1.+/.exec(address);
+  let regex = undefined;
+  if (PWCore.chainId === ChainID.ckb) {
+    regex = /ckb1.+/;
+  } else {
+    regex = /ckt1.+/;
+  }
+  let ckbAddress = regex.exec(address);
   !ckbAddress && (ckbAddress = /ck[bt]1.{42}/.exec(address));
   ckbAddress && (address = ckbAddress[0]);
 
@@ -238,14 +274,23 @@ export function isValidAddress(address: Address | undefined): boolean | string {
   }
   try {
     address.valid();
+    address.toLockScript();
     return true;
   } catch (e) {
     return (e as Error).message;
   }
 }
 export function isValidAmount(amount: Amount) {
-  if (amount.lt(new Amount('61')))
+  if (amount.lt(new Amount('61'))) {
     return i18n.t('send.msg.minAmount').toString();
+  }
+  if (
+    useAccount().balance.value.gt(Amount.ZERO) &&
+    amount.gte(useAccount().balance.value as Amount)
+  ) {
+    return i18n.t('send.msg.maxAmount').toString();
+  }
+
   return true;
 }
 

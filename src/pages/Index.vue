@@ -1,18 +1,22 @@
 <template>
   <q-page class="column justify-start q-pb-sm">
-    <q-toolbar class="bg-accent text-white">
-      <q-btn flat round dense icon="subject" @click="showDrawer = true" />
-      <q-space />
-    </q-toolbar>
     <q-drawer
+      side="left"
       v-model="showDrawer"
-      show-if-above
       :width="240"
-      :breakpoint="700"
+      :breakpoint="600"
       elevated
+      overlay
       content-class="bg-accent text-grey-2"
     >
       <q-scroll-area class="fit">
+        <q-btn
+          flat
+          v-if="showNetworkSwitch"
+          color="primary"
+          label="Switch Network"
+          @click="showSwitchNetwork"
+        />
         <div class="text-h6 q-pa-md">{{$t('index.label.settings')}}</div>
         <div class="q-pa-sm">
           <q-list v-for="(menuItem, index) in menuList" :key="index">
@@ -27,7 +31,7 @@
         </div>
       </q-scroll-area>
     </q-drawer>
-    <div class="row bg-accent items-center q-px-md q-py-sm">
+    <div class="row bg-accent items-center q-pa-sm q-pl-xs">
       <q-item class="col text-white">
         <q-item-section top avatar>
           <jazzicon :address="lockHash" :diameter="48" :shape-count="5" />
@@ -36,13 +40,25 @@
           <q-item-label class="text-bold">{{originAddress}}</q-item-label>
           <q-item-label caption class="text-warning">{{ckbAddress}}</q-item-label>
         </q-item-section>
+        <q-btn
+          class="absolute-top-right"
+          flat
+          round
+          dense
+          icon="subject"
+          @click="showDrawer = !showDrawer"
+        />
       </q-item>
     </div>
     <div class="row meta q-px-md q-py-xs">
       <q-card class="col bg-grey-1 balance-card" v-touch-hold:2000="toggleVConsole">
         <q-card-section class="relative-position">
-          <div class="text-h6 text-accent">{{balance}} CKB</div>
-          <div class="text-subtitle2 text-grey-8">{{fiatSymbol}} {{fiat}}</div>
+          <div
+            class="text-h6 text-accent"
+          >{{accountLoading ? $t('index.label.loading') : balance}} CKB</div>
+          <div
+            class="text-subtitle2 text-grey-8"
+          >{{fiatSymbol}} {{accountLoading ? $t('index.label.loading') : fiat}}</div>
           <q-btn
             class="absolute-right q-mr-md"
             color="accent"
@@ -103,7 +119,7 @@ import {
   logout,
 } from 'src/compositions/account';
 import { AmountUnit, Amount } from '@lay2/pw-core';
-import { Notify } from 'quasar';
+import { Notify, LocalStorage, openURL } from 'quasar';
 import { ref, computed, onMounted, watch } from '@vue/composition-api';
 import Jazzicon from 'vue-jazzicon';
 import TxList from 'src/components/TxList.vue';
@@ -111,8 +127,9 @@ import ReceiveCard from 'src/components/ReceiveCard.vue';
 import DaoCard from 'src/components/DaoCard.vue';
 import ShopCard from 'src/components/ShopCard.vue';
 import { useSwap, useFiatRates } from '../compositions/swap';
-import { useFiatSymbol } from '../compositions/config';
+import { useFiatSymbol, switchNetwork } from '../compositions/config';
 import { useSettings } from '../compositions/settings';
+import GTM from '../compositions/gtm';
 
 export default Vue.extend({
   name: 'PageIndex',
@@ -124,6 +141,7 @@ export default Vue.extend({
     const menuList = ref<MenuItem[]>([]);
 
     const { address } = useAccount();
+    const accountLoading = useAccount().loading;
     const showBalance = computed({
       get: () => useSettings().showBalance,
       set: (val) => (useSettings().showBalance = val),
@@ -173,17 +191,29 @@ export default Vue.extend({
     });
 
     const onMenuClicked = (menuItem: MenuItem) => {
-      console.log('[Drawer] Clicked: ', menuItem.label);
+      GTM.logEvent({
+        category: 'Actions',
+        action: 'click-menu',
+        label: menuItem.name,
+        value: new Date().getTime(),
+      });
       switch (menuItem.name) {
         case 'contacts':
           void root.$router.push('contacts');
           break;
         case 'language':
           chooseLanguage();
-
           break;
         case 'currency':
           chooseCurrency();
+          break;
+        case 'support':
+          openURL(
+            `https://portalwallet.zendesk.com/hc/${useSettings().locale}`
+          );
+          break;
+        case 'aboutus':
+          openURL('https://ckb.pw/about-us');
           break;
       }
     };
@@ -207,7 +237,6 @@ export default Vue.extend({
         .onOk((data: string) => {
           useSettings().locale = data;
           showDrawer.value = false;
-          console.log('[Language] ', data);
         });
     };
 
@@ -230,7 +259,27 @@ export default Vue.extend({
         .onOk((data: string) => {
           useSettings().currency = data;
           showDrawer.value = false;
-          console.log('[Currency] ', data);
+        });
+    };
+
+    const showSwitchNetwork = () => {
+      root.$q
+        .dialog({
+          title: 'Switch Network',
+          options: {
+            type: 'radio',
+            model: LocalStorage.getItem<string>('network') || 'main',
+            items: [
+              { label: 'Mainnet', value: 'main' },
+              { label: 'Testnet', value: 'test', color: 'accent' },
+              { label: 'Lay2net', value: 'lay2', color: 'orange' },
+            ],
+          },
+          cancel: true,
+          persistent: true,
+        })
+        .onOk((data: string) => {
+          switchNetwork(data);
         });
     };
 
@@ -268,6 +317,7 @@ export default Vue.extend({
     ];
 
     return {
+      accountLoading,
       originAddress,
       ckbAddress,
       lockHash,
@@ -280,6 +330,8 @@ export default Vue.extend({
       showBalance,
       showTxList,
       showDrawer,
+      showNetworkSwitch: process.env.RC,
+      showSwitchNetwork,
       showLogin: useShowLogin(),
       toggleVConsole: toggleVConsole,
       authorized: useAuthorized(),

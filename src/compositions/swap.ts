@@ -6,8 +6,9 @@ import { useApi } from './api';
 import { useAccount } from './account';
 import { toWei, fromWei } from 'ethjs-unit';
 import USDT_ABI from 'src/assets/usdt.json';
-import PWCore, { Amount } from '@lay2/pw-core';
+import PWCore, { Amount, Address } from '@lay2/pw-core';
 import { useConfig } from './config';
+import GTM from '../compositions/gtm';
 
 export interface SwapItem {
   symbol: string;
@@ -78,11 +79,15 @@ export function useFiatRates() {
   return fiatRates;
 }
 
-export async function loadSwapRates() {
-  const {
-    marketPrices: rates,
-    otcUSDTPrices: otcRates
-  } = await useApi().loadSwapRates();
+export interface SwapRates {
+  marketPrices: [];
+  otcUSDTPrices: Record<string, number>;
+}
+
+export async function loadSwapRates(data?: string) {
+  const { marketPrices: rates, otcUSDTPrices: otcRates } = data
+    ? JSON.parse(data)
+    : await useApi().loadSwapRates();
   if (rates && lefts.value) {
     for (let i = 0; i < lefts.value.length; i++) {
       lefts.value[i].price =
@@ -108,19 +113,28 @@ export async function loadSwapRates() {
   }
 }
 
-export async function loadSwapBalances() {
+const swapBalancesLoading = ref(false);
+export function useSwapBalancesLoading() {
+  return swapBalancesLoading;
+}
+
+export async function loadSwapBalances(address: Address) {
+  swapBalancesLoading.value = true;
+  const promises: Promise<string>[] = [];
   for (const left of lefts.value) {
-    try {
-      left.balance = new Amount(
-        fromWei(
-          await getBalance(PWCore.provider.address.addressString, left.address),
-          DecimalMap[left.decimal]
-        )
-      ).toString(undefined, { commify: true, fixed: 6 });
-    } catch (e) {
-      console.error((e as Error).message);
-    }
+    promises.push(getBalance(address.addressString, left.address));
   }
+  try {
+    const balances = await Promise.all(promises);
+    for (let i = 0; i < balances.length; i++) {
+      lefts.value[i].balance = new Amount(
+        fromWei(balances[i], DecimalMap[lefts.value[i].decimal])
+      ).toString(undefined, { commify: true, fixed: 6 });
+    }
+  } catch (e) {
+    console.error((e as Error).message);
+  }
+  swapBalancesLoading.value = false;
 }
 
 export async function swap(
@@ -129,7 +143,7 @@ export async function swap(
   rightAmount: string
 ) {
   if (config.value) {
-    const txHash = await sendAssets(
+    const { res, nonce } = await sendAssets(
       PWCore.provider.address.addressString,
       config.value.depositEthAddress,
       leftAmount,
@@ -138,13 +152,23 @@ export async function swap(
     );
 
     const ret = await useApi().submitPendingSwap(
-      txHash,
+      res,
+      Number(nonce),
       rightAmount,
       left.symbol,
       leftAmount,
       PWCore.provider.address.addressString
     );
-    console.log('[SwapCard] tx sent: ', txHash, ret);
+
+    GTM.logEvent({
+      category: 'Conversions',
+      action: 'swap',
+      label: `${left.symbol} -> CKB`,
+      value: Number(rightAmount)
+    });
+
+    void loadSwapTxs();
+    console.log('[SwapCard] tx sent: ', res, ret);
   }
 }
 
@@ -218,11 +242,26 @@ export async function loadSwapTxs(lastId?: number) {
 // eth tools
 
 const sendAsync = async (
+  from: string,
   params: Array<unknown>,
   method: string
-  // from: string
-) =>
-  new Promise<string>((resolve, reject) => {
+) => {
+  let nonce = '0';
+  if (method === 'eth_sendTransaction') {
+    nonce = await new Promise<string>((resolve, reject) => {
+      window.web3.eth.getTransactionCount(from, function(
+        err: Error,
+        result: number
+      ) {
+        err && reject(err);
+        resolve(`${result}`);
+      });
+    });
+    (params[0] as Record<string, string>).nonce = nonce;
+    console.log('[swap] sendAsync params ', params);
+  }
+
+  const res = await new Promise<string>((resolve, reject) => {
     window.web3.currentProvider.sendAsync({ method, params }, function(
       err: Error,
       result: Record<string, string>
@@ -232,6 +271,9 @@ const sendAsync = async (
       resolve(result.result);
     });
   });
+
+  return { res, nonce };
+};
 
 const DecimalMap: Record<number, string> = {
   6: 'mwei',
@@ -272,7 +314,7 @@ export const sendAssets = async (
   }
 
   console.log('[sendAssets]', params[0]);
-  return sendAsync(params, method);
+  return sendAsync(fromAddress, params, method);
 };
 
 export const getBalance = async (fromAddress: string, tokenAddress: string) => {
@@ -291,5 +333,5 @@ export const getBalance = async (fromAddress: string, tokenAddress: string) => {
     method = 'eth_getBalance';
   }
 
-  return sendAsync(params, method);
+  return (await sendAsync(fromAddress, params, method)).res;
 };

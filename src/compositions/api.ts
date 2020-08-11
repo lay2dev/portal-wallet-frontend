@@ -1,12 +1,16 @@
-import { Notify, Cookies, LocalStorage } from 'quasar';
+import { Notify, Cookies, LocalStorage, copyToClipboard } from 'quasar';
 import axios, { AxiosError } from 'axios';
 import { useConfig } from './config';
 import PWCore, { Amount, AmountUnit, Transaction } from '@lay2/pw-core';
-import { SwapTX, SwapTxStatus, SwapConfig } from './swap';
+import { SwapTX, SwapTxStatus, SwapConfig, SwapRates } from './swap';
 import * as jwt from 'jsonwebtoken';
 import { Contact, useShowLogin } from './account';
 import { CATE, SKU } from './shop/sku';
 import { Order, CardStatus, Card } from './shop/order';
+import ABCWallet from 'abcwallet';
+import { i18n } from 'src/boot/i18n';
+import { useShopConfig } from './shop/shop';
+import GTM from '../compositions/gtm';
 
 const apiGet = async (
   url: string,
@@ -129,10 +133,7 @@ export function useApi() {
     },
 
     loadSwapRates: async () => {
-      const rates = (await apiGet('/swap/tokenRate'))?.data as {
-        marketPrices: [];
-        otcUSDTPrices: Record<string, number>;
-      };
+      const rates = (await apiGet('/swap/tokenRate'))?.data as SwapRates;
       return rates;
     },
 
@@ -170,28 +171,33 @@ export function useApi() {
 
     submitPendingSwap: async (
       txhash: string,
+      nonce: number,
       ckbAmount: string,
       tokenSymbol: string,
       tokenAmount: string,
       from: string
-    ) => {
+    ) =>
       await apiPost('/swap/submitPendingSwap', {
         txhash,
+        nonce,
         ckbAmount,
         tokenSymbol,
         tokenAmount,
         from
-      });
-    },
-
+      }),
     shop: {
       loadConfig: async () => {
         const res = await apiGet('/store/config');
-        console.log('[api] shop.loadConfig', res);
         if (res?.status === 200) {
           const paymentList = (res.data as Record<string, []>)
             .receivePaymentList as { address: string; token: string }[];
-          return { address: paymentList[0].address };
+          useShopConfig().value = {
+            address: paymentList[0].address,
+            ...((res.data as Record<string, unknown>).service as {
+              name: string;
+              img: string;
+            })
+          };
         }
       },
       loadBanners: async (): Promise<{ img: string; link: string }[]> => {
@@ -212,6 +218,12 @@ export function useApi() {
         return categories;
       },
 
+      loadSelectedSkus: async () => {
+        const res = await apiGet('/store/selectedProducts');
+        if (res?.status === 200) {
+          return res.data as SKU[];
+        }
+      },
       loadSku: async (skuId: number) => {
         const res = await apiGet(`/store/productInfo/${skuId}`);
         if (res?.status === 200) {
@@ -402,11 +414,14 @@ export const get = async (
   try {
     ret = await axios.get(url, config);
   } catch (e) {
-    // GTM.logEvent({
-    //   category: 'exceptions',
-    //   action: `Error: ${e.toString()} | Params: ${JSON.stringify(params)}`,
-    //   label: '[API] - ' + url.split('/').pop()
-    // })
+    GTM.logEvent({
+      category: 'Exceptions',
+      action: `[API GET] - ${url.split('/').pop() || ''}`,
+      label: `Error: ${(e as Error).message} | Params: ${JSON.stringify(
+        params
+      )}`,
+      value: new Date().getTime()
+    });
     if ((e as AxiosError).response?.status === 401) {
       useShowLogin().value = true;
       return;
@@ -451,11 +466,14 @@ const post = async (
   try {
     ret = await axios.post(url, params, config);
   } catch (e) {
-    // GTM.logEvent({
-    //   category: 'exceptions',
-    //   action: `Error: ${e.toString()} | Params: ${JSON.stringify(params)}`,
-    //   label: '[API] - ' + url.split('/').pop()
-    // })
+    GTM.logEvent({
+      category: 'Exceptions',
+      action: `[API POST] - ${url.split('/').pop() || ''}`,
+      label: `Error: ${(e as Error).message} | Params: ${JSON.stringify(
+        params
+      )}`,
+      value: new Date().getTime()
+    });
     if ((e as AxiosError).response?.status === 401) {
       useShowLogin().value = true;
       return;
@@ -505,11 +523,14 @@ const del = async (
   try {
     ret = await axios.delete(url, config);
   } catch (e) {
-    // GTM.logEvent({
-    //   category: 'exceptions',
-    //   action: `Error: ${e.toString()} | Params: ${JSON.stringify(params)}`,
-    //   label: '[API] - ' + url.split('/').pop()
-    // })
+    GTM.logEvent({
+      category: 'Exceptions',
+      action: `[API DEL] - ${url.split('/').pop() || ''}`,
+      label: `Error: ${(e as Error).message} | Params: ${JSON.stringify(
+        params
+      )}`,
+      value: new Date().getTime()
+    });
     if ((e as AxiosError).response?.status === 401) {
       useShowLogin().value = true;
       return;
@@ -529,4 +550,26 @@ const del = async (
   }
 
   return ret;
+};
+
+export const copy = async (content: string) => {
+  try {
+    await copyToClipboard(content);
+  } catch (e) {
+    if (useConfig().platform === 'ImToken') {
+      window.imToken.callAPI('native.setClipboard', content);
+    } else if (useConfig().platform === 'ABCWallet') {
+      await ABCWallet.webview.copy({ text: content });
+    } else {
+      console.log(e); // long address not work on android
+      return;
+    }
+  }
+  console.log('[api] copied: ', content);
+  Notify.create({
+    message: i18n.t('common.copied').toString(),
+    position: 'top',
+    timeout: 2000,
+    color: 'positive'
+  });
 };

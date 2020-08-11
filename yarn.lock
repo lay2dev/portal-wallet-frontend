@@ -1774,10 +1774,10 @@
   dependencies:
     "@hapi/hoek" "^8.3.0"
 
-"@lay2/pw-core@^0.3.0":
-  version "0.3.0"
-  resolved "https://registry.yarnpkg.com/@lay2/pw-core/-/pw-core-0.3.0.tgz#f416b67fb2c67cf54f77803a845b955c7330b573"
-  integrity sha512-jZeMRZqjOJU7S8JXA62kfWoPIc3sqhsDB57L7ZKXZ4W2rw2oM6arsypDN5Z/JFj+CUqrvsVOtklP7fYawJP9lg==
+"@lay2/pw-core@^0.3.5":
+  version "0.3.5"
+  resolved "https://registry.yarnpkg.com/@lay2/pw-core/-/pw-core-0.3.5.tgz#e792142874b3eda1b67c14833518954c9851cc51"
+  integrity sha512-+vq6G3vQzo6jiYOcr9IxtIjnLt6bpRXLbVAoqIPYyEPhF3Lke5sOHbphYe5YGmeCl4/Z4+sw8xtqSTFlJ80W8w==
   dependencies:
     "@ckb-lumos/types" "^0.2.4"
     "@nervosnetwork/ckb-sdk-utils" "^0.32.0"
@@ -5236,9 +5236,9 @@ ethereumjs-util@^6.0.0:
     secp256k1 "^3.0.1"
 
 ethereumjs-util@^7.0.2:
-  version "7.0.3"
-  resolved "https://registry.yarnpkg.com/ethereumjs-util/-/ethereumjs-util-7.0.3.tgz#d055fc7f852d79065d2e689002a789b1323cf3fd"
-  integrity sha512-uLQsGPOwsRxe50WV1Dybh5N8zXDz4ev7wP49LKX9kr28I5TmcDILPgpKK/BFe5zYSfRGEeo+hPT7W3tjghYLuA==
+  version "7.0.4"
+  resolved "https://registry.yarnpkg.com/ethereumjs-util/-/ethereumjs-util-7.0.4.tgz#f4b2022a91416bf421b35b0d5b81c21e8abd8b7f"
+  integrity sha512-isldtbCn9fdnhBPxedMNbFkNWVZ8ZdQvKRDSrdflame/AycAPKMer+vEpndpBxYIB3qxN6bd3Gh1YCQW9LDkCQ==
   dependencies:
     "@types/bn.js" "^4.11.3"
     bn.js "^5.1.2"
@@ -11380,6 +11380,11 @@ vue-qrcode@^0.3.3:
   version "0.3.3"
   resolved "https://registry.yarnpkg.com/vue-qrcode/-/vue-qrcode-0.3.3.tgz#b303e3a67d0f311b5f40539ca4129dc801f68d12"
   integrity sha512-VkkRe3nbb+KY746TuBwdKAntXiCjwCCcZCsHir7KdwKupebfA8NxCzfF9lBmTeT4cSSLDuRM9oGuGHf6ZZrKuA==
+
+vue-router@3.0.1:
+  version "3.0.1"
+  resolved "https://registry.yarnpkg.com/vue-router/-/vue-router-3.0.1.tgz#d9b05ad9c7420ba0f626d6500d693e60092cc1e9"
+  integrity sha512-vLLoY452L+JBpALMP5UHum9+7nzR9PeIBCghU9ZtJ1eWm6ieUI8Zb/DI3MYxH32bxkjzYV1LRjNv4qr8d+uX/w==
 
 vue-router@3.2.0:
   version "3.2.0"
