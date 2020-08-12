@@ -34,10 +34,11 @@
       >- {{$t('receiveCard.msg.where')}} -</div>
       <q-tabs
         v-model="type"
+        class="bg-white text-grey"
         align="justify"
-        class="bg-grey-2 text-grey"
-        active-bg-color="white"
-        active-color="accent"
+        active-bg-color="accent"
+        active-color="white"
+        indicator-color="accent"
         no-caps
       >
         <q-tab name="default" :label="$t('receiveCard.label.native')" />
