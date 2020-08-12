@@ -48,6 +48,7 @@ export default {
       contacts,
       language,
       currency,
+      mykey: '退出并使用其他钱包',
       support: '帮助支持',
       aboutus: '关于我们',
       receive: '收款',
@@ -59,7 +60,9 @@ export default {
     },
     msg: {
       rc:
-        '这是 Portal Wallet 的预览版，功能可能不稳定，也可能出现 Bug，请小心使用'
+        '这是 Portal Wallet 的预览版，功能可能不稳定，也可能出现 Bug，请小心使用',
+      mykey:
+        'MyKey 的地址是一种特殊的以太坊地址，转入的 CKB 无法被再次转出，请立即停止在 MyKey 中使用 Portal Wallet！'
     }
   },
   contacts: {

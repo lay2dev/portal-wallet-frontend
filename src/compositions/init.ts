@@ -46,6 +46,7 @@ export const initProvider = () => {
   // MetaMask must be the last to check,
   // as other wallets often declare themselves
   // to be MetaMask for compatibility purpose
+  if (UA.indexOf('MYKEY') > 0) return initMyKey();
   if (window.ethereum.isMetaMask) return initMetaMask();
   return initDefault();
 };
@@ -80,6 +81,14 @@ function initABCWallet() {
 function initAlphaWallet() {
   return {
     platform: 'AlphaWallet',
+    showHeader: true
+  };
+}
+
+function initMyKey() {
+  /* MyKey is NOT SUPPORTED */
+  return {
+    platform: 'MyKey',
     showHeader: true
   };
 }

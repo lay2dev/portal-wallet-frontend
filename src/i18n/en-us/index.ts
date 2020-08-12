@@ -48,6 +48,7 @@ export default {
       contacts,
       language,
       currency,
+      mykey: 'EXIT and use other wallet',
       support: 'Support',
       aboutus: 'About Us',
       receive: 'Receive',
@@ -59,7 +60,9 @@ export default {
     },
     msg: {
       rc:
-        'This is the RC version of Portal Wallet. Features may be unstable and bugs may appear. Please use carefully.'
+        'This is the RC version of Portal Wallet. Features may be unstable and bugs may appear. Please use carefully.',
+      mykey:
+        'MyKey address is not regular ETH address. CKB sent to this address CANNOT be sent out again. Please STOP use Portal Wallet in MyKey right now!'
     }
   },
   contacts: {

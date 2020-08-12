@@ -24,13 +24,13 @@ import LoginDialog from '../components/LoginDialog.vue';
 import SignBoard from '../components/SignBoard.vue';
 import CardInfo from '../components/CardInfo.vue';
 import vConsole from 'vconsole';
-import { useShowLogin } from '../compositions/account';
+import { useShowLogin, useAccount } from '../compositions/account';
 import { useConfirmSend, send } from '../compositions/send';
 import { Loading, QSpinnerBall, Notify, openURL } from 'quasar';
 import { i18n } from '../boot/i18n';
 import { useShowCardinfo } from '../compositions/shop/order';
 import { useSettings, loadSettings } from '../compositions/settings';
-import { loadConfig } from '../compositions/config';
+import { loadConfig, useConfig } from '../compositions/config';
 
 export default defineComponent({
   name: 'MainLayout',
@@ -48,6 +48,25 @@ export default defineComponent({
       useSettings().locale = root.$q.lang.getLocale() || 'en-us';
       loadSettings();
       await init();
+
+      if (useConfig().platform === 'MyKey') {
+        root.$q
+          .dialog({
+            title: root.$t('index.label.caution').toString(),
+            message: root.$t('index.msg.mykey').toString(),
+            persistent: true,
+            ok: {
+              label: root.$t('index.btn.mykey'),
+              color: 'negative',
+            },
+          })
+          .onOk(() => {
+            useAccount().address.value = undefined;
+            useAccount().portalAddress.value = undefined;
+          });
+        return;
+      }
+
       if (process.env.RC) {
         showRCNotice();
       }
