@@ -416,11 +416,11 @@ export const get = async (
   } catch (e) {
     GTM.logEvent({
       category: 'Exceptions',
-      action: `[API GET] - ${url.split('/').pop() || ''}`,
+      action: `[API GET] - ${url}`,
       label: `Error: ${(e as Error).message} | Params: ${JSON.stringify(
         params
-      )}`,
-      value: new Date().getTime()
+      )} || UA: ${navigator.userAgent}`,
+      value: 0
     });
     if ((e as AxiosError).response?.status === 401) {
       useShowLogin().value = true;
@@ -468,11 +468,11 @@ const post = async (
   } catch (e) {
     GTM.logEvent({
       category: 'Exceptions',
-      action: `[API POST] - ${url.split('/').pop() || ''}`,
+      action: `[API POST] - ${url}`,
       label: `Error: ${(e as Error).message} | Params: ${JSON.stringify(
         params
-      )}`,
-      value: new Date().getTime()
+      )} || UA: ${navigator.userAgent}`,
+      value: 0
     });
     if ((e as AxiosError).response?.status === 401) {
       useShowLogin().value = true;
@@ -525,11 +525,11 @@ const del = async (
   } catch (e) {
     GTM.logEvent({
       category: 'Exceptions',
-      action: `[API DEL] - ${url.split('/').pop() || ''}`,
+      action: `[API DEL] - ${url}`,
       label: `Error: ${(e as Error).message} | Params: ${JSON.stringify(
         params
-      )}`,
-      value: new Date().getTime()
+      )} || UA: ${navigator.userAgent}`,
+      value: 0
     });
     if ((e as AxiosError).response?.status === 401) {
       useShowLogin().value = true;

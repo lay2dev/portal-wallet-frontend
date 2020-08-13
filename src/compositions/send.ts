@@ -182,7 +182,7 @@ export async function send(): Promise<string | undefined> {
         category: 'Exceptions',
         action: 'send-tx',
         label: (e as Error).message,
-        value: new Date().getTime()
+        value: 0
       });
       sending.value = false;
     }
