@@ -24,9 +24,9 @@ const urls: Record<string, Urls> = {
     socket_url: 'https://cellapiprod.ckb.pw/'
   },
   test: {
-    node_url: 'https://lay2.ckb.dev',
+    node_url: 'https://aggron.ckb.dev',
     api_base: 'https://cellapitest.ckb.pw',
-    explorer_base: 'https://explorer.ckb.pw/devnet',
+    explorer_base: 'https://explorer.nervos.org/aggron',
     dao_url: 'https://dao-ckb-pw.vercel.app',
     socket_url: 'https://cellapitest.ckb.pw/'
   },

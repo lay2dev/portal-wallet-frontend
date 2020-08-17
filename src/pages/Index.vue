@@ -208,9 +208,13 @@ export default Vue.extend({
           chooseCurrency();
           break;
         case 'support':
-          openURL(
-            `https://portalwallet.zendesk.com/hc/${useSettings().locale}`
-          );
+          let url = 'https://notion.so/lay2/';
+          if (useSettings().locale === 'zh-cn') {
+            url += '618970231b8b4466aacc45e2a082ab88';
+          } else {
+            url += 'User-manual-5dcdf86af6e140fab9ee68f73bed8935';
+          }
+          openURL(url);
           break;
         case 'aboutus':
           openURL('https://ckb.pw/about-us');
