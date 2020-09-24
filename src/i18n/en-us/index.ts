@@ -36,12 +36,14 @@ export default {
   },
   index: {
     label: {
+      assets: 'Assets',
       balance,
       caution,
       language,
       loading,
       settings,
-      fiatSymbol: 'Currency'
+      fiatSymbol: 'Currency',
+      utilities: 'Utilities'
     },
     btn: {
       send,

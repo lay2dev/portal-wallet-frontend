@@ -55,7 +55,8 @@ watch(toRef(account, 'address'), async address => {
     await checkLoginStatus(address.addressString);
     await Promise.all([
       updateAccount(address),
-      loadTxRecords({ address }),
+      loadAssets(address),
+      // loadTxRecords({ address }),
       loadSwapRates(),
       authorized.value && loadCards(),
       updateDao(address),
@@ -118,6 +119,37 @@ const initSocket = (address: Address) => {
   }
 };
 
+// --------Assets---------
+export interface Asset {
+  id: string;
+  symbol: string;
+  icon: string;
+  capacity: Amount;
+  balance: Amount;
+  price: number;
+}
+
+const assets = ref<Asset[]>([]);
+export function useAssets() {
+  return assets;
+}
+
+export async function loadAssets(address: Address) {
+  assets.value = await new Promise<Asset[]>(resolve => {
+    resolve([
+      {
+        id: '0xaasdffdsfds',
+        symbol: 'CKB',
+        icon: 'https://www.nervos.org//wp-content/uploads/2019/07/n.png',
+        capacity: new Amount('10000000'),
+        balance: new Amount('10000000'),
+        price: 0.004
+      }
+    ]);
+  });
+  console.log('[account.ts] loadAssets: ', assets.value);
+}
+
 // ---------DAO-----------
 
 const dao = reactive<{
@@ -171,13 +203,10 @@ export class TX {
     switch (part) {
       case 'date':
         return new Date(this.time).toLocaleDateString();
-        break;
       case 'time':
         return new Date(this.time).toLocaleTimeString();
-        break;
       default:
         return new Date(this.time).toLocaleString();
-        break;
     }
   }
 }

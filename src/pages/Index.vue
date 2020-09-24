@@ -69,34 +69,37 @@
             @click="showBalance = !showBalance"
           />
         </q-card-section>
-        <q-card-actions align="evenly" class="bg-accent text-white q-px-xs q-py-sm">
-          <q-btn flat dense no-caps icon="cached" :label="$t('index.btn.swap')" to="swap" />
-          <q-separator inset vertical dark />
-          <q-btn
-            flat
-            dense
-            no-caps
-            icon="qr_code"
-            :label="$t('index.btn.receive')"
-            @click="showReceive = true"
-          />
-          <q-separator inset vertical dark />
-          <q-btn flat dense no-caps icon="send" :label="$t('index.btn.send')" to="send" />
-        </q-card-actions>
       </q-card>
     </div>
-    <div v-if="showTxList" class="column q-px-md q-my-xs">
-      <q-card flat>
-        <tx-list :size="1" direction="all" :more="false" />
-      </q-card>
-    </div>
-    <div class="row q-px-md q-my-xs">
-      <dao-card class="col" />
-    </div>
-    <div class="row q-px-md q-my-xs">
-      <q-card flat class="col">
-        <shop-card />
-      </q-card>
+    <div class="q-px-md q-py-xs">
+      <q-tabs
+        v-model="tab"
+        class="text-grey"
+        indicator-color="secondary"
+        active-color="accent"
+        no-caps
+        dense
+        align="justify"
+      >
+        <q-tab name="assets" :label="$t('index.label.assets')" />
+        <q-tab name="utilities" :label="$t('index.label.utilities')" />
+      </q-tabs>
+      <q-separator class="q-mb-sm" />
+      <q-tab-panels v-model="tab" swipeable animated>
+        <q-tab-panel class="q-pa-none" name="assets">
+          <asset-card v-for="asset in assets" :key="asset.id" :asset="asset" />
+        </q-tab-panel>
+        <q-tab-panel name="utilities">
+          <div class="row q-px-md q-my-xs">
+            <dao-card class="col" />
+          </div>
+          <div class="row q-px-md q-my-xs">
+            <q-card flat class="col">
+              <shop-card />
+            </q-card>
+          </div>
+        </q-tab-panel>
+      </q-tab-panels>
     </div>
     <q-page-scroller position="bottom-right" :scroll-offset="150" :offset="[18, 32]">
       <q-btn fab icon="keyboard_arrow_up" color="accent" />
@@ -117,13 +120,14 @@ import {
   useAuthorized,
   useShowLogin,
   logout,
+  useAssets,
 } from 'src/compositions/account';
 import { AmountUnit, Amount } from '@lay2/pw-core';
 import { Notify, LocalStorage, openURL } from 'quasar';
 import { ref, computed, onMounted, watch } from '@vue/composition-api';
 import Jazzicon from 'vue-jazzicon';
-import TxList from 'src/components/TxList.vue';
 import ReceiveCard from 'src/components/ReceiveCard.vue';
+import AssetCard from 'src/components/AssetCard.vue';
 import DaoCard from 'src/components/DaoCard.vue';
 import ShopCard from 'src/components/ShopCard.vue';
 import { useSwap, useFiatRates } from '../compositions/swap';
@@ -134,7 +138,7 @@ import GTM from '../compositions/gtm';
 export default Vue.extend({
   name: 'PageIndex',
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  components: { Jazzicon, TxList, ReceiveCard, DaoCard, ShopCard },
+  components: { Jazzicon, ReceiveCard, AssetCard, DaoCard, ShopCard },
   setup(props, { root }) {
     const locale = ref<string | undefined>();
     const showDrawer = ref(false);
@@ -176,6 +180,8 @@ export default Vue.extend({
             .toString(AmountUnit.ckb, { commify: true, fixed: 2 })
         : '****'
     );
+
+    const assets = useAssets();
 
     const showTxList = computed(() => useTxRecords().txs.value.length);
     const showReceive = ref(false);
@@ -322,6 +328,7 @@ export default Vue.extend({
 
     return {
       accountLoading,
+      assets,
       originAddress,
       ckbAddress,
       lockHash,
@@ -329,6 +336,7 @@ export default Vue.extend({
       balance,
       fiat,
       fiatSymbol,
+      tab: ref('assets'),
       locale,
       menuList,
       showBalance,
