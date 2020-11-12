@@ -3,6 +3,7 @@
 
 const address = '地址';
 const amount = '金额';
+const assets = '资产';
 const balance = '余额';
 const boughtAt = '购买时间';
 const cancel = '取消';
@@ -36,12 +37,14 @@ export default {
   },
   index: {
     label: {
+      assets,
       balance,
       caution,
       language,
       loading,
       settings,
-      fiatSymbol: '货币单位'
+      fiatSymbol: '货币单位',
+      utilities: '应用'
     },
     btn: {
       send,
@@ -95,6 +98,7 @@ export default {
   send: {
     title: send,
     label: {
+      asset: '选择要发送的资产',
       address,
       amount,
       caution,
@@ -303,6 +307,12 @@ export default {
     label: {
       validBefore,
       boughtAt
+    }
+  },
+
+  assetSelect: {
+    label: {
+      select: '选择资产'
     }
   }
 };

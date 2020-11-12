@@ -1774,10 +1774,8 @@
   dependencies:
     "@hapi/hoek" "^8.3.0"
 
-"@lay2/pw-core@^0.3.9":
-  version "0.3.9"
-  resolved "https://registry.yarnpkg.com/@lay2/pw-core/-/pw-core-0.3.9.tgz#d921ff5bbb91394b219d5b89d0fd962821547800"
-  integrity sha512-K+Fw+rA7QTCm7g7DMo9p7K2j7+g8B5S9k7naHiJhXAjWNdhI2aTOgkfh713cCVXfs7t5Y06VtG1KclQfVkTbWg==
+"@lay2/pw-core@../../TS/pw-core/":
+  version "0.3.20-beta.2"
   dependencies:
     "@ckb-lumos/types" "^0.2.4"
     "@nervosnetwork/ckb-sdk-utils" "^0.32.0"
@@ -1785,6 +1783,7 @@
     bech32 "^1.1.4"
     blake2b "^2.1.3"
     ckb-js-toolkit "^0.9.1"
+    decimal.js "^10.2.1"
     ethereum-ens "^0.8.0"
     ethereumjs-util "^7.0.2"
     jsbi "^3.1.2"
@@ -4435,6 +4434,11 @@ decamelize@^1.1.2, decamelize@^1.2.0:
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/decamelize/-/decamelize-1.2.0.tgz#f6534d15148269b20352e7bee26f501f9a191290"
   integrity sha1-9lNNFRSCabIDUue+4m9QH5oZEpA=
+
+decimal.js@^10.2.1:
+  version "10.2.1"
+  resolved "https://registry.yarnpkg.com/decimal.js/-/decimal.js-10.2.1.tgz#238ae7b0f0c793d3e3cea410108b35a2c01426a3"
+  integrity sha512-KaL7+6Fw6i5A2XSnsbhm/6B+NuEA7TZ4vqxnd5tXz9sbKtrN9Srj8ab4vKVdK8YAqZO9P1kg45Y6YLoduPf+kw==
 
 decode-uri-component@^0.2.0:
   version "0.2.0"

@@ -1,22 +1,27 @@
 <template>
   <div>
-    <q-expansion-item dense dark expand-icon-toggle v-model="expanded" header-style="padding: 2px;">
+    <q-expansion-item
+      dense
+      expand-icon-toggle
+      v-model="expanded"
+      header-style="padding: 2px;"
+    >
       <template slot="header">
         <q-item-section>
           <div class="row items-center text-caption">
-            <q-icon class="q-mr-xs text-grey-4" name="speed" />
+            <q-icon class="q-mr-xs text-grey" name="speed" />
             <div v-if="expanded">
-              <span class="text-grey-4">{{$t('feebar.label.feeRate')}}:</span>
-              <b class="q-mx-xs">{{rate}}</b>
+              <span class="text-grey">{{ $t('feebar.label.feeRate') }}:</span>
+              <b class="q-mx-xs">{{ rate }}</b>
               <span>Shn/KB</span>
             </div>
             <div class="row q-gutter-xs" v-else>
-              <span class="text-grey-4">{{$t('feebar.label.fee')}}:</span>
+              <span class="text-grey">{{ $t('feebar.label.fee') }}:</span>
               <div v-if="building">
                 <q-spinner-facebook color="white" />
               </div>
               <span v-else>
-                <b>{{feeAmount}}</b> CKB
+                <b>{{ feeAmount }}</b> CKB
               </span>
             </div>
           </div>
@@ -26,7 +31,6 @@
         <q-slider
           v-model="rate"
           color="primary"
-          dark
           markers
           dense
           snap

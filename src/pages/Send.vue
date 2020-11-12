@@ -2,86 +2,101 @@
   <q-page class="column">
     <q-toolbar v-if="showHeader" class="bg-accent text-white">
       <q-btn flat size="sm" round icon="arrow_back_ios" to="/" replace />
-      <q-toolbar-title class="text-center text-subtitle1 text-bold">{{ $t('send.title') }}</q-toolbar-title>
+      <q-toolbar-title class="text-center text-subtitle1 text-bold">{{
+        $t('send.title')
+      }}</q-toolbar-title>
       <q-btn flat round icon="more_vert" class="invisible" />
     </q-toolbar>
-    <q-card flat class="bg-accent quick-send-card">
-      <q-card-section class="q-gutter-sm">
+
+    <q-card class="bg-white no-border-radius shadow-up-1">
+      <q-card-section class="column justify-between">
+        <div class="text-grey">{{ $t('send.label.asset') }}</div>
+        <div class="row col justify-between items-center">
+          <asset-select dense :asset.sync="selectedAsset" :assets="assets" />
+          <div class="text-bold">
+            {{
+              `${displayBalance(selectedAsset)} ${
+                selectedAsset && selectedAsset.symbol
+              }`
+            }}
+          </div>
+        </div>
+      </q-card-section>
+    </q-card>
+
+    <div class="bg-grey q-my-sm"></div>
+
+    <q-card flat class="bg-white">
+      <q-card-section class="column q-py-xs">
+        <div class="row text-grey justify-between items-center">
+          <div>{{ $t('send.label.address') }}</div>
+          <div>
+            <q-btn round dense flat icon="qr_code_scanner" @click="scan" />
+            <q-btn
+              round
+              dense
+              flat
+              icon="contacts"
+              @click="showContacts = true"
+            />
+          </div>
+        </div>
         <q-input
           v-model="address"
           dense
           debounce="300"
-          dark
-          color="white"
-          standout
+          input-class="text-bold"
+          input-style="font-size: 0.8em"
+          standout="bg-secondary"
           clearable
           autogrow
           type="text"
           :placeholder="$t('send.msg.address')"
-          :rules="[val => pair.valid.address]"
+          :rules="[(val) => pair.valid.address]"
           :disable="resolvingEns"
           :loading="resolvingEns"
           hide-bottom-space
         >
-          <template v-slot:after>
-            <q-btn round dense flat icon="qr_code_scanner" @click="scan" />
-            <q-btn round dense flat icon="contacts" @click="showContacts = true" />
-          </template>
+          <template v-slot:after> </template>
           <template v-slot:loading>
             <q-spinner-facebook color="grey" />
           </template>
         </q-input>
-        <div class="row justify-between items-center">
-          <q-input
-            class="col"
-            type="number"
-            input-class="text-bold"
-            input-style="font-size: 1.2em"
-            v-model="amount"
-            dense
-            debounce="300"
-            dark
-            color="white"
-            standout
-            clearable
-            autogrow
-            suffix="CKB"
-            :rules="[val => pair.valid.amount]"
-            @blur="amount = pair.amount.toString(undefined, {commify: true})"
-            hide-bottom-space
-          >
-            <template v-slot:after>
-              <q-btn
-                style="margin-left: 2px; width: 67px"
-                color="primary"
-                rounded
-                @click="onSend"
-                :disable="building || !canSend"
-                :loading="building"
-              >
-                {{$t('send.btn.send')}}
-                <template v-slot:loading>
-                  <q-spinner-facebook color="white" />
-                </template>
-              </q-btn>
-            </template>
-          </q-input>
+        <div class="text-grey q-py-sm">
+          <div>{{ $t('send.label.amount') }}</div>
         </div>
-        <div class="row text-grey text-caption">
-          <span class="q-mr-xs">{{$t('send.label.balance')}}:</span>
-          <span>{{balance}} CKB</span>
-        </div>
+        <q-input
+          class="col"
+          type="number"
+          input-class="text-bold"
+          input-style="font-size: 1.2em"
+          v-model="amount"
+          dense
+          debounce="300"
+          standout="bg-secondary"
+          clearable
+          autogrow
+          :suffix="selectedAsset && selectedAsset.symbol"
+          :rules="[(val) => pair.valid.amount]"
+          @blur="amount = pair.amount.toString(undefined, { commify: true })"
+          hide-bottom-space
+        >
+          <template v-slot:after> </template>
+        </q-input>
         <div>
-          <q-separator class="q-mt-sm" dark />
+          <q-separator class="q-mt-sm" />
         </div>
-        <div class="row justify-between items-center">
+        <div class="row justify-between items-center text-grey">
           <fee-bar :builder="builder" />
-          <div class="row col justify-end items-center no-wrap" @click="showNote = true">
-            <div class="ellipsis text-grey text-caption q-px-xs" style="max-width: 200px">
-              {{note ? $t('send.label.note') + ': ' : $t('send.label.addNote')}}
-              <span
-                class="text-white"
-              >{{ note }}</span>
+          <div
+            class="row col justify-end items-center no-wrap"
+            @click="showNote = true"
+          >
+            <div class="ellipsis text-caption q-px-xs" style="max-width: 200px">
+              {{
+                note ? $t('send.label.note') + ': ' : $t('send.label.addNote')
+              }}
+              <span class="text-white">{{ note }}</span>
             </div>
             <q-btn
               flat
@@ -95,19 +110,23 @@
         </div>
       </q-card-section>
     </q-card>
-    <div v-if="showBatch" class="row q-px-sm q-mt-md">
+    <div class="row absolute-bottom justify-center q-pa-lg q-ma-lg">
       <q-btn
-        class="col q-mx-md"
-        icon="account_tree"
-        color="indigo-1"
-        text-color="accent"
-        unelevated
-        no-caps
-        :label="$t('send.btn.batch')"
-        to="/send/batch"
-      />
+        class="col-6"
+        size="1.2em"
+        color="secondary"
+        @click="onSend"
+        :disable="building || !canSend"
+        :loading="building"
+      >
+        {{ $t('send.btn.send') }}
+        <template v-slot:loading>
+          <q-spinner-facebook color="white" />
+        </template>
+      </q-btn>
     </div>
-    <div class="column col q-mt-md">
+
+    <!-- <div class="column col q-mt-md">
       <q-card flat class="filter-card">
         <q-tabs
           v-model="filter.direction"
@@ -127,13 +146,17 @@
       </q-card>
       <tx-list :direction="filter.direction" />
     </div>
-    <q-page-scroller position="bottom-right" :scroll-offset="150" :offset="[18, 32]">
+    <q-page-scroller
+      position="bottom-right"
+      :scroll-offset="150"
+      :offset="[18, 32]"
+    >
       <q-btn fab icon="keyboard_arrow_up" color="accent" />
-    </q-page-scroller>
+    </q-page-scroller>-->
     <q-dialog v-model="showNote" persistent>
       <q-card style="min-width: 280px">
         <q-card-section>
-          <div class="text-h6">{{$t('send.label.note')}}</div>
+          <div class="text-h6">{{ $t('send.label.note') }}</div>
         </q-card-section>
         <q-card-section class="q-pt-none">
           <q-input dense v-model="noteTemp" autogrow autofocus clearable />
@@ -159,7 +182,7 @@
       </q-card>
     </q-dialog>
     <q-dialog v-model="showContacts" position="bottom">
-      <contact-select @onSelect="addr => address = addr" />
+      <contact-select @onSelect="(addr) => (address = addr)" />
     </q-dialog>
   </q-page>
 </template>
@@ -185,6 +208,8 @@ import {
   onMounted,
   ref,
   defineComponent,
+  PropType,
+  watch,
 } from '@vue/composition-api';
 import PWCore, {
   SimpleBuilder,
@@ -196,13 +221,24 @@ import PWCore, {
 import FeeBar from '../components/FeeBar.vue';
 import TxList from '../components/TxList.vue';
 import ContactSelect from '../components/ContactSelect.vue';
-import { useTxFilter, useAccount } from '../compositions/account';
+import AssetSelect from '../components/AssetSelect.vue';
+import {
+  useTxFilter,
+  useAccount,
+  useAssets,
+  Asset,
+} from '../compositions/account';
 import { ClearBuilder } from 'src/compositions/clear-builder';
 import GTM from '../compositions/gtm';
 
 export default defineComponent({
   name: 'Send',
-  components: { FeeBar, TxList, ContactSelect },
+  components: { FeeBar, TxList, ContactSelect, AssetSelect },
+  props: {
+    asset: {
+      type: (Object as unknown) as PropType<Asset>,
+    },
+  },
   setup(props, { root }) {
     const filter = useTxFilter();
     const ens = ref('');
@@ -212,6 +248,8 @@ export default defineComponent({
     const address = ref('');
     const amount = ref('');
     const sending = useSending();
+    const assets = useAssets();
+    const selectedAsset = ref<Asset>(assets.value[0]);
 
     const balance = computed(() =>
       useAccount().balance.value.toString(undefined, {
@@ -220,26 +258,12 @@ export default defineComponent({
       })
     );
 
-    // let dot = false;
-    // const amount = computed({
-    //   get: () => {
-    //     console.log('[Send.vue] amount get dot', dot);
-    //     return (
-    //       pair.amount.toString(AmountUnit.ckb, { commify: true }) +
-    //       (dot ? '.' : '')
-    //     );
-    //   },
-    //   set: (val) => {
-    //     dot = val.endsWith('.');
-    //     console.log('[Send.vue] amount set dot', dot);
-    //     try {
-    //       pair.amount = setAmount(val);
-    //       pair.valid.amount = isValidAmount(pair.amount as Amount);
-    //     } catch (e) {
-    //       pair.valid.amount = (e as Error).message;
-    //     }
-    //   },
-    // });
+    const displayBalance = (asset: Asset) => {
+      if (!asset) return '0';
+      const balance = asset.sudt ? asset.sudtAmount : asset.capacity;
+      return balance.toString(asset.decimals, { commify: true, fixed: 4 });
+    };
+
     const canSend = computed(() => pair.isValidPair());
     const needClear = computed(() => {
       if (useAccount().balance.value.gt(Amount.ZERO)) {
@@ -303,6 +327,10 @@ export default defineComponent({
         });
     };
 
+    watch(assets, () => {
+      selectedAsset.value = props.asset || assets.value[0];
+    });
+
     return {
       showHeader: useConfig().showHeader,
       showBatch: process.env.RC,
@@ -310,6 +338,9 @@ export default defineComponent({
       showContacts: ref(false),
       pair,
       address,
+      assets,
+      selectedAsset,
+      displayBalance,
       amount,
       balance,
       builder,

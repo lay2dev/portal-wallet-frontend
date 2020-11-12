@@ -1,25 +1,30 @@
 <template>
-  <q-card class="my-card">
-    <q-card-section class="row items-center q-gutter-sm">
+  <q-card class="shadow-1 my-card">
+    <q-card-section class="row items-center">
       <div>
         <q-avatar size="36px">
           <img :src="asset.icon" />
         </q-avatar>
       </div>
-      <div class="column">
-        <div class="text-subtitle text-bold">{{asset.symbol}}</div>
-        <div class="text-caption text-grey">{{asset.id}}</div>
+      <div class="column q-mx-sm">
+        <div class="text-subtitle text-bold">
+          {{ asset.symbol }}
+        </div>
+        <div class="text-caption text-grey">{{ asset.name }}</div>
       </div>
       <div class="column col text-right">
-        <div class="text-subtitle text-bold">{{asset.balance}}</div>
-        <div class="text-caption text-grey">{{asset.price}}</div>
+        <div class="text-subtitle text-secondary text-bold">
+          {{ formatedBalance }}
+        </div>
+        <div class="text-caption text-grey">{{ asset.decimals }}</div>
       </div>
     </q-card-section>
   </q-card>
 </template>
 
 <script lang="ts">
-import { defineComponent, PropType } from '@vue/composition-api';
+import { AmountUnit } from '@lay2/pw-core';
+import { computed, defineComponent, PropType } from '@vue/composition-api';
 import { Asset } from 'src/compositions/account';
 export default defineComponent({
   name: 'AssetCard',
@@ -30,7 +35,27 @@ export default defineComponent({
     },
   },
   setup(props) {
-    return {};
+    const formatedBalance = computed(() => {
+      if (props.asset.sudt) {
+        return props.asset.sudtAmount.toString(props.asset.decimals, {
+          fixed: 5,
+          commify: true,
+        });
+      }
+      return props.asset.capacity.toString(AmountUnit.ckb, {
+        fixed: 5,
+        commify: true,
+      });
+    });
+    return {
+      formatedBalance,
+    };
   },
 });
 </script>
+
+<style lang="scss" scoped>
+.my-card {
+  border-radius: 6px;
+}
+</style>

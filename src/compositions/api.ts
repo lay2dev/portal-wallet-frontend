@@ -4,7 +4,7 @@ import { useConfig } from './config';
 import PWCore, { Amount, AmountUnit, Transaction } from '@lay2/pw-core';
 import { SwapTX, SwapTxStatus, SwapConfig, SwapRates } from './swap';
 import * as jwt from 'jsonwebtoken';
-import { Contact, useShowLogin } from './account';
+import { Contact, useShowLogin, Asset } from './account';
 import { CATE, SKU } from './shop/sku';
 import { Order, CardStatus, Card } from './shop/order';
 import ABCWallet from 'abcwallet';
@@ -90,6 +90,24 @@ export function useApi() {
       }
 
       return contacts;
+    },
+
+    loadAssets: async (lockHash: string) => {
+      const rawAssets = ((await apiGet('/cell/assets', { lockHash }))
+        ?.data as Record<string, unknown>).assets as Asset[];
+      const assets: Asset[] = [];
+      rawAssets.forEach(a => {
+        const capacity = new Amount(
+          (a.capacity as unknown) as string,
+          AmountUnit.shannon
+        );
+        assets.push({
+          ...a,
+          capacity,
+          sudtAmount: new Amount((a.sudtAmount as unknown) as string, 0)
+        });
+      });
+      return assets;
     },
 
     loadTxRecords: async (

@@ -1,107 +1,177 @@
 <template>
-  <q-page class="column justify-start q-pb-sm">
-    <q-drawer
-      side="left"
-      v-model="showDrawer"
-      :width="240"
-      :breakpoint="600"
-      elevated
-      overlay
-      content-class="bg-accent text-grey-2"
-    >
-      <q-scroll-area class="fit">
-        <q-btn
-          flat
-          v-if="showNetworkSwitch"
-          color="primary"
-          label="Switch Network"
-          @click="showSwitchNetwork"
-        />
-        <div class="text-h6 q-pa-md">{{$t('index.label.settings')}}</div>
-        <div class="q-pa-sm">
-          <q-list v-for="(menuItem, index) in menuList" :key="index">
-            <q-item clickable v-ripple @click="onMenuClicked(menuItem)">
-              <q-item-section avatar>
-                <q-icon :name="menuItem.icon" />
-              </q-item-section>
-              <q-item-section>{{ menuItem.label }}</q-item-section>
-            </q-item>
-            <q-separator dark class="q-my-sm" v-if="menuItem.separator" />
-          </q-list>
-        </div>
-      </q-scroll-area>
-    </q-drawer>
-    <div class="row bg-accent items-center q-pa-sm q-pl-xs">
-      <q-item class="col text-white">
-        <q-item-section top avatar>
-          <jazzicon :address="lockHash" :diameter="48" :shape-count="5" />
-        </q-item-section>
-        <q-item-section>
-          <q-item-label class="text-bold">{{originAddress}}</q-item-label>
-          <q-item-label caption class="text-warning">{{ckbAddress}}</q-item-label>
-        </q-item-section>
-        <q-btn
-          class="absolute-top-right"
-          flat
-          round
-          dense
-          icon="subject"
-          @click="showDrawer = !showDrawer"
-        />
-      </q-item>
-    </div>
-    <div class="row meta q-px-md q-py-xs">
-      <q-card class="col bg-grey-1 balance-card" v-touch-hold:2000="toggleVConsole">
-        <q-card-section class="relative-position">
-          <div
-            class="text-h6 text-accent"
-          >{{accountLoading ? $t('index.label.loading') : balance}} CKB</div>
-          <div
-            class="text-subtitle2 text-grey-8"
-          >{{fiatSymbol}} {{accountLoading ? $t('index.label.loading') : fiat}}</div>
+  <q-page class="column justify-start">
+    <div class="bg-accent column col">
+      <q-drawer
+        side="left"
+        v-model="showDrawer"
+        :width="240"
+        :breakpoint="600"
+        elevated
+        overlay
+        content-class="bg-secondary text-grey-2"
+      >
+        <q-scroll-area class="fit">
           <q-btn
-            class="absolute-right q-mr-md"
-            color="accent"
-            :ripple="false"
-            round
             flat
-            :icon="showBalance ? 'visibility' : 'visibility_off'"
-            @click="showBalance = !showBalance"
+            v-if="showNetworkSwitch"
+            color="white"
+            label="Switch Network"
+            @click="showSwitchNetwork"
           />
-        </q-card-section>
+          <div class="text-h6 q-pa-md">{{ $t('index.label.settings') }}</div>
+          <div class="q-pa-sm">
+            <q-list v-for="(menuItem, index) in menuList" :key="index">
+              <q-item clickable v-ripple @click="onMenuClicked(menuItem)">
+                <q-item-section avatar>
+                  <q-icon :name="menuItem.icon" />
+                </q-item-section>
+                <q-item-section>{{ menuItem.label }}</q-item-section>
+              </q-item>
+              <q-separator dark class="q-my-sm" v-if="menuItem.separator" />
+            </q-list>
+          </div>
+        </q-scroll-area>
+      </q-drawer>
+      <div class="meta q-pt-sm q-px-md">
+        <div class="row justify-between">
+          <q-item
+            class="text-amber q-px-none"
+            clickable
+            @click="showReceive = true"
+          >
+            <q-item-section top avatar>
+              <div class="row items-center">
+                <jazzicon
+                  class="row items-center"
+                  :address="lockHash"
+                  :diameter="28"
+                  :shape-count="5"
+                />
+                <q-item-label class="q-ml-sm text-bold">{{
+                  originAddress
+                }}</q-item-label>
+                <q-btn
+                  color="amber"
+                  icon="qr_code"
+                  size="sm"
+                  dense
+                  flat
+                  @click="showReceive = true"
+                />
+              </div>
+            </q-item-section>
+            <q-item-section>
+              <!-- <q-item-label caption class="text-warning">{{ckbAddress}}</q-item-label> -->
+            </q-item-section>
+          </q-item>
+          <q-btn
+            flat
+            color="white"
+            round
+            dense
+            icon="subject"
+            @click="showDrawer = !showDrawer"
+          />
+        </div>
+        <q-card
+          class="bg-grey-1 balance-card"
+          v-touch-hold:2000="toggleVConsole"
+        >
+          <div class="relative-position">
+            <!-- <div
+            class="text-h6 text-dark text-right"
+          >{{accountLoading ? $t('index.label.loading') : balance}} CKB</div> -->
+            <div class="row justify-between items-center q-px-md q-py-sm">
+              <div class="text-h6 text-accent">
+                {{ fiatSymbol }}
+                {{ accountLoading ? $t('index.label.loading') : fiat }}
+              </div>
+              <q-btn
+                color="accent"
+                :ripple="false"
+                round
+                flat
+                :icon="showBalance ? 'visibility' : 'visibility_off'"
+                @click="showBalance = !showBalance"
+              />
+            </div>
+          </div>
+          <q-card-actions align="evenly" class="bg-primary text-white">
+            <q-btn
+              class="col"
+              size="0.9em"
+              dense
+              flat
+              no-caps
+              icon="cached"
+              to="swap"
+              :label="$t('index.btn.swap')"
+            />
+            <q-separator spaced inset vertical dark />
+            <q-btn
+              class="col"
+              size="0.9em"
+              dense
+              flat
+              no-caps
+              icon="send"
+              to="send"
+              :label="$t('index.btn.send')"
+            />
+          </q-card-actions>
+        </q-card>
+        <div class="col q-px-md q-pt-md">
+          <q-tabs
+            v-model="tab"
+            class="text-grey"
+            indicator-color="primary"
+            active-color="white"
+            no-caps
+            dense
+            align="justify"
+          >
+            <q-tab
+              name="assets"
+              :label="$t('index.label.assets')"
+              content-class=""
+            />
+            <q-tab name="utilities" :label="$t('index.label.utilities')" />
+          </q-tabs>
+        </div>
+      </div>
+      <q-card class="panel-card col" flat>
+        <q-tab-panels
+          v-model="tab"
+          class="q-my-sm bg-transparent"
+          swipeable
+          animated
+        >
+          <q-tab-panel name="assets">
+            <asset-card
+              v-for="(asset, index) in assets"
+              :key="index"
+              :asset="asset"
+              class="q-mb-sm"
+            />
+          </q-tab-panel>
+          <q-tab-panel name="utilities">
+            <div class="row q-px-md q-my-xs">
+              <dao-card class="col" />
+            </div>
+            <div class="row q-px-md q-my-xs">
+              <q-card flat class="col">
+                <shop-card />
+              </q-card>
+            </div>
+          </q-tab-panel>
+        </q-tab-panels>
       </q-card>
     </div>
-    <div class="q-px-md q-py-xs">
-      <q-tabs
-        v-model="tab"
-        class="text-grey"
-        indicator-color="secondary"
-        active-color="accent"
-        no-caps
-        dense
-        align="justify"
-      >
-        <q-tab name="assets" :label="$t('index.label.assets')" />
-        <q-tab name="utilities" :label="$t('index.label.utilities')" />
-      </q-tabs>
-      <q-separator class="q-mb-sm" />
-      <q-tab-panels v-model="tab" swipeable animated>
-        <q-tab-panel class="q-pa-none" name="assets">
-          <asset-card v-for="asset in assets" :key="asset.id" :asset="asset" />
-        </q-tab-panel>
-        <q-tab-panel name="utilities">
-          <div class="row q-px-md q-my-xs">
-            <dao-card class="col" />
-          </div>
-          <div class="row q-px-md q-my-xs">
-            <q-card flat class="col">
-              <shop-card />
-            </q-card>
-          </div>
-        </q-tab-panel>
-      </q-tab-panels>
-    </div>
-    <q-page-scroller position="bottom-right" :scroll-offset="150" :offset="[18, 32]">
+    <q-page-scroller
+      position="bottom-right"
+      :scroll-offset="150"
+      :offset="[18, 32]"
+    >
       <q-btn fab icon="keyboard_arrow_up" color="accent" />
     </q-page-scroller>
 
@@ -151,7 +221,7 @@ export default Vue.extend({
       set: (val) => (useSettings().showBalance = val),
     });
     const originAddress = computed(() =>
-      truncatedAddress(address.value?.addressString)
+      truncatedAddress(address.value?.addressString, 22)
     );
     const ckbAddress = computed(() =>
       truncatedAddress(address.value?.toCKBAddress(), 21)
@@ -387,9 +457,18 @@ interface MenuItem {
 
 <style lang="scss" scoped>
 .meta {
-  background: linear-gradient($accent 30%, transparent);
+  background: linear-gradient($secondary 50%, $accent);
 }
 .balance-card {
-  border-radius: 10px;
+  border-radius: 6px;
+}
+.q-tab__indicator {
+  height: 5px !important;
+}
+.panel-card {
+  border-radius: 0px;
+  border-top-left-radius: 20px;
+  border-top-right-radius: 20px;
+  background: #eee;
 }
 </style>

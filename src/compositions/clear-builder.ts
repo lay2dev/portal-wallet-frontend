@@ -20,7 +20,7 @@ export class ClearBuilder extends Builder {
 
     const inputCells = await PWCore.defaultCollector.collect(
       PWCore.provider.address,
-      outputCell.capacity
+      { neededAmount: outputCell.capacity }
     );
 
     const tx = new Transaction(new RawTransaction(inputCells, [outputCell]), [

@@ -121,12 +121,17 @@ const initSocket = (address: Address) => {
 
 // --------Assets---------
 export interface Asset {
-  id: string;
+  id: number;
+  name: string;
+  // cellCount: number;
   symbol: string;
+  decimals: number;
   icon: string;
+  typeHash: string;
   capacity: Amount;
-  balance: Amount;
+  sudtAmount: Amount;
   price: number;
+  sudt: boolean;
 }
 
 const assets = ref<Asset[]>([]);
@@ -135,18 +140,7 @@ export function useAssets() {
 }
 
 export async function loadAssets(address: Address) {
-  assets.value = await new Promise<Asset[]>(resolve => {
-    resolve([
-      {
-        id: '0xaasdffdsfds',
-        symbol: 'CKB',
-        icon: 'https://www.nervos.org//wp-content/uploads/2019/07/n.png',
-        capacity: new Amount('10000000'),
-        balance: new Amount('10000000'),
-        price: 0.004
-      }
-    ]);
-  });
+  assets.value = await useApi().loadAssets(address.toLockScript().toHash());
   console.log('[account.ts] loadAssets: ', assets.value);
 }
 

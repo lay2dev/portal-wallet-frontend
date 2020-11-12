@@ -9,10 +9,10 @@ interface ImToken {
   callPromisifyAPI: (string) => Promise<known>;
 }
 interface Window {
-  web3: any;
-  ethereum: any;
+  web3: unknown;
+  ethereum: unknown;
   imToken: ImToken;
-  dataLayer: any;
+  dataLayer: unknown;
 }
 
 declare module 'vue-qrcode';

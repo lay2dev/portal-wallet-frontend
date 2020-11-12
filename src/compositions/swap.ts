@@ -4,7 +4,7 @@
 import { reactive, ref, computed } from '@vue/composition-api';
 import { useApi } from './api';
 import { useAccount } from './account';
-import { toWei, fromWei } from 'ethjs-unit';
+import { toWei } from 'ethjs-unit';
 import USDT_ABI from 'src/assets/usdt.json';
 import PWCore, { Amount, Address } from '@lay2/pw-core';
 import { useConfig } from './config';
@@ -128,7 +128,8 @@ export async function loadSwapBalances(address: Address) {
     const balances = await Promise.all(promises);
     for (let i = 0; i < balances.length; i++) {
       lefts.value[i].balance = new Amount(
-        fromWei(balances[i], DecimalMap[lefts.value[i].decimal])
+        balances[i],
+        lefts.value[i].decimal
       ).toString(undefined, { commify: true, fixed: 6 });
     }
   } catch (e) {
@@ -281,7 +282,7 @@ const DecimalMap: Record<number, string> = {
 };
 
 export const displayFromAmount = (amount: string, decimal: number) => {
-  return new Amount(fromWei(amount, DecimalMap[decimal])).toString(undefined, {
+  return new Amount(amount, decimal).toString(decimal, {
     commify: true,
     fixed: 6
   });

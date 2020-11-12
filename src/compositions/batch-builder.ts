@@ -31,10 +31,9 @@ export class BatchBuilder extends Builder {
     const inputCells: Cell[] = [];
 
     // fill the inputs
-    const cells = await this.collector.collect(
-      PWCore.provider.address,
+    const cells = await this.collector.collect(PWCore.provider.address, {
       neededAmount
-    );
+    });
     for (const cell of cells) {
       inputCells.push(cell);
       inputSum = inputSum.add(cell.capacity);

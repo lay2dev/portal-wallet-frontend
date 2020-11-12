@@ -2,7 +2,9 @@
   <q-page>
     <q-toolbar v-if="showHeader" class="bg-accent text-white">
       <q-btn flat size="sm" round icon="arrow_back_ios" to="/" replace />
-      <q-toolbar-title class="text-center text-subtitle1 text-bold">{{ $t('swap.title') }}</q-toolbar-title>
+      <q-toolbar-title class="text-center text-subtitle1 text-bold">{{
+        $t('swap.title')
+      }}</q-toolbar-title>
       <q-btn flat round icon="more_vert" class="invisible" />
     </q-toolbar>
     <div class="swap-wrapper q-pa-md">
@@ -28,12 +30,21 @@
                   <!-- <q-icon :name="scope.opt.icon" /> -->
                   <q-item-section>
                     <q-item-label v-html="scope.opt.symbol" />
-                    <q-item-label
-                      caption
-                    >{{$t('swap.label.balance')}}: {{ balancesLoading ? $t('swap.label.loading') : scope.opt.balance }}</q-item-label>
+                    <q-item-label caption
+                      >{{ $t('swap.label.balance') }}:
+                      {{
+                        balancesLoading
+                          ? $t('swap.label.loading')
+                          : scope.opt.balance
+                      }}</q-item-label
+                    >
                   </q-item-section>
                   <q-item-section side>
-                    <q-icon v-if="left.symbol === scope.opt.symbol" name="done" color="primary" />
+                    <q-icon
+                      v-if="left.symbol === scope.opt.symbol"
+                      name="done"
+                      color="primary"
+                    />
                   </q-item-section>
                 </q-item>
               </template>
@@ -57,10 +68,17 @@
                   <!-- <q-icon :name="scope.opt.icon" /> -->
                   <q-item-section>
                     <q-item-label v-html="scope.opt.symbol" />
-                    <q-item-label caption>{{$t('swap.label.balance')}}: {{ scope.opt.balance }}</q-item-label>
+                    <q-item-label caption
+                      >{{ $t('swap.label.balance') }}:
+                      {{ scope.opt.balance }}</q-item-label
+                    >
                   </q-item-section>
                   <q-item-section side>
-                    <q-icon v-if="right.symbol === scope.opt.symbol" name="done" color="primary" />
+                    <q-icon
+                      v-if="right.symbol === scope.opt.symbol"
+                      name="done"
+                      color="primary"
+                    />
                   </q-item-section>
                 </q-item>
               </template>
@@ -95,17 +113,21 @@
         <q-separator />
         <q-card-section>
           <div class="row justify-between">
-            <div
-              class="text-caption text-grey"
-            >{{$t('swap.label.rate')}}({{left.symbol}}/{{right.symbol}}):</div>
-            <div class="text-caption text-grey">{{$t('swap.label.range')}}(CKB):</div>
+            <div class="text-caption text-grey">
+              {{ $t('swap.label.rate') }}({{ left.symbol }}/{{ right.symbol }}):
+            </div>
+            <div class="text-caption text-grey">
+              {{ $t('swap.label.range') }}(CKB):
+            </div>
           </div>
           <div class="row justify-between">
-            <div class="text-caption">{{rate}}</div>
+            <div class="text-caption">{{ rate }}</div>
             <div
               class="text-caption"
               :class="rightAmount && outOfRange && 'text-negative'"
-            >{{minimum}} - {{maximum}}</div>
+            >
+              {{ minimum }} - {{ maximum }}
+            </div>
           </div>
         </q-card-section>
       </q-card>
@@ -191,10 +213,7 @@ export default defineComponent({
 
     const rate = computed(
       () =>
-        left.value.price &&
-        new Amount(
-          (left.value.price / (right.price || 1)).toString()
-        ).toString(undefined, { commify: true, fixed: 4 })
+        left.value.price && (left.value.price / (right.price || 1)).toFixed(4)
     );
 
     const outOfRange = computed(

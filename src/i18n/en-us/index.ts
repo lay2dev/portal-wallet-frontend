@@ -3,6 +3,7 @@
 
 const address = 'Address';
 const amount = 'Amount';
+const assets = 'Assets';
 const balance = 'Balance';
 const boughtAt = 'Bought At';
 const cancel = 'Cancel';
@@ -36,7 +37,7 @@ export default {
   },
   index: {
     label: {
-      assets: 'Assets',
+      assets,
       balance,
       caution,
       language,
@@ -97,6 +98,7 @@ export default {
   send: {
     title: send,
     label: {
+      asset: 'Asset to Send',
       address,
       amount,
       balance,
@@ -308,6 +310,12 @@ export default {
     label: {
       validBefore,
       boughtAt
+    }
+  },
+
+  assetSelect: {
+    label: {
+      select: 'Select Asset'
     }
   }
 };

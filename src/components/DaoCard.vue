@@ -55,7 +55,7 @@ export default defineComponent({
       showBalance.value
         ? locked.value.toString(AmountUnit.ckb, {
             commify: true,
-            section: 'whole',
+            section: 'integer',
           })
         : '****'
     );
