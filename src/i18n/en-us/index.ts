@@ -110,6 +110,9 @@ export default {
       note,
       addNote: 'Add Note'
     },
+    asset: {
+      title: 'Asset'
+    },
     btn: {
       send,
       sendAll: 'Send All CKB',

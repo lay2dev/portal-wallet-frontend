@@ -1,5 +1,5 @@
 <template>
-  <q-card class="shadow-1 my-card">
+  <q-card class="shadow-1 my-card cursor-pointer" @click="$emit('click')">
     <q-card-section class="row items-center">
       <div>
         <q-avatar size="36px">

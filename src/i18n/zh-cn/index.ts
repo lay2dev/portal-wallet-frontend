@@ -132,6 +132,9 @@ export default {
       wrongAmount: '错误的金额格式'
     }
   },
+  asset: {
+    title: '资产详情'
+  },
   sendBatch: {
     title: '批量转账',
     label: {

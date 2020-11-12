@@ -6,7 +6,8 @@ const routes: RouteConfig[] = [
     component: () => import('layouts/MainLayout.vue'),
     children: [
       { path: '', component: () => import('pages/Index.vue') },
-      { path: 'send', component: () => import('pages/Send.vue') },
+      { path: 'asset/:id', component: () => import('pages/Asset.vue') },
+      { path: 'send', name: 'Send', component: () => import('pages/Send.vue') },
       { path: 'send/batch', component: () => import('pages/SendBatch.vue') },
       { path: 'swap', component: () => import('pages/Swap.vue') },
       { path: 'shop', component: () => import('pages/Shop.vue') },

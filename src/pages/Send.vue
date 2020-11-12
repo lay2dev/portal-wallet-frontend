@@ -1,7 +1,13 @@
 <template>
   <q-page class="column">
     <q-toolbar v-if="showHeader" class="bg-accent text-white">
-      <q-btn flat size="sm" round icon="arrow_back_ios" to="/" replace />
+      <q-btn
+        flat
+        size="sm"
+        round
+        icon="arrow_back_ios"
+        @click="$router.back()"
+      />
       <q-toolbar-title class="text-center text-subtitle1 text-bold">{{
         $t('send.title')
       }}</q-toolbar-title>
@@ -126,33 +132,6 @@
       </q-btn>
     </div>
 
-    <!-- <div class="column col q-mt-md">
-      <q-card flat class="filter-card">
-        <q-tabs
-          v-model="filter.direction"
-          dense
-          no-caps
-          inline-label
-          indicator-color="transparent"
-          class="bg-white text-grey"
-          active-color="accent"
-          active-bg-color="grey-1"
-        >
-          <q-tab name="all" icon="swap_vert" :label="$t('send.label.all')" />
-          <q-tab name="in" icon="arrow_downward" :label="$t('send.label.in')" />
-          <q-tab name="out" icon="arrow_upward" :label="$t('send.label.out')" />
-        </q-tabs>
-        <q-separator />
-      </q-card>
-      <tx-list :direction="filter.direction" />
-    </div>
-    <q-page-scroller
-      position="bottom-right"
-      :scroll-offset="150"
-      :offset="[18, 32]"
-    >
-      <q-btn fab icon="keyboard_arrow_up" color="accent" />
-    </q-page-scroller>-->
     <q-dialog v-model="showNote" persistent>
       <q-card style="min-width: 280px">
         <q-card-section>
@@ -208,7 +187,6 @@ import {
   onMounted,
   ref,
   defineComponent,
-  PropType,
   watch,
 } from '@vue/composition-api';
 import PWCore, {
@@ -219,28 +197,16 @@ import PWCore, {
   Builder,
 } from '@lay2/pw-core';
 import FeeBar from '../components/FeeBar.vue';
-import TxList from '../components/TxList.vue';
 import ContactSelect from '../components/ContactSelect.vue';
 import AssetSelect from '../components/AssetSelect.vue';
-import {
-  useTxFilter,
-  useAccount,
-  useAssets,
-  Asset,
-} from '../compositions/account';
+import { useAccount, useAssets, Asset } from '../compositions/account';
 import { ClearBuilder } from 'src/compositions/clear-builder';
 import GTM from '../compositions/gtm';
 
 export default defineComponent({
   name: 'Send',
-  components: { FeeBar, TxList, ContactSelect, AssetSelect },
-  props: {
-    asset: {
-      type: (Object as unknown) as PropType<Asset>,
-    },
-  },
+  components: { FeeBar, ContactSelect, AssetSelect },
   setup(props, { root }) {
-    const filter = useTxFilter();
     const ens = ref('');
     const note = useNote();
     const pair = useReceivePair();
@@ -248,8 +214,7 @@ export default defineComponent({
     const address = ref('');
     const amount = ref('');
     const sending = useSending();
-    const assets = useAssets();
-    const selectedAsset = ref<Asset>(assets.value[0]);
+    const selectedAsset = ref<Asset>();
 
     const balance = computed(() =>
       useAccount().balance.value.toString(undefined, {
@@ -264,6 +229,9 @@ export default defineComponent({
       return balance.toString(asset.decimals, { commify: true, fixed: 4 });
     };
 
+    const assets = computed(() =>
+      useAssets().value.filter((a) => a.id !== 0 && a.id !== 999999)
+    );
     const canSend = computed(() => pair.isValidPair());
     const needClear = computed(() => {
       if (useAccount().balance.value.gt(Amount.ZERO)) {
@@ -299,7 +267,10 @@ export default defineComponent({
     };
 
     onMounted(() => {
-      amount.value = '100';
+      // amount.value = '100';
+      if (assets) {
+        selectAsset();
+      }
       useIsBatch().value = false;
       useSendMode().value = 'local';
     });
@@ -327,8 +298,14 @@ export default defineComponent({
         });
     };
 
+    const selectAsset = () => {
+      const id = root.$route.params.id || '-1';
+      console.log('[Send] asset id: ', id);
+      selectedAsset.value = assets.value.find((a) => `${a.id}` === id);
+    };
+
     watch(assets, () => {
-      selectedAsset.value = props.asset || assets.value[0];
+      selectAsset();
     });
 
     return {
@@ -351,7 +328,6 @@ export default defineComponent({
       onSend,
       sending,
       scan,
-      filter,
       note,
       noteTemp: ref(''),
     };
@@ -414,13 +390,5 @@ export default defineComponent({
   border-radius: 0;
   border-bottom-left-radius: 10%;
   border-bottom-right-radius: 10%;
-}
-.filter-card {
-  border-radius: 10%;
-  border-bottom-left-radius: 0;
-  border-bottom-right-radius: 0;
-}
-.tx-records-card {
-  border-radius: 0;
 }
 </style>

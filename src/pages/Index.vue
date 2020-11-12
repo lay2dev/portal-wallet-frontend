@@ -152,6 +152,7 @@
               :key="index"
               :asset="asset"
               class="q-mb-sm"
+              @click="gotoAsset(asset)"
             />
           </q-tab-panel>
           <q-tab-panel name="utilities">
@@ -191,6 +192,7 @@ import {
   useShowLogin,
   logout,
   useAssets,
+  Asset,
 } from 'src/compositions/account';
 import { AmountUnit, Amount } from '@lay2/pw-core';
 import { Notify, LocalStorage, openURL } from 'quasar';
@@ -201,7 +203,11 @@ import AssetCard from 'src/components/AssetCard.vue';
 import DaoCard from 'src/components/DaoCard.vue';
 import ShopCard from 'src/components/ShopCard.vue';
 import { useSwap, useFiatRates } from '../compositions/swap';
-import { useFiatSymbol, switchNetwork } from '../compositions/config';
+import {
+  useFiatSymbol,
+  switchNetwork,
+  useConfig,
+} from '../compositions/config';
 import { useSettings } from '../compositions/settings';
 import GTM from '../compositions/gtm';
 
@@ -295,6 +301,18 @@ export default Vue.extend({
         case 'aboutus':
           openURL('https://ckb.pw/about-us');
           break;
+      }
+    };
+
+    const gotoAsset = (asset: Asset) => {
+      if (asset.id === 0) {
+        // Nervos DAO
+        openURL(useConfig().dao_url);
+      } else if (asset.id === 999999) {
+        // Unknown
+        return;
+      } else {
+        void root.$router.push(`asset/${asset.id}`);
       }
     };
 
@@ -419,6 +437,7 @@ export default Vue.extend({
       authorized: useAuthorized(),
       onMenuClicked,
       logout: logout,
+      gotoAsset,
     };
   },
 });
