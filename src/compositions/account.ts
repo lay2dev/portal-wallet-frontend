@@ -3,7 +3,8 @@ import PWCore, {
   Amount,
   Address,
   AddressType,
-  AmountUnit
+  AmountUnit,
+  Script
 } from '@lay2/pw-core';
 import { useConfig } from './config';
 import { useApi, checkAuthorization } from './api';
@@ -132,6 +133,7 @@ export interface Asset {
   sudtAmount: Amount;
   price: number;
   sudt: boolean;
+  typeScript: Script | null;
 }
 
 const assets = ref<Asset[]>([]);

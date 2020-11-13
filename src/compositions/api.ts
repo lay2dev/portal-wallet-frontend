@@ -1,7 +1,7 @@
 import { Notify, Cookies, LocalStorage, copyToClipboard } from 'quasar';
 import axios, { AxiosError } from 'axios';
 import { useConfig } from './config';
-import PWCore, { Amount, AmountUnit, Transaction } from '@lay2/pw-core';
+import PWCore, { Amount, AmountUnit, Script, Transaction } from '@lay2/pw-core';
 import { SwapTX, SwapTxStatus, SwapConfig, SwapRates } from './swap';
 import * as jwt from 'jsonwebtoken';
 import { Contact, useShowLogin, Asset } from './account';
@@ -101,10 +101,20 @@ export function useApi() {
           (a.capacity as unknown) as string,
           AmountUnit.shannon
         );
+
+        const typeScript = a.typeScript
+          ? new Script(
+              a.typeScript.codeHash,
+              a.typeScript.args,
+              a.typeScript.hashType
+            )
+          : null;
+
         assets.push({
           ...a,
           capacity,
-          sudtAmount: new Amount((a.sudtAmount as unknown) as string, 0)
+          sudtAmount: new Amount((a.sudtAmount as unknown) as string, 0),
+          typeScript
         });
       });
       return assets;

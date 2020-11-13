@@ -7,9 +7,11 @@ import PWCore, {
   Amount,
   EthSigner,
   SimpleBuilder,
-  ChainID
+  ChainID,
+  SUDT,
+  AmountUnit
 } from '@lay2/pw-core';
-import { addPendingTx, TX, useAccount } from './account';
+import { addPendingTx, TX, useAccount, Asset } from './account';
 import { BatchBuilder } from './batch-builder';
 import { useConfig } from './config';
 import { i18n } from 'src/boot/i18n';
@@ -18,6 +20,7 @@ import { payOrder } from './shop/shop';
 import { loadPendingCard } from './shop/order';
 import { ClearBuilder } from './clear-builder';
 import GTM from '../compositions/gtm';
+import { CoffeeBuilder } from './coffee-builder';
 
 export class Pair {
   public address: Address | undefined;
@@ -86,14 +89,22 @@ export function setAddress(val: string): Address {
   }
 }
 
-export function setAmount(val: string | undefined): Amount {
+export function setAmount(
+  val: string | undefined,
+  decimals: number | AmountUnit = AmountUnit.ckb
+): Amount {
   if (!val) val = '0';
   val = val.split(',').join('');
   if (/^\d+(\.\d+)?$/.test(val)) {
-    return new Amount(val);
+    return new Amount(val, decimals);
   } else {
     throw new Error(i18n.t('send.msg.wrongAmount').toString());
   }
+}
+
+const selectedAsset = ref<Asset>();
+export function useSelectedAsset() {
+  return selectedAsset;
 }
 
 // Send
@@ -118,9 +129,21 @@ export async function send(): Promise<string | undefined> {
   if (address instanceof Address && amount instanceof Amount) {
     sending.value = true;
     try {
+      console.log('selectedAsset', selectedAsset);
       let txHash = '';
       const pw = new PWCore(useConfig().node_url);
-      if (useSendMode().value === 'remote') {
+      if (selectedAsset.value?.symbol === 'COFFEE') {
+        const builder = new CoffeeBuilder(
+          new SUDT(selectedAsset.value.typeScript?.args as string),
+          address,
+          amount,
+          rate.value
+        );
+        txHash = await pw.sendTransaction(
+          builder,
+          new EthSigner(PWCore.provider.address.addressString)
+        );
+      } else if (useSendMode().value === 'remote') {
         const builder = new SimpleBuilder(address, amount, rate.value);
         try {
           const tx = await new EthSigner(
@@ -281,9 +304,23 @@ export function isValidAddress(address: Address | undefined): boolean | string {
   }
 }
 export function isValidAmount(amount: Amount) {
-  if (amount.lt(new Amount('61'))) {
-    return i18n.t('send.msg.minAmount').toString();
+  if (selectedAsset.value?.symbol === 'CKB') {
+    if (amount.lt(new Amount('61'))) {
+      return i18n
+        .t('send.msg.minAmount', { amount: 61, symbol: 'CKB' })
+        .toString();
+    }
+  } else {
+    if (amount.lt(new Amount('1', 0))) {
+      return i18n
+        .t('send.msg.minAmount', {
+          amount: 1,
+          symbol: selectedAsset.value?.symbol
+        })
+        .toString();
+    }
   }
+
   if (
     useAccount().balance.value.gt(Amount.ZERO) &&
     amount.gte(useAccount().balance.value as Amount)

@@ -125,7 +125,7 @@ export default {
       sent,
       requireAddress: '地址不能为空',
       requireAmount: '金额不能为空',
-      minAmount: '最小金额为 61 CKB',
+      minAmount: '最小金额为 {amount} {symbol}',
       maxAmount: '转账金额必须小于余额',
       wrongEns: 'ENS 无法解析',
       wrongAddress: '错误的地址格式',

@@ -84,7 +84,11 @@
           autogrow
           :suffix="selectedAsset && selectedAsset.symbol"
           :rules="[(val) => pair.valid.amount]"
-          @blur="amount = pair.amount.toString(undefined, { commify: true })"
+          @blur="
+            amount = pair.amount.toString(selectedAsset.decimals, {
+              commify: true,
+            })
+          "
           hide-bottom-space
         >
           <template v-slot:after> </template>
@@ -181,6 +185,7 @@ import {
   useConfirmSend,
   useSendMode,
   scanQR,
+  useSelectedAsset,
 } from '../compositions/send';
 import {
   computed,
@@ -214,7 +219,8 @@ export default defineComponent({
     const address = ref('');
     const amount = ref('');
     const sending = useSending();
-    const selectedAsset = ref<Asset>();
+    // const selectedAsset = ref<Asset>();
+    const selectedAsset = useSelectedAsset();
 
     const balance = computed(() =>
       useAccount().balance.value.toString(undefined, {
@@ -293,7 +299,7 @@ export default defineComponent({
         })
         .onOk(() => {
           useSendMode().value = 'clear';
-          pair.amount = setAmount(balance.value);
+          pair.amount = setAmount(balance.value, selectedAsset.value?.decimals);
           useConfirmSend().value = true;
         });
     };
@@ -306,6 +312,13 @@ export default defineComponent({
 
     watch(assets, () => {
       selectAsset();
+    });
+
+    watch(selectedAsset, () => {
+      // reset state
+      amount.value = '';
+      address.value = '';
+      ens.value = '';
     });
 
     return {
@@ -353,7 +366,7 @@ export default defineComponent({
     },
     amount(amount: string | undefined) {
       try {
-        this.pair.amount = setAmount(amount);
+        this.pair.amount = setAmount(amount, this.selectedAsset?.decimals);
         this.pair.valid.amount = isValidAmount(this.pair.amount as Amount);
       } catch (e) {
         this.pair.valid.amount = (e as Error).message;

@@ -128,7 +128,7 @@ export default {
       sent,
       requireAddress: 'Address is required',
       requireAmount: 'Amount is required',
-      minAmount: 'minimal amount is 61 CKB',
+      minAmount: 'minimal amount is {amount} {symbol}',
       maxAmount: 'amount must be smaller than balance',
       wrongEns: 'ENS cannot be resolved',
       wrongAddress: 'Invalid address foramt',
