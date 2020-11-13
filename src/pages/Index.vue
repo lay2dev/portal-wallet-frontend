@@ -123,7 +123,7 @@
         <div class="col q-px-md q-pt-md">
           <q-tabs
             v-model="tab"
-            class="text-grey"
+            class="index-tab text-grey"
             indicator-color="primary"
             active-color="white"
             no-caps
@@ -156,13 +156,11 @@
             />
           </q-tab-panel>
           <q-tab-panel name="utilities">
-            <div class="row q-px-md q-my-xs">
+            <div class="row">
               <dao-card class="col" />
             </div>
-            <div class="row q-px-md q-my-xs">
-              <q-card flat class="col">
-                <shop-card />
-              </q-card>
+            <div class="row q-my-sm">
+              <shop-card class="col" />
             </div>
           </q-tab-panel>
         </q-tab-panels>
@@ -245,17 +243,26 @@ export default Vue.extend({
     const fiatPrice = computed(() =>
       useFiatRates()[useSettings().currency].toString()
     );
-    const fiat = computed(() =>
-      showBalance.value
-        ? useAccount()
-            .balance.value.mul(
-              new Amount(useSwap().rights[0].price.toString()).mul(
-                new Amount(fiatPrice.value)
-              )
-            )
-            .toString(AmountUnit.ckb, { commify: true, fixed: 2 })
-        : '****'
-    );
+    const fiat = computed(() => {
+      let balance = Amount.ZERO;
+      if (assets.value && assets.value.length) {
+        balance = assets.value
+          .map((a) => a.capacity)
+          .reduce(
+            (cap, sum) =>
+              (sum = sum.add(
+                cap.mul(
+                  new Amount(useSwap().rights[0].price.toString()).mul(
+                    new Amount(fiatPrice.value)
+                  )
+                )
+              ))
+          );
+      }
+      return showBalance.value
+        ? balance.toString(AmountUnit.ckb, { commify: true, fixed: 2 })
+        : '****';
+    });
 
     const assets = useAssets();
 
@@ -474,15 +481,17 @@ interface MenuItem {
 }
 </script>
 
+<style lang="scss">
+.index-tab .q-tab__indicator {
+  height: 6px;
+}
+</style>
 <style lang="scss" scoped>
 .meta {
   background: linear-gradient($secondary 50%, $accent);
 }
 .balance-card {
   border-radius: 6px;
-}
-.q-tab__indicator {
-  height: 5px !important;
 }
 .panel-card {
   border-radius: 0px;

@@ -42,8 +42,8 @@
             flat
             no-caps
             icon="qr_code"
-            to="swap"
             :label="$t('index.btn.receive')"
+            @click="showReceive = true"
           />
           <q-separator spaced vertical />
           <q-btn
@@ -93,22 +93,27 @@
         <q-btn fab icon="keyboard_arrow_up" color="accent" />
       </q-page-scroller>
     </div>
+    <q-dialog v-model="showReceive" position="top">
+      <receive-card class="col" />
+    </q-dialog>
   </q-page>
 </template>
 
 <script lang="ts">
-import { computed, defineComponent } from '@vue/composition-api';
+import { computed, defineComponent, ref } from '@vue/composition-api';
 import { Asset, useAssets, useTxFilter } from 'src/compositions/account';
 import { useConfig } from 'src/compositions/config';
 import TxList from '../components/TxList.vue';
+import ReceiveCard from '../components/ReceiveCard.vue';
 export default defineComponent({
   name: 'Asset',
-  components: { TxList },
+  components: { TxList, ReceiveCard },
   setup(props, { root }) {
     const assetId = Number.parseInt(root.$route.params.id);
     const assets = useAssets();
     const asset = computed(() => assets.value.find((a) => a.id === assetId));
     const filter = useTxFilter();
+    const showReceive = ref(false);
 
     const displayBalance = (asset: Asset) => {
       if (!asset) return '0';
@@ -127,6 +132,7 @@ export default defineComponent({
 
     return {
       showHeader: useConfig().showHeader,
+      showReceive,
       asset,
       displayBalance,
       filter,

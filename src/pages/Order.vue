@@ -2,7 +2,9 @@
   <q-page class="column">
     <q-toolbar v-if="showHeader" class="bg-accent text-white">
       <q-btn flat size="sm" round icon="arrow_back_ios" to="/shop" replace />
-      <q-toolbar-title class="text-center text-subtitle1 text-bold">{{ $t('order.title') }}</q-toolbar-title>
+      <q-toolbar-title class="text-center text-subtitle1 text-bold">{{
+        $t('order.title')
+      }}</q-toolbar-title>
       <q-btn flat round icon="more_vert" class="invisible" />
     </q-toolbar>
     <div v-if="sku" class="col column justify-between">
@@ -14,19 +16,30 @@
             <div class="text-h6 text-negative">¥ {{ sku.sellPrice / 100 }}</div>
           </div>
           <q-separator spaced />
-          <div class="text-caption text-dark" style="white-space: pre-line;">{{ sku.description }}</div>
+          <div class="text-caption text-dark" style="white-space: pre-line">
+            {{ sku.description }}
+          </div>
         </q-card-section>
       </q-card>
       <q-card class="q-ma-md">
-        <q-card-section class="col row justify-between bg-accent text-white q-pa-none">
-          <div class="col column q-pl-xs justify-center">
-            <div class="column q-pa-sm q-gutter-xs">
-              <div style="font-size:1.5em; line-height: 1">{{ amount }} CKB</div>
-              <div
-                style="font-size:0.8em; line-height: 1"
-                class="text-grey"
-              >{{`1 CKB = ${rate} CNY`}}</div>
+        <q-card-section
+          class="col row justify-between bg-white text-accent q-pa-none"
+        >
+          <div class="row col q-px-xs justify-between items-center">
+            <div class="column q-pa-sm q-gutter-xs justify-center items-end">
+              <div style="font-size: 1.3em; font-weight: 400; line-height: 1">
+                <!-- {{ `${amount} ${selectedAsset.symbol}` }} -->
+                {{ `${amount}` }}
+              </div>
+              <!-- <div style="font-size: 0.8em; line-height: 1" class="text-grey">
+                {{ `1${}=${rate}CNY` }}
+              </div> -->
             </div>
+            <asset-select
+              class="q-ml-sm"
+              :asset.sync="selectedAsset"
+              :assets="assets"
+            />
             <fee-bar :builder="builder" class="hidden" />
           </div>
           <q-btn
@@ -60,20 +73,22 @@ import { Amount, Address, AddressType, SimpleBuilder } from '@lay2/pw-core';
 import {
   useConfirmSend,
   useReceivePair,
+  useSelectedAsset,
   useSending,
   useSendMode,
 } from '../compositions/send';
 import { Notify, Loading, QSpinnerBall } from 'quasar';
 import { i18n } from '../boot/i18n';
 import FeeBar from '../components/FeeBar.vue';
+import AssetSelect from '../components/AssetSelect.vue';
 import { useOrderNo, useShopConfig } from '../compositions/shop/shop';
 import { useConfig } from '../compositions/config';
-import { useAccount, useAuthorized } from 'src/compositions/account';
+import { useAccount, useAssets, useAuthorized } from 'src/compositions/account';
 import GTM from '../compositions/gtm';
 
 export default defineComponent({
   name: 'Order',
-  components: { FeeBar },
+  components: { FeeBar, AssetSelect },
   props: {
     sid: {
       type: String,
@@ -89,8 +104,14 @@ export default defineComponent({
     const builder = ref<SimpleBuilder | undefined>();
     const sending = useSending();
 
-    onMounted(async () => {
-      await init();
+    const assets = computed(() =>
+      useAssets().value.filter((a) => a.id !== 0 && a.id !== 999999)
+    );
+
+    const selectedAsset = useSelectedAsset();
+
+    onMounted(() => {
+      void init();
     });
 
     const amount = computed(() =>
@@ -103,7 +124,7 @@ export default defineComponent({
           sku.value.sellPrice /
           100 /
           Number(tokenAmount.value.toString())
-        ).toFixed(4);
+        ).toFixed(3);
       }
       return 0;
     });
@@ -111,6 +132,14 @@ export default defineComponent({
     const stop = watch(useAuthorized(), (auth) => {
       stop();
       auth && init();
+    });
+
+    watch(assets, () => {
+      selectedAsset.value = assets.value[0];
+    });
+
+    watch(selectedAsset, () => {
+      void init();
     });
 
     const init = async () => {
@@ -136,7 +165,10 @@ export default defineComponent({
       placingOrder.value = true;
       orderNo.value = await useApi().shop.placeOrder(Number(props.sid), 1);
       if (!!orderNo.value) {
-        const res = await useApi().shop.prePayOrder(orderNo.value);
+        const res = await useApi().shop.prePayOrder(
+          orderNo.value,
+          selectedAsset.value?.symbol
+        );
         if (!!res) {
           tokenAmount.value = new Amount(res.tokenAmount);
           useReceivePair().amount = tokenAmount.value;
@@ -222,6 +254,8 @@ export default defineComponent({
 
     return {
       showHeader: useConfig().showHeader,
+      assets,
+      selectedAsset,
       sku,
       rate,
       placingOrder,

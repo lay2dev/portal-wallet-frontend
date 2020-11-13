@@ -1,18 +1,32 @@
 <template>
-  <q-card flat class="shop-card">
+  <q-card class="shop-card">
     <q-card-section class="q-px-sm q-py-xs">
       <div class="row justify-between items-center" @click="gotoShop">
         <div class="row items-center">
           <q-avatar size="lg" icon="img:lay2.svg" />
-          <div class="q-ml-xs text-center text-subtitle">{{$t('shop.title')}}</div>
+          <div class="q-ml-xs text-center text-subtitle">
+            {{ $t('shop.title') }}
+          </div>
         </div>
         <q-icon size="sm" color="grey-4" name="chevron_right" />
       </div>
     </q-card-section>
     <q-separator color="grey-2" />
     <q-card-section class="q-pa-none">
-      <q-carousel height="auto" autoplay animated v-model="slide" swipeable infinite>
-        <q-carousel-slide class="q-pa-none" v-for="(sku, index) in skus" :name="index" :key="index">
+      <q-carousel
+        height="auto"
+        autoplay
+        animated
+        v-model="slide"
+        swipeable
+        infinite
+      >
+        <q-carousel-slide
+          class="q-pa-none"
+          v-for="(sku, index) in skus"
+          :name="index"
+          :key="index"
+        >
           <sku-card :sku="sku" class="bg-white" />
         </q-carousel-slide>
       </q-carousel>
@@ -52,7 +66,7 @@ export default defineComponent({
 
 <style lang="scss" scoped>
 .shop-card {
-  border-radius: 5px;
+  border-radius: 6px;
 }
 .custom-caption {
   text-align: center;
