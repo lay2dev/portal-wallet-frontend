@@ -46,6 +46,7 @@ export function usePortalAddress() {
 
 const updateData = (address: Address) => {
   void updateAccount(address);
+  void loadAssets(address);
   void loadTxRecords({ address, silent: true });
   void updateDao(address);
 };
