@@ -16,16 +16,19 @@
         <div class="text-subtitle text-secondary text-bold">
           {{ formatedBalance }}
         </div>
-        <div class="text-caption text-grey">{{ asset.decimals }}</div>
+        <div class="text-caption text-grey">{{ fiatSymbol }} {{ fiat }}</div>
       </div>
     </q-card-section>
   </q-card>
 </template>
 
 <script lang="ts">
-import { AmountUnit } from '@lay2/pw-core';
+import { Amount, AmountUnit } from '@lay2/pw-core';
 import { computed, defineComponent, PropType } from '@vue/composition-api';
+import { useSettings } from '../compositions/settings';
+import { useSwap, useFiatRates } from '../compositions/swap';
 import { Asset } from 'src/compositions/account';
+import { useFiatSymbol } from '../compositions/config';
 export default defineComponent({
   name: 'AssetCard',
   props: {
@@ -47,8 +50,27 @@ export default defineComponent({
         commify: true,
       });
     });
+
+    const fiatPrice = computed(() =>
+      useFiatRates()[useSettings().currency].toString()
+    );
+
+    const fiat = computed(() => {
+      const fiatValue = props.asset.capacity
+        .mul(new Amount(useSwap().rights[0].price.toString()))
+        .mul(new Amount(fiatPrice.value));
+      return props.asset.sudt
+        ? '~'
+        : useSettings().showBalance
+        ? fiatValue.toString(AmountUnit.ckb, { commify: true, fixed: 2 })
+        : '****';
+    });
+    const fiatSymbol = useFiatSymbol();
+
     return {
       formatedBalance,
+      fiatSymbol,
+      fiat,
     };
   },
 });

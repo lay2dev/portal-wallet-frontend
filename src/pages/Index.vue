@@ -247,6 +247,7 @@ export default Vue.extend({
       let balance = Amount.ZERO;
       if (assets.value && assets.value.length) {
         balance = assets.value
+          .filter(x=>x.symbol === 'CKB' || x.symbol === 'DAO')
           .map((a) => a.capacity)
           .reduce((a, b) => a.add(b));
         balance = balance
