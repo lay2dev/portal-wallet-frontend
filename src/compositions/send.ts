@@ -149,7 +149,10 @@ export async function send(): Promise<string | undefined> {
             PWCore.provider.address.addressString
           ).sign(await builder.build());
           txHash = tx.raw.toHash();
-          const orderNo = await payOrder(tx, selectedAsset.value?.symbol as string);
+          const orderNo = await payOrder(
+            tx,
+            selectedAsset.value?.symbol as string
+          );
           if (orderNo) {
             void loadPendingCard(orderNo, txHash);
           }
@@ -316,6 +319,13 @@ export function isValidAmount(amount: Amount) {
         .t('send.msg.minAmount', { amount: 61, symbol: 'CKB' })
         .toString();
     }
+
+    if (
+      selectedAsset.value?.capacity.gt(Amount.ZERO) &&
+      amount.gt(selectedAsset.value?.capacity)
+    ) {
+      return i18n.t('send.msg.maxAmount').toString();
+    }
   } else {
     if (amount.lt(new Amount('1', 0))) {
       return i18n
@@ -325,13 +335,12 @@ export function isValidAmount(amount: Amount) {
         })
         .toString();
     }
-  }
-
-  if (
-    useAccount().balance.value.gt(Amount.ZERO) &&
-    amount.gte(useAccount().balance.value as Amount)
-  ) {
-    return i18n.t('send.msg.maxAmount').toString();
+    if (
+      selectedAsset.value?.sudtAmount.gt(Amount.ZERO) &&
+      amount.gt(selectedAsset.value?.sudtAmount)
+    ) {
+      return i18n.t('send.msg.maxAmount').toString();
+    }
   }
 
   return true;
