@@ -222,7 +222,8 @@ export function useApi() {
           const paymentList = (res.data as Record<string, []>)
             .receivePaymentList as { address: string; token: string }[];
           useShopConfig().value = {
-            address: paymentList[0].address,
+            paymentList,
+            // address: paymentList[0].address,
             ...((res.data as Record<string, unknown>).service as {
               name: string;
               img: string;

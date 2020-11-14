@@ -69,7 +69,13 @@ import {
 } from '@vue/composition-api';
 import { SKU } from '../compositions/shop/sku';
 import { useApi } from '../compositions/api';
-import { Amount, Address, AddressType, SimpleBuilder } from '@lay2/pw-core';
+import {
+  Amount,
+  Address,
+  AddressType,
+  SimpleBuilder,
+  SUDT,
+} from '@lay2/pw-core';
 import {
   useConfirmSend,
   useReceivePair,
@@ -85,6 +91,7 @@ import { useOrderNo, useShopConfig } from '../compositions/shop/shop';
 import { useConfig } from '../compositions/config';
 import { useAccount, useAssets, useAuthorized } from 'src/compositions/account';
 import GTM from '../compositions/gtm';
+import { CoffeeBuilder } from 'src/compositions/coffee-builder';
 
 export default defineComponent({
   name: 'Order',
@@ -101,7 +108,7 @@ export default defineComponent({
     const tokenAmount = ref<Amount | undefined>();
     const expiresIn = ref(0);
     const placingOrder = ref(false);
-    const builder = ref<SimpleBuilder | undefined>();
+    // const builder = ref<SimpleBuilder | undefined>();
     const sending = useSending();
 
     const assets = computed(() =>
@@ -109,13 +116,34 @@ export default defineComponent({
     );
 
     const selectedAsset = useSelectedAsset();
+    const pair = useReceivePair();
+
+    const builder = computed(() => {
+      if (selectedAsset.value?.symbol === 'COFFEE') {
+        return new CoffeeBuilder(
+          new SUDT(selectedAsset.value.typeScript?.args as string),
+          pair.address as Address,
+          pair.amount as Amount
+        );
+      } else if (pair.isValidPair()) {
+        return new SimpleBuilder(
+          pair.address as Address,
+          pair.amount as Amount
+        );
+      } else {
+        return undefined;
+      }
+    });
 
     onMounted(() => {
       void init();
     });
 
     const amount = computed(() =>
-      (tokenAmount.value || Amount.ZERO).toString(undefined, { commify: true })
+      (tokenAmount.value || Amount.ZERO).toString(
+        selectedAsset.value?.decimals,
+        { commify: true, fixed: 2 }
+      )
     );
 
     const rate = computed(() => {
@@ -153,7 +181,9 @@ export default defineComponent({
       }
       if (!!config.value) {
         useReceivePair().address = new Address(
-          config.value.address,
+          config.value.paymentList.filter(
+            (x) => x.token === selectedAsset.value?.symbol
+          )[0].address,
           AddressType.ckb
         );
       } else {
@@ -170,14 +200,17 @@ export default defineComponent({
           selectedAsset.value?.symbol
         );
         if (!!res) {
-          tokenAmount.value = new Amount(res.tokenAmount);
-          useReceivePair().amount = tokenAmount.value;
+          tokenAmount.value = new Amount(
+            res.tokenAmount.toString(),
+            selectedAsset.value?.decimals
+          );
+          pair.amount = tokenAmount.value;
           expiresIn.value = res.expiresIn;
 
-          builder.value = new SimpleBuilder(
-            useReceivePair().address as Address,
-            useReceivePair().amount as Amount
-          );
+          // builder.value = new SimpleBuilder(
+          //   useReceivePair().address as Address,
+          //   useReceivePair().amount as Amount
+          // );
         }
       }
       placingOrder.value = false;

@@ -7,7 +7,7 @@
     </q-toolbar>
     <q-card flat class="q-mx-md detail-card">
       <q-card-section>
-        <div class="row justify-center text-h6 text-accent">{{amount}} CKB</div>
+        <div class="row justify-center text-h6 text-accent">{{amount}} {{symbol}}</div>
         <q-separator spaced />
         <div class="column q-gutter-xs">
           <div class="text-caption text-grey">{{$t('signBoard.label.to')}}:</div>
@@ -49,6 +49,7 @@ import {
   useRate,
   useReceivePairs,
   useIsBatch,
+  useSelectedAsset,
   useNote,
 } from '../compositions/send';
 import PWCore, { AmountUnit } from '@lay2/pw-core';
@@ -58,6 +59,8 @@ export default defineComponent({
     const isSendBatch = useIsBatch();
 
     const from = PWCore.provider.address.addressString;
+    const selectedAsset = useSelectedAsset();
+    const symbol = selectedAsset.value?.symbol;
 
     const to = computed(() => {
       let address = useReceivePair().address;
@@ -75,11 +78,11 @@ export default defineComponent({
           .value.map((rp) => rp.amount)
           .reduce((sum, a) => sum.add(a));
       }
-      return amount.toString(AmountUnit.ckb, { commify: true, fixed: 4 });
+      return amount.toString(selectedAsset.value?.decimals, { commify: true, fixed: 4 });
     });
     const fee = computed(() => useFee().value.toString(AmountUnit.ckb));
     const rate = useRate();
-    return { from, to, amount, fee, rate, note: useNote() };
+    return { from, to, amount, symbol, fee, rate, note: useNote() };
   },
 });
 </script>

@@ -37,6 +37,7 @@ import {
   CardStatus,
 } from 'src/compositions/shop/order';
 import { AmountUnit, Amount } from '@lay2/pw-core';
+import { useAssets } from 'src/compositions/account';
 export default defineComponent({
   name: 'CardItem',
   props: {
@@ -53,10 +54,11 @@ export default defineComponent({
     );
     const boughtAt = computed(() => new Date(card.buyTime).toLocaleString());
     const fiatPrice = computed(() => `¥ ${card.sellPrice / 100}`);
+    const asset = useAssets().value.filter(x => x.symbol === card.payToken)[0];
     const tokenPrice = computed(() => {
       if (!card.payTokenAmount) return undefined;
       const tokenAmount = new Amount(card.payTokenAmount, AmountUnit.shannon);
-      return `(${tokenAmount.toString(undefined, {
+      return `(${tokenAmount.toString(asset.decimals, {
         commify: true,
         fixed: 4,
       })} ${card.payToken})`;

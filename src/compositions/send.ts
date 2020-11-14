@@ -129,28 +129,27 @@ export async function send(): Promise<string | undefined> {
   if (address instanceof Address && amount instanceof Amount) {
     sending.value = true;
     try {
-      console.log('selectedAsset', selectedAsset);
       let txHash = '';
+      const coffeeBuilder = new CoffeeBuilder(
+        new SUDT(selectedAsset.value?.typeScript?.args as string),
+        address,
+        amount,
+        rate.value
+      );
+      const simpleBuilder = new SimpleBuilder(address, amount, rate.value);
+
       const pw = new PWCore(useConfig().node_url);
-      if (selectedAsset.value?.symbol === 'COFFEE') {
-        const builder = new CoffeeBuilder(
-          new SUDT(selectedAsset.value.typeScript?.args as string),
-          address,
-          amount,
-          rate.value
-        );
-        txHash = await pw.sendTransaction(
-          builder,
-          new EthSigner(PWCore.provider.address.addressString)
-        );
-      } else if (useSendMode().value === 'remote') {
-        const builder = new SimpleBuilder(address, amount, rate.value);
+      if (useSendMode().value === 'remote') {
+        const builder =
+          selectedAsset.value?.symbol === 'COFFEE'
+            ? coffeeBuilder
+            : simpleBuilder;
         try {
           const tx = await new EthSigner(
             PWCore.provider.address.addressString
           ).sign(await builder.build());
           txHash = tx.raw.toHash();
-          const orderNo = await payOrder(tx);
+          const orderNo = await payOrder(tx, selectedAsset.value?.symbol as string);
           if (orderNo) {
             void loadPendingCard(orderNo, txHash);
           }
@@ -164,7 +163,14 @@ export async function send(): Promise<string | undefined> {
           new EthSigner(PWCore.provider.address.addressString)
         );
       } else {
-        txHash = await pw.send(address, amount, rate.value);
+        const builder =
+          selectedAsset.value?.symbol === 'COFFEE'
+            ? coffeeBuilder
+            : simpleBuilder;
+        txHash = await pw.sendTransaction(
+          builder,
+          new EthSigner(PWCore.provider.address.addressString)
+        );
       }
 
       if (txHash) {
