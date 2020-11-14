@@ -248,22 +248,26 @@ export default defineComponent({
       }
       return false;
     });
-    const builder = computed(() =>{
-      if(selectedAsset.value?.symbol === 'COFFEE'){
-        return new CoffeeBuilder(
-          new SUDT(selectedAsset.value.typeScript?.args as string),
-          pair.address as Address, pair.amount as Amount);
-      }else if(pair.isValidPair()){
-        if(needClear.value){
-          return new ClearBuilder(pair.address as Address)
-        }else{
-          return new SimpleBuilder(pair.address as Address, pair.amount as Amount);
+    const builder = computed(() => {
+      if (pair.isValidPair()) {
+        if (selectedAsset.value?.symbol === 'COFFEE') {
+          return new CoffeeBuilder(
+            new SUDT(selectedAsset.value.typeScript?.args as string),
+            pair.address as Address,
+            pair.amount as Amount
+          );
+        } else if (needClear.value) {
+          return new ClearBuilder(pair.address as Address);
+        } else {
+          return new SimpleBuilder(
+            pair.address as Address,
+            pair.amount as Amount
+          );
         }
-      }else{
-        return undefined
+      } else {
+        return undefined;
       }
-    }
-    );
+    });
 
     const onSend = () => {
       if (needClear.value) {
@@ -273,7 +277,9 @@ export default defineComponent({
       }
     };
 
-    const scan = async () => { address.value = await scanQR(); GTM.logEvent({
+    const scan = async () => {
+      address.value = await scanQR();
+      GTM.logEvent({
         category: 'Actions',
         action: 'scan-qr',
         label: address.value,
