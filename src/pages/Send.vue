@@ -314,7 +314,7 @@ export default defineComponent({
         })
         .onOk(() => {
           useSendMode().value = 'clear';
-          pair.amount = setAmount(balance.value, selectedAsset.value?.decimals);
+          pair.amount = useAccount().balance.value;
           useConfirmSend().value = true;
         });
     };
