@@ -122,15 +122,17 @@ export function useApi() {
 
     loadTxRecords: async (
       lockHash: string,
+      typeHash: string | undefined,
       lastHash: string | undefined,
       size = 10,
       direction = 'all'
     ) =>
       ((
         await apiGet(
-          '/cell/txList',
+          '/cell/txListV2',
           {
             lockHash,
+            typeHash,
             lastHash,
             size: `${size}`,
             direction

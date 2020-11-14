@@ -14,25 +14,29 @@
 
 <script lang="ts">
 import { defineComponent, computed } from '@vue/composition-api';
-import { TX, truncatedAddress } from '../compositions/account';
-import { AmountUnit } from '@lay2/pw-core';
+import { TX, truncatedAddress, useAssets } from '../compositions/account';
 
 export default defineComponent({
   name: 'TxItem',
   props: {
+    tokenSymbol: {
+      type: String,
+      default: 'CKB',
+    },
     tx: {
       type: TX,
       required: true,
     },
   },
   setup(props) {
+    const asset = useAssets().value.filter(x => x.symbol === props.tokenSymbol)[0];
     const pending = computed(() => !props.tx.blockNumber);
     const tag = computed(() => (props.tx.direction === 'in' ? 'from' : 'to'));
     const address = computed(() =>
       truncatedAddress(props.tx[tag.value].addressString)
     );
     const amount = computed(() =>
-      props.tx.amount.toString(AmountUnit.ckb, { commify: true, fixed: 4 })
+      props.tx.amount.toString(asset.decimals, { commify: true, fixed: 4 })
     );
     const icon = computed(() =>
       tag.value === 'from'

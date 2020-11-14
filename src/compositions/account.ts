@@ -261,6 +261,7 @@ export function useTxFilter() {
 
 export async function loadTxRecords({
   address = account.address,
+  token = 'CKB',
   size = 0,
   direction = '',
   lastHash = '',
@@ -269,10 +270,16 @@ export async function loadTxRecords({
   size = size || txFilter.size;
   direction = direction.length ? direction : txFilter.direction;
 
+  const typeHash =
+    token === 'CKB'
+      ? ''
+      : assets.value.filter(x => x.symbol === token)[0]?.typeHash;
+
   if (address !== undefined) {
     txsLoading.value = !silent && true;
     const res = await useApi().loadTxRecords(
       address.toLockScript().toHash(),
+      typeHash,
       lastHash,
       size,
       direction

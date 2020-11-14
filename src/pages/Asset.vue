@@ -83,7 +83,7 @@
           </q-tabs>
           <q-separator />
         </q-card>
-        <tx-list :direction="filter.direction" />
+        <tx-list :direction="filter.direction" :tokenSymbol="asset.symbol" />
       </div>
       <q-page-scroller
         position="bottom-right"

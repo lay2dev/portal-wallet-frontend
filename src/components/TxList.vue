@@ -6,6 +6,7 @@
         v-for="tx in txList"
         :key="tx.hash"
         :tx="tx"
+        :tokenSymbol="asset.symbol"
         @click="showTx(tx)"
       />
       <q-btn
@@ -37,7 +38,7 @@
         <q-card-section class="section column q-gutter-xs">
           <div class="row">
             <span class="col-3 text-caption text-grey">{{$t('txlist.label.amount')}}:</span>
-            <span class="col-8 text-bold text-dark">{{displayAmount(selectedTx.amount)}} CKB</span>
+            <span class="col-8 text-bold text-dark">{{displayAmount(selectedTx.amount)}} {{asset.symbol}}</span>
           </div>
           <div class="row">
             <span class="col-3 text-caption text-grey">{{$t('txlist.label.fee')}}:</span>
@@ -126,9 +127,10 @@ import {
   useHasMoreTxs,
   useAuthorized,
   useShowLogin,
+  useAssets,
 } from 'src/compositions/account';
 import TxItem from './TxItem.vue';
-import { AmountUnit, Amount } from '@lay2/pw-core';
+import { Amount } from '@lay2/pw-core';
 import { useApi } from '../compositions/api';
 import GTM from '../compositions/gtm';
 
@@ -136,6 +138,10 @@ export default defineComponent({
   name: 'TxList',
   components: { TxItem },
   props: {
+    tokenSymbol: {
+      type: String,
+      default: 'CKB',
+    },
     direction: {
       type: String,
       default: 'all',
@@ -150,6 +156,7 @@ export default defineComponent({
   },
   created() {
     void loadTxRecords({
+      token: this.tokenSymbol,
       size: this.size,
       direction: this.direction,
     });
@@ -171,8 +178,10 @@ export default defineComponent({
         value: new Date().getTime(),
       });
     };
+    const assets = useAssets();
+    const asset = assets.value.filter(x => x.symbol === props.tokenSymbol)[0];
     const displayAmount = (amount: Amount) =>
-      amount.toString(AmountUnit.ckb, { commify: true });
+      amount.toString(asset.decimals, { commify: true });
     const openExplorer = (url: string) => {
       openURL(url);
     };
@@ -181,6 +190,7 @@ export default defineComponent({
     );
     const loadMore = async () => {
       await loadTxRecords({
+        token: props.tokenSymbol,
         lastHash: lastHash.value,
         size: props.size,
         direction: props.direction,
@@ -214,6 +224,7 @@ export default defineComponent({
       loadMore,
       hasMore,
       displayAmount,
+      asset,
       truncatedAddress,
       openExplorer,
       saveNote,
@@ -225,10 +236,10 @@ export default defineComponent({
   watch: {
     async direction(direction: string) {
       console.log('[TxList] load tx for ', direction);
-      await loadTxRecords({ direction });
+      await loadTxRecords({ token: this.tokenSymbol, direction });
     },
     async size(size: number) {
-      await loadTxRecords({ size });
+      await loadTxRecords({ token: this.tokenSymbol, size });
     },
   },
 });
