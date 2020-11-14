@@ -248,16 +248,10 @@ export default Vue.extend({
       if (assets.value && assets.value.length) {
         balance = assets.value
           .map((a) => a.capacity)
-          .reduce(
-            (cap, sum) =>
-              (sum = sum.add(
-                cap.mul(
-                  new Amount(useSwap().rights[0].price.toString()).mul(
-                    new Amount(fiatPrice.value)
-                  )
-                )
-              ))
-          );
+          .reduce((a, b) => a.add(b));
+        balance = balance
+          .mul(new Amount(useSwap().rights[0].price.toString()))
+          .mul(new Amount(fiatPrice.value));
       }
       return showBalance.value
         ? balance.toString(AmountUnit.ckb, { commify: true, fixed: 2 })
