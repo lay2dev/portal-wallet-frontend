@@ -128,9 +128,9 @@ export async function loadSwapBalances(address: Address) {
     const balances = await Promise.all(promises);
     for (let i = 0; i < balances.length; i++) {
       lefts.value[i].balance = new Amount(
-        balances[i],
-        lefts.value[i].decimal
-      ).toString(undefined, { commify: true, fixed: 6 });
+        balances[i] === '0x'? '0x0': balances[i],
+        0
+      ).toString(lefts.value[i].decimal, { commify: true, fixed: 6 });
     }
   } catch (e) {
     console.error((e as Error).message);

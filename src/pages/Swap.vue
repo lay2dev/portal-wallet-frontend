@@ -197,6 +197,7 @@ export default defineComponent({
     });
 
     const right = rights[0];
+    right.balance = balance.value.toString(undefined, { commify: true, fixed: 4 });
     watch(balance, (balance) => {
       right.balance = balance.toString(undefined, { commify: true, fixed: 4 });
     });
