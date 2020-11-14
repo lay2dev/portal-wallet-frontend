@@ -43,7 +43,7 @@ export default defineComponent({
         });
       }
       return props.asset.capacity.toString(AmountUnit.ckb, {
-        fixed: 5,
+        fixed: 4,
         commify: true,
       });
     });
