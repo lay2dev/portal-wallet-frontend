@@ -200,6 +200,7 @@ import PWCore, {
   Amount,
   EthProvider,
   Builder,
+  SUDT,
 } from '@lay2/pw-core';
 import FeeBar from '../components/FeeBar.vue';
 import ContactSelect from '../components/ContactSelect.vue';
@@ -207,6 +208,7 @@ import AssetSelect from '../components/AssetSelect.vue';
 import { useAccount, useAssets, Asset } from '../compositions/account';
 import { ClearBuilder } from 'src/compositions/clear-builder';
 import GTM from '../compositions/gtm';
+import { CoffeeBuilder } from 'src/compositions/coffee-builder';
 
 export default defineComponent({
   name: 'Send',
@@ -246,12 +248,21 @@ export default defineComponent({
       }
       return false;
     });
-    const builder = computed(() =>
-      pair.isValidPair()
-        ? needClear.value
-          ? new ClearBuilder(pair.address as Address)
-          : new SimpleBuilder(pair.address as Address, pair.amount as Amount)
-        : undefined
+    const builder = computed(() =>{
+      if(selectedAsset.value?.symbol === 'COFFEE'){
+        return new CoffeeBuilder(
+          new SUDT(selectedAsset.value.typeScript?.args as string),
+          pair.address as Address, pair.amount as Amount);
+      }else if(pair.isValidPair()){
+        if(needClear.value){
+          return new ClearBuilder(pair.address as Address)
+        }else{
+          return new SimpleBuilder(pair.address as Address, pair.amount as Amount);
+        }
+      }else{
+        return undefined
+      }
+    }
     );
 
     const onSend = () => {
@@ -262,9 +273,7 @@ export default defineComponent({
       }
     };
 
-    const scan = async () => {
-      address.value = await scanQR();
-      GTM.logEvent({
+    const scan = async () => { address.value = await scanQR(); GTM.logEvent({
         category: 'Actions',
         action: 'scan-qr',
         label: address.value,
