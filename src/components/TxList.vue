@@ -42,7 +42,7 @@
           </div>
           <div class="row">
             <span class="col-3 text-caption text-grey">{{$t('txlist.label.fee')}}:</span>
-            <span class="col-8 text-caption text-dark">{{displayAmount(selectedTx.fee)}} CKB</span>
+            <span class="col-8 text-caption text-dark">{{selectedTx.fee.toString(8, { commify: true })}} CKB</span>
           </div>
           <div class="row">
             <span class="col-3 text-caption text-grey">{{$t('txlist.label.from')}}:</span>
