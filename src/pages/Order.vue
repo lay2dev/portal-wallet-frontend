@@ -74,6 +74,7 @@ import {
   Address,
   AddressType,
   SimpleBuilder,
+  Builder,
   SUDT,
 } from '@lay2/pw-core';
 import {
@@ -106,19 +107,25 @@ export default defineComponent({
     const sku = ref<SKU | undefined>();
     const orderNo = useOrderNo();
     const tokenAmount = ref<Amount | undefined>();
+    const amount = ref<string>('0.00');
     const expiresIn = ref(0);
     const placingOrder = ref(false);
-    // const builder = ref<SimpleBuilder | undefined>();
+    const builder = ref<Builder | undefined>();
     const sending = useSending();
 
+    const selectedAsset = useSelectedAsset();
     const assets = computed(() =>
-      useAssets().value.filter((a) => a.id !== 0 && a.id !== 999999)
+      useAssets().value.filter((a) => {
+        if (sku.value?.cid === 1) {
+          return a.symbol === 'CKB' || a.symbol == 'COFFEE';
+        }
+        return a.symbol === 'CKB';
+      })
     );
 
-    const selectedAsset = useSelectedAsset();
     const pair = useReceivePair();
 
-    const builder = computed(() => {
+    const getBuilder = () => {
       if (selectedAsset.value?.symbol === 'COFFEE') {
         return new CoffeeBuilder(
           new SUDT(selectedAsset.value.typeScript?.args as string),
@@ -133,29 +140,17 @@ export default defineComponent({
       } else {
         return undefined;
       }
-    });
+    };
 
     onMounted(() => {
       void init();
     });
 
-    const amount = computed(() =>
+    const getAmount = () =>
       (tokenAmount.value || Amount.ZERO).toString(
         selectedAsset.value?.decimals,
         { commify: true, fixed: 2 }
-      )
-    );
-
-    const rate = computed(() => {
-      if (sku.value && tokenAmount.value) {
-        return (
-          sku.value.sellPrice /
-          100 /
-          Number(tokenAmount.value.toString())
-        ).toFixed(3);
-      }
-      return 0;
-    });
+      );
 
     const stop = watch(useAuthorized(), (auth) => {
       stop();
@@ -163,7 +158,9 @@ export default defineComponent({
     });
 
     watch(assets, () => {
-      selectedAsset.value = assets.value[0];
+      if(!selectedAsset.value){
+         selectedAsset.value = assets.value[0];
+      }
     });
 
     watch(selectedAsset, () => {
@@ -171,14 +168,20 @@ export default defineComponent({
     });
 
     const init = async () => {
-      loading(true);
+      console.warn('enter init', sku.value, selectedAsset.value);
+      if(!sku.value) sku.value = await useApi().shop.loadSku(Number(props.sid));
+      if (!selectedAsset.value) {
+        // loading(false);
+        return;
+      }
 
+      loading(true);
       useSendMode().value = 'remote';
-      sku.value = await useApi().shop.loadSku(Number(props.sid));
       const config = useShopConfig();
       if (!config.value) {
         await useApi().shop.loadConfig();
       }
+
       if (!!config.value) {
         useReceivePair().address = new Address(
           config.value.paymentList.filter(
@@ -206,6 +209,9 @@ export default defineComponent({
           );
           pair.amount = tokenAmount.value;
           expiresIn.value = res.expiresIn;
+
+          builder.value = getBuilder();
+          amount.value = getAmount();
 
           // builder.value = new SimpleBuilder(
           //   useReceivePair().address as Address,
@@ -290,7 +296,6 @@ export default defineComponent({
       assets,
       selectedAsset,
       sku,
-      rate,
       placingOrder,
       amount,
       onPay,
