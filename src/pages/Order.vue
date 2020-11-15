@@ -114,6 +114,7 @@ export default defineComponent({
     const sending = useSending();
 
     const selectedAsset = useSelectedAsset();
+    selectedAsset.value = undefined;
     const assets = computed(() =>
       useAssets().value.filter((a) => {
         if (sku.value?.cid === 1) {
