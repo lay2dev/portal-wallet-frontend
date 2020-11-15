@@ -196,6 +196,7 @@ export default defineComponent({
       loading(false);
 
       placingOrder.value = true;
+      amount.value = '0.00';
       orderNo.value = await useApi().shop.placeOrder(Number(props.sid), 1);
       if (!!orderNo.value) {
         const res = await useApi().shop.prePayOrder(

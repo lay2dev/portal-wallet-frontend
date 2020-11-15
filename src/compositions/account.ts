@@ -10,6 +10,7 @@ import { useConfig } from './config';
 import { useApi, checkAuthorization } from './api';
 import { LocalStorage, Cookies } from 'quasar';
 import { loadSwapRates, loadSwapTxs } from './swap';
+import { useSelectedAsset } from './send';
 import { LoginSigner } from './login-signer';
 import IoClient from 'socket.io-client';
 import { loadCards } from './shop/order';
@@ -47,7 +48,7 @@ export function usePortalAddress() {
 const updateData = (address: Address) => {
   void updateAccount(address);
   void loadAssets(address);
-  void loadTxRecords({ address, silent: true });
+  void loadTxRecords({ token: useSelectedAsset().value?.symbol || 'CKB', address, silent: true });
   void updateDao(address);
 };
 

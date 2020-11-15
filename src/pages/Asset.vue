@@ -100,8 +100,9 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, ref } from '@vue/composition-api';
+import { defineComponent, ref, watch } from '@vue/composition-api';
 import { Asset, useAssets, useTxFilter } from 'src/compositions/account';
+import { useSelectedAsset } from 'src/compositions/send';
 import { useConfig } from 'src/compositions/config';
 import TxList from '../components/TxList.vue';
 import ReceiveCard from '../components/ReceiveCard.vue';
@@ -111,9 +112,17 @@ export default defineComponent({
   setup(props, { root }) {
     const assetId = Number.parseInt(root.$route.params.id);
     const assets = useAssets();
-    const asset = computed(() => assets.value.find((a) => a.id === assetId));
+    // const asset = computed(() => assets.value.find((a) => a.id === assetId));
     const filter = useTxFilter();
     const showReceive = ref(false);
+
+    const asset = useSelectedAsset();
+    if(assets.value.length > 0) asset.value = assets.value.find((x) => x.id === assetId);
+
+    watch(assets, () => {
+      console.log('hello', 'assets change');
+      asset.value = assets.value.find((x) => x.id === assetId);
+    });
 
     const displayBalance = (asset: Asset) => {
       if (!asset) return '0';
