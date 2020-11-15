@@ -158,8 +158,8 @@ export default defineComponent({
     });
 
     watch(assets, () => {
-      if(!selectedAsset.value){
-         selectedAsset.value = assets.value[0];
+      if (!selectedAsset.value) {
+        selectedAsset.value = assets.value[0];
       }
     });
 
@@ -169,7 +169,8 @@ export default defineComponent({
 
     const init = async () => {
       console.warn('enter init', sku.value, selectedAsset.value);
-      if(!sku.value) sku.value = await useApi().shop.loadSku(Number(props.sid));
+      if (!sku.value)
+        sku.value = await useApi().shop.loadSku(Number(props.sid));
       if (!selectedAsset.value) {
         // loading(false);
         return;
@@ -233,7 +234,12 @@ export default defineComponent({
         return;
       }
       if (tokenAmount.value instanceof Amount) {
-        if (useAccount().balance.value?.lte(tokenAmount.value)) {
+        const balance =
+          selectedAsset.value?.symbol === 'CKB'
+            ? selectedAsset.value.capacity
+            : selectedAsset.value?.sudtAmount;
+
+        if (balance?.lt(tokenAmount.value)) {
           Notify.create({
             type: 'warning',
             message: i18n.t('order.msg.notEnough').toString(),
