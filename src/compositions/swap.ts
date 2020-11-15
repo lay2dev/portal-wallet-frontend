@@ -282,7 +282,7 @@ const DecimalMap: Record<number, string> = {
 };
 
 export const displayFromAmount = (amount: string, decimal: number) => {
-  return new Amount(amount, decimal).toString(decimal, {
+  return new Amount(amount, 0).toString(decimal, {
     commify: true,
     fixed: 6
   });
