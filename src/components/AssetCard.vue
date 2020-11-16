@@ -39,6 +39,9 @@ export default defineComponent({
   },
   setup(props) {
     const formatedBalance = computed(() => {
+      if (!useSettings().showBalance) {
+        return '****';
+      }
       if (props.asset.sudt) {
         return props.asset.sudtAmount.toString(props.asset.decimals, {
           fixed: 5,
