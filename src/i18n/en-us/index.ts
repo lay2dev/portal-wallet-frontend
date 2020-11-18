@@ -135,6 +135,9 @@ export default {
       wrongAmount: 'Invalid amount foramt'
     }
   },
+  asset: {
+    title: 'Asset'
+  },
   sendBatch: {
     title: 'Batch Transaction',
     label: {
