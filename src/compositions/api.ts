@@ -123,7 +123,7 @@ export function useApi() {
     loadTxRecords: async (
       lockHash: string,
       typeHash: string | undefined,
-      lastHash: string | undefined,
+      lastTxId: string | undefined,
       size = 10,
       direction = 'all'
     ) =>
@@ -133,7 +133,7 @@ export function useApi() {
           {
             lockHash,
             typeHash,
-            lastHash,
+            lastTxId: lastTxId || '9999999999',
             size: `${size}`,
             direction
           },

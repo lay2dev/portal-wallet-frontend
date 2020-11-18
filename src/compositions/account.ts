@@ -180,6 +180,7 @@ export function useDao() {
 
 export class TX {
   constructor(
+    public readonly id: string,
     public readonly txHash: string,
     public readonly time: number,
     public readonly from: Address,
@@ -238,6 +239,7 @@ function loadLocalPending() {
     const stillPendingTx = stillPending.map(
       p =>
         new TX(
+          '',
           p.txHash,
           p.time,
           p.from,
@@ -266,7 +268,7 @@ export async function loadTxRecords({
   token = 'CKB',
   size = 0,
   direction = '',
-  lastHash = '',
+  lastTxId = '',
   silent = false
 }) {
   size = size || txFilter.size;
@@ -282,7 +284,7 @@ export async function loadTxRecords({
     const res = await useApi().loadTxRecords(
       address.toLockScript().toHash(),
       typeHash,
-      lastHash,
+      lastTxId,
       size,
       direction
     );
@@ -290,6 +292,7 @@ export async function loadTxRecords({
     const rawTxs = res.map(
       tx =>
         new TX(
+          `${tx.id}`,
           tx.hash as string,
           tx.time as number,
           getAddress(tx.from as string),
@@ -305,8 +308,7 @@ export async function loadTxRecords({
     );
 
     hasMoreTxs.value = rawTxs.length >= size;
-
-    txs.value = lastHash.length ? [...txs.value, ...rawTxs] : rawTxs;
+    txs.value = lastTxId.length ? [...txs.value, ...rawTxs] : rawTxs;
 
     loadLocalPending();
     txsLoading.value = false;

@@ -185,13 +185,13 @@ export default defineComponent({
     const openExplorer = (url: string) => {
       openURL(url);
     };
-    const lastHash = computed(() =>
-      txs.value.length ? txs.value[txs.value.length - 1].txHash : undefined
+    const lastTxId= computed(() =>
+      txs.value.length ? txs.value[txs.value.length - 1].id: undefined
     );
     const loadMore = async () => {
       await loadTxRecords({
         token: props.tokenSymbol,
-        lastHash: lastHash.value,
+        lastTxId: lastTxId.value,
         size: props.size,
         direction: props.direction,
       });

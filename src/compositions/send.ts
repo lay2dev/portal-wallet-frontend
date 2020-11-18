@@ -179,6 +179,7 @@ export async function send(): Promise<string | undefined> {
       if (txHash) {
         addPendingTx(
           new TX(
+            '',
             txHash,
             new Date().getTime(),
             PWCore.provider.address,
@@ -245,6 +246,7 @@ export async function sendBatch() {
     );
     addPendingTx(
       new TX(
+        '',
         txHash,
         new Date().getTime(),
         PWCore.provider.address,
