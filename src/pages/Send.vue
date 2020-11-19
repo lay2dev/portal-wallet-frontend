@@ -106,7 +106,7 @@
               {{
                 note ? $t('send.label.note') + ': ' : $t('send.label.addNote')
               }}
-              <span class="text-white">{{ note }}</span>
+              <span class="text-gray">{{ note }}</span>
             </div>
             <q-btn
               flat
