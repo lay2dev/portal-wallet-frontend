@@ -4,13 +4,13 @@ import ABCWallet from 'abcwallet';
 import PWCore, {
   Address,
   EthProvider,
-  PwCollector,
   ChainID,
   CHAIN_SPECS
 } from '@lay2/pw-core';
 import { useConfig } from './config';
 import { useAccount } from './account';
 import { LocalStorage } from 'quasar';
+import { PWalletCollector } from './pwallet-collector';
 
 const ethProvider = new EthProvider((newAddress: Address) => {
   useAccount().address.value = newAddress;
@@ -20,14 +20,14 @@ export default async function init() {
   if (LocalStorage.getItem('network') === 'lay2') {
     await new PWCore(useConfig().node_url).init(
       ethProvider,
-      new PwCollector(useConfig().api_base),
+      new PWalletCollector(useConfig().api_base),
       ChainID.ckb,
       CHAIN_SPECS.Lay2
     );
   } else {
     await new PWCore(useConfig().node_url).init(
       ethProvider,
-      new PwCollector(useConfig().api_base)
+      new PWalletCollector(useConfig().api_base)
     );
   }
 

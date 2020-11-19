@@ -9,7 +9,8 @@ import PWCore, {
   SimpleBuilder,
   ChainID,
   SUDT,
-  AmountUnit
+  AmountUnit,
+  Transaction
 } from '@lay2/pw-core';
 import { addPendingTx, TX, Asset } from './account';
 import { BatchBuilder } from './batch-builder';
@@ -21,6 +22,8 @@ import { loadPendingCard } from './shop/order';
 import { ClearBuilder } from './clear-builder';
 import GTM from '../compositions/gtm';
 import { CoffeeBuilder } from './coffee-builder';
+import { PWalletCollector } from './pwallet-collector';
+import { Notify } from 'quasar';
 
 export class Pair {
   public address: Address | undefined;
@@ -130,6 +133,7 @@ export async function send(): Promise<string | undefined> {
     sending.value = true;
     try {
       let txHash = '';
+      let tx: Transaction;
       const coffeeBuilder = new CoffeeBuilder(
         new SUDT(selectedAsset.value?.typeScript?.args as string),
         address,
@@ -145,9 +149,10 @@ export async function send(): Promise<string | undefined> {
             ? coffeeBuilder
             : simpleBuilder;
         try {
-          const tx = await new EthSigner(
-            PWCore.provider.address.addressString
-          ).sign(await builder.build());
+          tx = await builder.build();
+          tx = await new EthSigner(PWCore.provider.address.addressString).sign(
+            tx
+          );
           txHash = tx.raw.toHash();
           const orderNo = await payOrder(
             tx,
@@ -161,8 +166,9 @@ export async function send(): Promise<string | undefined> {
           return;
         }
       } else if (useSendMode().value === 'clear') {
+        tx = await new ClearBuilder(address, rate.value).build();
         txHash = await pw.sendTransaction(
-          new ClearBuilder(address, rate.value),
+          tx,
           new EthSigner(PWCore.provider.address.addressString)
         );
       } else {
@@ -170,13 +176,20 @@ export async function send(): Promise<string | undefined> {
           selectedAsset.value?.symbol === 'COFFEE'
             ? coffeeBuilder
             : simpleBuilder;
+        tx = await builder.build();
         txHash = await pw.sendTransaction(
-          builder,
+          tx,
           new EthSigner(PWCore.provider.address.addressString)
         );
       }
 
       if (txHash) {
+        const sudt =
+          selectedAsset.value?.symbol === 'COFFEE'
+            ? new SUDT(selectedAsset.value?.typeScript?.args as string)
+            : undefined;
+        PWalletCollector.notifyTxSuccess(PWCore.provider.address, tx, sudt);
+
         addPendingTx(
           new TX(
             '',
@@ -210,6 +223,12 @@ export async function send(): Promise<string | undefined> {
 
       return txHash;
     } catch (e) {
+      Notify.create({
+        message: `[API] - ${(e as Error).toString()}`,
+        position: 'top',
+        timeout: 2000,
+        color: 'negative'
+      });
       console.error((e as Error).message);
       GTM.logEvent({
         category: 'Exceptions',

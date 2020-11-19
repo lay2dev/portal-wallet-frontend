@@ -54,6 +54,7 @@ import {
 import { Builder, Amount, Transaction } from '@lay2/pw-core';
 import { useFee, useRate, useBuilding } from '../compositions/send';
 import GTM from '../compositions/gtm';
+import { Notify } from 'quasar';
 
 export default defineComponent({
   name: 'FeeBar',
@@ -103,8 +104,18 @@ export default defineComponent({
       if (builder) {
         useBuilding().value = true;
         console.log('[FeeBar] building');
-        const tx = await builder.build();
-        this.fee = Builder.calcFee(tx, this.rate);
+        try {
+          const tx = await builder.build();
+          this.fee = Builder.calcFee(tx, this.rate);
+        } catch (e) {
+          Notify.create({
+            message: `[API] - ${(e as Error).toString()}`,
+            position: 'top',
+            timeout: 2000,
+            color: 'negative',
+          });
+          console.error((e as Error).message);
+        }
         useBuilding().value = false;
       } else {
         this.fee = Amount.ZERO;

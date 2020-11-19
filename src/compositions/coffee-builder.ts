@@ -10,6 +10,7 @@ import PWCore, {
   Transaction
 } from '@lay2/pw-core';
 import { SUDTCollector } from '@lay2/pw-core/build/main/collectors/sudt-collector';
+import { PWalletCell } from './pwallet-collector';
 
 export class CoffeeBuilder extends Builder {
   constructor(
@@ -27,12 +28,12 @@ export class CoffeeBuilder extends Builder {
     const outputCells = [];
     let inputSUDTSum = Amount.ZERO;
 
-    const receiverSUDTCells = await (this
+    const receiverSUDTCells = (await (this
       .collector as SUDTCollector).collectSUDT(
       this.sudt,
       PWCore.provider.address,
       { neededAmount: this.amount }
-    );
+    )) as PWalletCell[];
     console.log('receiverSUDTCells', receiverSUDTCells);
     if (!receiverSUDTCells || receiverSUDTCells.length < 1) {
       throw new Error('No live sudt cell to transfer');
@@ -75,9 +76,9 @@ export class CoffeeBuilder extends Builder {
     }
 
     // fetch pure ckb cell to pay tx fee
-    const ckbCells = await this.collector.collect(PWCore.provider.address, {
+    const ckbCells = (await this.collector.collect(PWCore.provider.address, {
       neededAmount: this.fee.add(Builder.MIN_CHANGE).add(Builder.MIN_CHANGE)
-    });
+    })) as PWalletCell[];
     if (!ckbCells || ckbCells.length < 1) {
       throw new Error('no ckb to pay tx fee');
     }
