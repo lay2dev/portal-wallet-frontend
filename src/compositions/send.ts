@@ -11,7 +11,7 @@ import PWCore, {
   SUDT,
   AmountUnit
 } from '@lay2/pw-core';
-import { addPendingTx, TX, useAccount, Asset } from './account';
+import { addPendingTx, TX, Asset } from './account';
 import { BatchBuilder } from './batch-builder';
 import { useConfig } from './config';
 import { i18n } from 'src/boot/i18n';

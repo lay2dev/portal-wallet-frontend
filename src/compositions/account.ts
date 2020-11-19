@@ -61,6 +61,7 @@ watch(toRef(account, 'address'), async address => {
       loadAssets(address),
       // loadTxRecords({ address }),
       loadSwapRates(),
+      loadSudts(),
       authorized.value && loadCards(),
       updateDao(address),
       getPortalAddress(address),
@@ -123,6 +124,16 @@ const initSocket = (address: Address) => {
 };
 
 // --------Assets---------
+export interface SUDTInfo {
+  id: number;
+  name: string;
+  // cellCount: number;
+  symbol: string;
+  decimals: number;
+  icon: string;
+  typeHash: string;
+  typeScript: Script | null;
+}
 export interface Asset {
   id: number;
   name: string;
@@ -147,6 +158,18 @@ export async function loadAssets(address: Address) {
   assets.value = await useApi().loadAssets(address.toLockScript().toHash());
   console.log('[account.ts] loadAssets: ', assets.value);
 }
+
+
+const sudts = ref<SUDTInfo[]>([]);
+export function useSudts() {
+  return sudts;
+}
+
+export async function loadSudts() {
+  sudts.value = await useApi().loadSudts();
+  console.log('[account.ts] loadSudts: ', assets.value);
+}
+
 
 // ---------DAO-----------
 

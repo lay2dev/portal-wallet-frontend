@@ -90,7 +90,7 @@ import FeeBar from '../components/FeeBar.vue';
 import AssetSelect from '../components/AssetSelect.vue';
 import { useOrderNo, useShopConfig } from '../compositions/shop/shop';
 import { useConfig } from '../compositions/config';
-import { useAccount, useAssets, useAuthorized } from 'src/compositions/account';
+import { useAssets, useAuthorized } from 'src/compositions/account';
 import GTM from '../compositions/gtm';
 import { CoffeeBuilder } from 'src/compositions/coffee-builder';
 

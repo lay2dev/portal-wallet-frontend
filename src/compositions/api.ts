@@ -4,7 +4,7 @@ import { useConfig } from './config';
 import PWCore, { Amount, AmountUnit, Script, Transaction } from '@lay2/pw-core';
 import { SwapTX, SwapTxStatus, SwapConfig, SwapRates } from './swap';
 import * as jwt from 'jsonwebtoken';
-import { Contact, useShowLogin, Asset } from './account';
+import { Contact, useShowLogin, Asset, SUDTInfo } from './account';
 import { CATE, SKU } from './shop/sku';
 import { Order, CardStatus, Card } from './shop/order';
 import ABCWallet from 'abcwallet';
@@ -120,6 +120,28 @@ export function useApi() {
       return assets;
     },
 
+    loadSudts: async() => {
+      const rawAssets = (await apiGet('/sudt/list', {}))?.data as SUDTInfo[];
+      const assets: SUDTInfo[] = [];
+      rawAssets.forEach(a => {
+        const typeScript = a.typeScript
+          ? new Script(
+              a.typeScript.codeHash,
+              a.typeScript.args,
+              a.typeScript.hashType
+            )
+          : null;
+
+        assets.push({
+          ...a,
+          // capacity,
+          // sudtAmount: new Amount((a.sudtAmount as unknown) as string, 0),
+          typeScript
+        });
+      });
+      return assets;
+
+    },
     loadTxRecords: async (
       lockHash: string,
       typeHash: string | undefined,
