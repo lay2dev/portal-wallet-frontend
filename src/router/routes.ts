@@ -9,7 +9,7 @@ const routes: RouteConfig[] = [
       { path: 'asset/:id', component: () => import('pages/Asset.vue') },
       { path: 'send', name: 'Send', component: () => import('pages/Send.vue') },
       { path: 'send/batch', component: () => import('pages/SendBatch.vue') },
-      { path: 'swap', component: () => import('pages/Swap.vue') },
+      // { path: 'swap', component: () => import('pages/Swap.vue') },
       { path: 'shop', component: () => import('pages/Shop.vue') },
       {
         path: 'shop/order/:sid',

@@ -23,64 +23,68 @@
 </template>
 
 <script lang="ts">
-import { Amount, AmountUnit } from '@lay2/pw-core';
-import { computed, defineComponent, PropType } from '@vue/composition-api';
-import { useSettings } from '../compositions/settings';
-import { useSwap, useFiatRates } from '../compositions/swap';
-import { Asset } from 'src/compositions/account';
-import { useFiatSymbol } from '../compositions/config';
-export default defineComponent({
-  name: 'AssetCard',
-  props: {
-    asset: {
-      required: true,
-      type: (Object as unknown) as PropType<Asset>,
+  import { Amount, AmountUnit } from '@lay2/pw-core';
+  import { computed, defineComponent, PropType } from '@vue/composition-api';
+  import { useSettings } from '../compositions/settings';
+  import { useSwap, useFiatRates } from '../compositions/swap';
+  import { Asset } from 'src/compositions/account';
+  import { useFiatSymbol } from '../compositions/config';
+  export default defineComponent({
+    name: 'AssetCard',
+    props: {
+      asset: {
+        required: true,
+        type: (Object as unknown) as PropType<Asset>,
+      },
     },
-  },
-  setup(props) {
-    const formatedBalance = computed(() => {
-      if (!useSettings().showBalance) {
-        return '****';
-      }
-      if (props.asset.sudt) {
-        return props.asset.sudtAmount.toString(props.asset.decimals, {
-          fixed: 5,
+    setup(props) {
+      const formatedBalance = computed(() => {
+        if (!useSettings().showBalance) {
+          return '****';
+        }
+        if (props.asset.sudt) {
+          return props.asset.sudtAmount.toString(props.asset.decimals, {
+            fixed: 5,
+            commify: true,
+          });
+        }
+        return props.asset.capacity.toString(AmountUnit.ckb, {
+          fixed: 4,
           commify: true,
         });
-      }
-      return props.asset.capacity.toString(AmountUnit.ckb, {
-        fixed: 4,
-        commify: true,
       });
-    });
 
-    const fiatPrice = computed(() =>
-      useFiatRates()[useSettings().currency].toString()
-    );
+      const fiatPrice = computed(() =>
+        useFiatRates()[useSettings().currency].toString()
+      );
 
-    const fiat = computed(() => {
-      const fiatValue = props.asset.capacity
-        .mul(new Amount(useSwap().rights[0].price.toString()))
-        .mul(new Amount(fiatPrice.value));
-      return props.asset.sudt
-        ? '~'
-        : useSettings().showBalance
-        ? fiatValue.toString(AmountUnit.ckb, { commify: true, fixed: 2 })
-        : '****';
-    });
-    const fiatSymbol = useFiatSymbol();
+      const fiat = computed(() => {
+        const fiatValue = new Amount(
+          `${(
+            Number(props.asset.capacity.toString()) *
+            useSwap().rights[0].price *
+            Number(fiatPrice.value)
+          ).toFixed(2)}`
+        );
+        return props.asset.sudt
+          ? '~'
+          : useSettings().showBalance
+          ? fiatValue.toString(AmountUnit.ckb, { commify: true, fixed: 2 })
+          : '****';
+      });
+      const fiatSymbol = useFiatSymbol();
 
-    return {
-      formatedBalance,
-      fiatSymbol,
-      fiat,
-    };
-  },
-});
+      return {
+        formatedBalance,
+        fiatSymbol,
+        fiat,
+      };
+    },
+  });
 </script>
 
 <style lang="scss" scoped>
-.my-card {
-  border-radius: 6px;
-}
+  .my-card {
+    border-radius: 6px;
+  }
 </style>
