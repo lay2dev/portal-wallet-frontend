@@ -193,7 +193,7 @@ import {
   Asset,
 } from 'src/compositions/account';
 import { AmountUnit, Amount } from '@lay2/pw-core';
-import { Notify, LocalStorage, openURL } from 'quasar';
+import { Notify, LocalStorage } from 'quasar';
 import { ref, computed, onMounted, watch } from '@vue/composition-api';
 import Jazzicon from 'vue-jazzicon';
 import ReceiveCard from 'src/components/ReceiveCard.vue';
@@ -247,7 +247,7 @@ export default Vue.extend({
       let balance = Amount.ZERO;
       if (assets.value && assets.value.length) {
         balance = assets.value
-          .filter(x=>x.symbol === 'CKB' || x.symbol === 'DAO')
+          .filter((x) => x.symbol === 'CKB' || x.symbol === 'DAO')
           .map((a) => a.capacity)
           .reduce((a, b) => a.add(b));
         balance = balance
@@ -443,6 +443,10 @@ export default Vue.extend({
     };
   },
 });
+
+function openURL(url: string) {
+  window.location.href = url;
+}
 
 function toggleVConsole() {
   let vConsole = localStorage.getItem('vconsole') || '';

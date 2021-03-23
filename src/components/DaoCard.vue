@@ -50,7 +50,6 @@
 
 <script lang="ts">
 import { defineComponent, computed } from '@vue/composition-api';
-import { openURL } from 'quasar';
 import { useDao } from 'src/compositions/account';
 import { AmountUnit } from '@lay2/pw-core';
 import { useConfig } from '../compositions/config';
@@ -94,6 +93,10 @@ export default defineComponent({
     };
   },
 });
+
+function openURL(url: string) {
+  window.location.href = url;
+}
 </script>
 
 <style lang="scss" scoped>

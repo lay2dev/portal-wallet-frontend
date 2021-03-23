@@ -128,7 +128,7 @@ export async function loadSwapBalances(address: Address) {
     const balances = await Promise.all(promises);
     for (let i = 0; i < balances.length; i++) {
       lefts.value[i].balance = new Amount(
-        balances[i] === '0x'? '0x0': balances[i],
+        balances[i] === '0x' ? '0x0' : balances[i],
         0
       ).toString(lefts.value[i].decimal, { commify: true, fixed: 6 });
     }
@@ -301,9 +301,10 @@ export const sendAssets = async (
     const contract = await window.web3.eth.contract(USDT_ABI).at(tokenAddress);
     amount =
       '0x' +
-      BigInt(
-        toWei(Number(amount).toFixed(decimal), DecimalMap[decimal])
-      ).toString(16);
+      new Amount(
+        toWei(Number(amount).toFixed(decimal), DecimalMap[decimal]),
+        0
+      ).toHexString();
     console.log('[sendAssets] amount', amount);
     params[0].to = tokenAddress;
     params[0].data = contract.transfer.getData(toAddress, amount, {
