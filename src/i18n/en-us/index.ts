@@ -223,9 +223,9 @@ export default {
   },
   receiveCard: {
     label: {
-      native: 'Portal Wallet',
-      portal: 'Wallets / Exchanges',
-      ckb: 'Neuron',
+      native: 'ETH',
+      portal: 'Relay',
+      ckb: 'Full',
       address
     },
     msg: {

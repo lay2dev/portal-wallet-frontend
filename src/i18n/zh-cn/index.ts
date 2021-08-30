@@ -219,9 +219,9 @@ export default {
   },
   receiveCard: {
     label: {
-      native: 'Portal Wallet',
-      portal: '其他钱包/交易所',
-      ckb: 'Neuron',
+      native: 'ETH 地址',
+      portal: '中转地址',
+      ckb: '长地址',
       address
     },
     msg: {

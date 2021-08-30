@@ -8,9 +8,9 @@
         <!-- <div class="text-caption text-grey">{{$t('receiveCard.label.address')}}</div> -->
         <div
           class="text-center text-bold q-px-lg q-mt-sm"
-          style="font-size: 1.2em;word-break: break-word;line-height:1.3"
+          style="font-size: 1.2em; word-break: break-word; line-height: 1.3"
         >
-          {{addresses[type]}}
+          {{ addresses[type] }}
           <q-btn
             color="grey"
             icon="content_copy"
@@ -25,13 +25,15 @@
       <q-card-section class="column items-center q-py-sm">
         <div
           class="text-caption text-accent text-center q-px-lg"
-          style="min-height: 3.5rem;line-height: 1.5"
-        >{{$t(`receiveCard.msg.${type}`)}}</div>
+          style="min-height: 3.5rem; line-height: 1.5"
+        >
+          {{ $t(`receiveCard.msg.${type}`) }}
+        </div>
       </q-card-section>
       <q-separator spaced />
-      <div
-        class="text-center text-subtitle text-grey-6 text-bold q-my-sm"
-      >- {{$t('receiveCard.msg.where')}} -</div>
+      <!-- <div class="text-center text-subtitle text-grey-6 text-bold q-my-sm">
+        - {{ $t('receiveCard.msg.where') }} -
+      </div> -->
       <q-tabs
         v-model="type"
         class="bg-white text-grey"
@@ -42,7 +44,7 @@
         no-caps
       >
         <q-tab name="default" :label="$t('receiveCard.label.native')" />
-        <!-- <q-tab name="ckb" :label="$t('receiveCard.label.ckb')" /> -->
+        <q-tab name="ckb" :label="$t('receiveCard.label.ckb')" />
         <q-tab name="portal" :label="$t('receiveCard.label.portal')" />
       </q-tabs>
     </q-card>
@@ -50,41 +52,41 @@
 </template>
 
 <script lang="ts">
-import {
-  defineComponent,
-  ref,
-  Ref,
-  computed,
-  onMounted,
-} from '@vue/composition-api';
-import { useAccount } from '../compositions/account';
-import VueQrcode from 'vue-qrcode';
-import { copy } from '../compositions/api';
-import GTM from '../compositions/gtm';
+  import {
+    defineComponent,
+    ref,
+    Ref,
+    computed,
+    onMounted,
+  } from '@vue/composition-api';
+  import { useAccount } from '../compositions/account';
+  import VueQrcode from 'vue-qrcode';
+  import { copy } from '../compositions/api';
+  import GTM from '../compositions/gtm';
 
-export default defineComponent({
-  name: 'ReceiveCard',
-  /* eslint-disable @typescript-eslint/no-unsafe-assignment */
-  components: { VueQrcode },
-  setup() {
-    const type: Ref<'default' | 'ckb' | 'portal'> = ref('default');
-    const { address, portalAddress } = useAccount();
-    const addresses = {
-      default: computed(() => address.value?.addressString || '-'),
-      ckb: computed(() => address.value?.toCKBAddress() || '-'),
-      portal: computed(() => portalAddress.value || '-'),
-    };
+  export default defineComponent({
+    name: 'ReceiveCard',
+    /* eslint-disable @typescript-eslint/no-unsafe-assignment */
+    components: { VueQrcode },
+    setup() {
+      const type: Ref<'default' | 'ckb' | 'portal'> = ref('default');
+      const { address, portalAddress } = useAccount();
+      const addresses = {
+        default: computed(() => address.value?.addressString || '-'),
+        ckb: computed(() => address.value?.toCKBAddress() || '-'),
+        portal: computed(() => portalAddress.value || '-'),
+      };
 
-    onMounted(() => {
-      GTM.logEvent({
-        category: 'Actions',
-        action: 'show-dialog',
-        label: 'receive-card',
-        value: new Date().getTime(),
+      onMounted(() => {
+        GTM.logEvent({
+          category: 'Actions',
+          action: 'show-dialog',
+          label: 'receive-card',
+          value: new Date().getTime(),
+        });
       });
-    });
 
-    return { addresses, type, copy };
-  },
-});
+      return { addresses, type, copy };
+    },
+  });
 </script>
