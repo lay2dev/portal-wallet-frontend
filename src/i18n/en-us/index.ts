@@ -223,9 +223,9 @@ export default {
   },
   receiveCard: {
     label: {
-      native: 'ETH',
+      native: 'ETH Address',
       portal: 'Relay',
-      ckb: 'Full',
+      ckb: 'CKB Address',
       address
     },
     msg: {

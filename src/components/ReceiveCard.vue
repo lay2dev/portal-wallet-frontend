@@ -45,7 +45,7 @@
       >
         <q-tab name="default" :label="$t('receiveCard.label.native')" />
         <q-tab name="ckb" :label="$t('receiveCard.label.ckb')" />
-        <q-tab name="portal" :label="$t('receiveCard.label.portal')" />
+        <!-- <q-tab name="portal" :label="$t('receiveCard.label.portal')" /> -->
       </q-tabs>
     </q-card>
   </div>

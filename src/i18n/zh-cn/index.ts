@@ -221,7 +221,7 @@ export default {
     label: {
       native: 'ETH 地址',
       portal: '中转地址',
-      ckb: '长地址',
+      ckb: 'CKB 地址',
       address
     },
     msg: {
