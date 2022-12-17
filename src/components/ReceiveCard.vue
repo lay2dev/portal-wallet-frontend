@@ -63,6 +63,7 @@
   import VueQrcode from 'vue-qrcode';
   import { copy } from '../compositions/api';
   import GTM from '../compositions/gtm';
+import { NervosAddressVersion } from '@lay2/pw-core';
 
   export default defineComponent({
     name: 'ReceiveCard',
@@ -73,7 +74,7 @@
       const { address, portalAddress } = useAccount();
       const addresses = {
         default: computed(() => address.value?.addressString || '-'),
-        ckb: computed(() => address.value?.toCKBAddress() || '-'),
+        ckb: computed(() => address.value?.toCKBAddress(NervosAddressVersion.pre2021) || '-'),
         portal: computed(() => portalAddress.value || '-'),
       };
 

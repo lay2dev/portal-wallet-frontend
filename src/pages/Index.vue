@@ -192,7 +192,7 @@
     useAssets,
     Asset,
   } from 'src/compositions/account';
-  import { AmountUnit, Amount } from '@lay2/pw-core';
+  import { AmountUnit, Amount, NervosAddressVersion } from '@lay2/pw-core';
   import { Notify, LocalStorage } from 'quasar';
   import { ref, computed, onMounted, watch } from '@vue/composition-api';
   import Jazzicon from 'vue-jazzicon';
@@ -228,7 +228,7 @@
         truncatedAddress(address.value?.addressString, 22)
       );
       const ckbAddress = computed(() =>
-        truncatedAddress(address.value?.toCKBAddress(), 21)
+        truncatedAddress(address.value?.toCKBAddress(NervosAddressVersion.pre2021), 21)
       );
       const lockHash = computed(() => address.value?.toLockScript().toHash());
       const balance = computed(() =>

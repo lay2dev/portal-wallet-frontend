@@ -4,7 +4,7 @@ import { Signer, Keccak256Hasher } from '@lay2/pw-core';
 
 export class LoginSigner extends Signer {
   constructor(public readonly from: string) {
-    super(new Keccak256Hasher());
+    super();
   }
 
   protected signMessages(): Promise<string[]> {

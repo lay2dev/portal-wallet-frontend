@@ -10,7 +10,8 @@ import PWCore, {
   ChainID,
   SUDT,
   AmountUnit,
-  Transaction
+  Transaction,
+  LockType
 } from '@lay2/pw-core';
 import { addPendingTx, TX, Asset } from './account';
 import { BatchBuilder } from './batch-builder';
@@ -86,7 +87,7 @@ export function setAddress(val: string): Address {
   if (val.startsWith('ckb') || val.startsWith('ckt')) {
     return new Address(val, AddressType.ckb);
   } else if (isEthAddress(val)) {
-    return new Address(val, AddressType.eth);
+    return new Address(val, AddressType.eth, undefined, LockType.pw);
   } else {
     throw new Error(i18n.t('send.msg.wrongAddress').toString());
   }
@@ -140,7 +141,9 @@ export async function send(): Promise<string | undefined> {
         amount,
         rate.value
       );
-      const simpleBuilder = new SimpleBuilder(address, amount, rate.value);
+      const simpleBuilder = new SimpleBuilder(address, amount, {
+        feeRate: rate.value
+      });
 
       const pw = new PWCore(useConfig().node_url);
       if (useSendMode().value === 'remote') {

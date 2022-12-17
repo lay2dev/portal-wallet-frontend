@@ -4,7 +4,9 @@ import PWCore, {
   Address,
   AddressType,
   AmountUnit,
-  Script
+  Script,
+  LockType,
+  NervosAddressVersion
 } from '@lay2/pw-core';
 import { useConfig } from './config';
 import { useApi, checkAuthorization } from './api';
@@ -73,12 +75,14 @@ watch(toRef(account, 'address'), async address => {
 const getAddress = (address: string) =>
   new Address(
     address,
-    address.startsWith('0x') ? AddressType.eth : AddressType.ckb
+    address.startsWith('0x') ? AddressType.eth : AddressType.ckb,
+    undefined,
+    LockType.pw
   );
 
 const getPortalAddress = async (address: Address) => {
   account.portalAddress = await useApi().loadPortalAddress(
-    address.toCKBAddress()
+    address.toCKBAddress(NervosAddressVersion.pre2021)
   );
 };
 

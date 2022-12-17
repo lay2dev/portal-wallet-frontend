@@ -137,7 +137,8 @@
         } else if (pair.isValidPair()) {
           return new SimpleBuilder(
             pair.address as Address,
-            pair.amount as Amount
+            pair.amount as Amount,
+            { feeRate: 1000 }
           );
         } else {
           return undefined;

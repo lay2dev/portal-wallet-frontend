@@ -5,7 +5,8 @@ import PWCore, {
   Address,
   EthProvider,
   ChainID,
-  CHAIN_SPECS
+  CHAIN_SPECS,
+  LockType
 } from '@lay2/pw-core';
 import { useConfig } from './config';
 import { useAccount } from './account';
@@ -14,7 +15,7 @@ import { PWalletCollector } from './pwallet-collector';
 
 const ethProvider = new EthProvider((newAddress: Address) => {
   useAccount().address.value = newAddress;
-});
+}, LockType.pw);
 
 export default async function init() {
   if (LocalStorage.getItem('network') === 'lay2') {
