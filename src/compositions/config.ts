@@ -17,7 +17,7 @@ interface Config extends Urls {
 
 const urls: Record<string, Urls> = {
   main: {
-    node_url: 'https://lina.ckb.dev',
+    node_url: 'https://mainnet.ckb.dev',
     api_base: 'https://cellapiprod.ckb.pw',
     explorer_base: 'https://explorer.nervos.org',
     dao_url: 'https://dao.ckb.pw',
